@@ -29,3 +29,4 @@ ENV/
 manage.py
 settings.py
 db.sqlite3
+migrations

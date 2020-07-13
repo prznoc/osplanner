@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Workstand, User, Workweek
 
-# Register your models here.
+admin.site.register(Workstand)
+admin.site.register(User)
