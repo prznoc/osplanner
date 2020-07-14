@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 
 class Workstation(models.Model):
     ws_id = models.IntegerField(primary_key=True, unique = True)
-    window = models.IntegerField(default = 1, validators=[MaxValueValidator(3), MinValueValidator(1)])
-    noise = models.IntegerField(default = 1, validators=[MaxValueValidator(5), MinValueValidator(1)])
+    window = models.BooleanField(default = False)
+    noise = models.BooleanField(default = False)
     large_screen = models.BooleanField(default = False)
     is_mac = models.BooleanField(default = False)
 
@@ -35,10 +35,14 @@ class User(models.Model):
     
 class Preferences(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    window = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
-    noise = models.IntegerField(default = 1, validators=[MaxValueValidator(1), MinValueValidator(5)])
+    window = models.BooleanField(default = False)
+    window_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
+    noise = models.BooleanField(default = False)
+    noise_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
     large_screen = models.BooleanField(default = False)
+    large_screen_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
     is_mac = models.BooleanField(default = False)
+    is_mac_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
 
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)

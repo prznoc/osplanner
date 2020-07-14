@@ -1,10 +1,10 @@
 from django.test import TestCase
 from datetime import datetime, timedelta
 
-from spaceplanner.models import User, Workstation, Workweek
+from spaceplanner.models import User, Workstation, Workweek, Preferences
 from spaceplanner.app_logic import assigner
 
-class DatabaseTests(TestCase):
+class AvailabilityTest(TestCase):
     def setUp(self):
         Workstation.objects.create(ws_id = 1)
         Workstation.objects.create(ws_id = 2)
@@ -14,11 +14,11 @@ class DatabaseTests(TestCase):
         working_days = ["monday", "wednesday", "saturday"]
         availability = assigner.prepare_availability(working_days)
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
-        wanted_availability = {}
+        expected_availability = {}
         for workstation in Workstation.objects.all():
             slot = Workweek.objects.get(start_date = next_monday, workstation = workstation)
-            wanted_availability[slot] = working_days
-        self.assertEqual(availability, wanted_availability)
+            expected_availability[slot] = working_days
+        self.assertEqual(availability, expected_availability)
 
     
     def test_get_slots_after_edition(self):
@@ -30,12 +30,12 @@ class DatabaseTests(TestCase):
         slot.wednesday = user
         slot.save()
         availability = assigner.prepare_availability(working_days)
-        wanted_availability = {}
-        wanted_availability[slot] = ["monday"]
+        expected_availability = {}
+        expected_availability[slot] = ["monday"]
         workstation = Workstation.objects.get(ws_id = 1)
         slot = Workweek.objects.get(start_date = next_monday, workstation = workstation)
-        wanted_availability[slot] = working_days
-        self.assertEqual(availability, wanted_availability)
+        expected_availability[slot] = working_days
+        self.assertEqual(availability, expected_availability)
 
     def test_get_slots_with_one_empty(self):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
@@ -47,9 +47,32 @@ class DatabaseTests(TestCase):
         slot.monday = user
         slot.save()
         availability = assigner.prepare_availability(working_days)
-        wanted_availability = {}
+        expected_availability = {}
         workstation = Workstation.objects.get(ws_id = 1)
         slot = Workweek.objects.get(start_date = next_monday, workstation = workstation)
-        wanted_availability[slot] = working_days
-        self.assertEqual(availability, wanted_availability)
+        expected_availability[slot] = working_days
+        self.assertEqual(availability, expected_availability)
+'''
+class SlotFilteringTest(TestCase):
+    def setUp(self):
+        Workstation.objects.create(ws_id = 1)
+        Workstation.objects.create(ws_id = 2)
+        workstation1 = Workstation.objects.get(ws_id = 1)
+        workstation1.large_screen = True
+        workstation1.is_mac = True
+        workstation1.save()
+        Preferences.objects.create(user = User.objects.create(name = "Andrzej"),
+            large_screen = True, is_mac = True)
+    
+    def test_filter_matching_workspace(self):
+        preference = Preferences.objects.get(user = User.objects.get(name = "Andrzej"))
+        working_days = ["monday", "wednesday", "saturday"]
+        availability = assigner.prepare_availability(working_days)
+        print(availability)
+        availability = assigner.filter_workspaces("is_mac", preference, availability)
+        print(availability)
+        expected_availability = []
+        self.assertEqual(availability, expected_availability)
+'''
+
         
