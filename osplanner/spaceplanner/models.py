@@ -57,9 +57,6 @@ class Workweek(models.Model):
     sunday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
     related_name = 'sunday')
 
-'''
-    class Meta:
-        constraints  = [
-            models.UniqueConstraint(fields=['start_date', 'workstand'], name = "workstand schedule")
-        ]
-'''
+    def __str__(self):
+        return str(str(self.workstand) + str(self.start_date))
+
