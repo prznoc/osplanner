@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from datetime import datetime, timedelta
 
-class Workstand(models.Model):
+class Workstation(models.Model):
     ws_id = models.IntegerField(primary_key=True, unique = True)
     window = models.IntegerField(default = 1, validators=[MaxValueValidator(3), MinValueValidator(1)])
     noise = models.IntegerField(default = 1, validators=[MaxValueValidator(5), MinValueValidator(1)])
@@ -18,15 +18,15 @@ class Workstand(models.Model):
         today = datetime.today()
         next_monday = today + timedelta(days=-today.weekday(), weeks=1)
         while (next_monday.year == today.year):
-            week = Workweek(workstand = self, start_date = next_monday)
+            week = Workweek(workstation = self, start_date = next_monday)
             week.save()
             next_monday = next_monday + timedelta(days = 7)
-        super(Workstand, self).save(*args, **kwargs)
+        super(Workstation, self).save(*args, **kwargs)
 
 class User(models.Model):
     us_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
-    favourite_workspace = models.ManyToManyField(Workstand)
+    favourite_workspace = models.ManyToManyField(Workstation)
     
     def __str__(self):
         return str(self.name)
@@ -42,7 +42,7 @@ class Preferences(models.Model):
 
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
-    workstand = models.ForeignKey(Workstand, on_delete=models.CASCADE)
+    workstation = models.ForeignKey(Workstation, on_delete=models.CASCADE)
     start_date = models.DateField() #date of week's monday
     monday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name='monday')
@@ -60,5 +60,5 @@ class Workweek(models.Model):
     related_name = 'sunday')
 
     def __str__(self):
-        return str(str(self.workstand) + str(self.start_date) + str(self.week_id))
+        return str(str(self.workstation) + str(self.start_date) + str(self.week_id))
 

@@ -11,7 +11,7 @@ def prepare_availability(weekdays):
         for weekday in weekdays:
             if getattr(slot, weekday) is None:
                 free_days.append(weekday)
-        if (not free_days): 
+        if (free_days): 
             availability[slot] = free_days
     return availability
 
