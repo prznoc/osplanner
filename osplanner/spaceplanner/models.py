@@ -30,6 +30,8 @@ class User(models.Model):
     
     def __str__(self):
         return str(self.name)
+
+    #def save(self, *args, **kwargs):
     
 class Preferences(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -42,21 +44,21 @@ class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
     workstand = models.ForeignKey(Workstand, on_delete=models.CASCADE)
     start_date = models.DateField() #date of week's monday
-    monday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
+    monday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name='monday')
-    tuesday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
+    tuesday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name = 'tuesday')
-    wednesday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
+    wednesday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name = 'wednesday')
-    thursday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
+    thursday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name = 'thursday')
-    friday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
+    friday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name = 'friday')
-    saturday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
+    saturday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name = 'saturday')
-    sunday = models.ForeignKey(User, default= None, blank = True, null = True, on_delete=models.SET_NULL,
+    sunday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name = 'sunday')
 
     def __str__(self):
-        return str(str(self.workstand) + str(self.start_date))
+        return str(str(self.workstand) + str(self.start_date) + str(self.week_id))
 

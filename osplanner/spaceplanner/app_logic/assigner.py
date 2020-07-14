@@ -11,10 +11,12 @@ def prepare_availability(weekdays):
         for weekday in weekdays:
             if getattr(slot, weekday) is None:
                 free_days.append(weekday)
-        availability[slot] = free_days
+        if (not free_days): 
+            availability[slot] = free_days
     return availability
 
 def assign_next_week(user, weekdays):
+    availability = prepare_availability(weekdays)
     pass
 '''
     next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
