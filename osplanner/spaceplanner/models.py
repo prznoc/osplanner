@@ -21,23 +21,23 @@ class Workstand(models.Model):
             week = Workweek(workstand = self, start_date = next_monday)
             week.save()
             next_monday = next_monday + timedelta(days = 7)
-
         super(Workstand, self).save(*args, **kwargs)
 
 class User(models.Model):
     us_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
+    favourite_workspace = models.ManyToManyField(Workstand)
+    
+    def __str__(self):
+        return str(self.name)
+    
+class Preferences(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     window = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
     noise = models.IntegerField(default = 1, validators=[MaxValueValidator(1), MinValueValidator(5)])
     large_screen = models.BooleanField(default = False)
     is_mac = models.BooleanField(default = False)
 
-    def __str__(self):
-        return str(self.name)
-
-class Preference(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key = True)
-    
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
     workstand = models.ForeignKey(Workstand, on_delete=models.CASCADE)
