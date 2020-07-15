@@ -27,7 +27,7 @@ class Workstation(models.Model):
 class User(models.Model):
     us_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
-    favourite_workspace = models.ManyToManyField(Workstation)
+    favourite_workspace = models.ForeignKey(Workstation, blank = True, null = True, on_delete=models.SET_NULL)
     
     def __str__(self):
         return str(self.name)
@@ -35,7 +35,7 @@ class User(models.Model):
     #def save(self, *args, **kwargs):
     
 class Preferences(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     window = models.BooleanField(default = False)
     window_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
     noise = models.BooleanField(default = False)
