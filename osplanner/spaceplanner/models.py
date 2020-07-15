@@ -37,13 +37,13 @@ class User(models.Model):
 class Preferences(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     window = models.BooleanField(default = False)
-    window_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
+    window_preference = models.IntegerField(default = 0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     noise = models.BooleanField(default = False)
-    noise_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
+    noise_preference = models.IntegerField(default = 0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     large_screen = models.BooleanField(default = False)
-    large_screen_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
+    large_screen_preference = models.IntegerField(default = 0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     is_mac = models.BooleanField(default = False)
-    is_mac_preference = models.IntegerField(default = 1, validators=[MinValueValidator(1), MaxValueValidator(3)])
+    is_mac_preference = models.IntegerField(default = 0, validators=[MinValueValidator(0), MaxValueValidator(3)])
 
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
@@ -69,4 +69,3 @@ class Workweek(models.Model):
 
     class Meta:
         unique_together = ('workstation', 'start_date')
-
