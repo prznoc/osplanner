@@ -15,12 +15,13 @@ class Workstation(models.Model):
 
     #@transaction.commit_on_success
     def save(self, *args, **kwargs):
-        today = datetime.today()
-        next_monday = today + timedelta(days=-today.weekday(), weeks=1)
-        while (next_monday.year == today.year):
-            week = Workweek(workstation = self, start_date = next_monday)
-            week.save()
-            next_monday = next_monday + timedelta(days = 7)
+        if self._state.adding is True:
+            today = datetime.today()
+            next_monday = today + timedelta(days=-today.weekday(), weeks=1)
+            while (next_monday.year == today.year):
+                week = Workweek(workstation = self, start_date = next_monday)
+                week.save()
+                next_monday = next_monday + timedelta(days = 7)
         super(Workstation, self).save(*args, **kwargs)
 
 class User(models.Model):
@@ -65,4 +66,7 @@ class Workweek(models.Model):
 
     def __str__(self):
         return str(str(self.workstation) + str(self.start_date) + str(self.week_id))
+
+    class Meta:
+        unique_together = ('workstation', 'start_date')
 
