@@ -4,7 +4,7 @@ import random
 
 from spaceplanner.models import User, Workweek, Preferences
 
-def assign_next_week(user, weekdays):
+def assign_next_week(user, weekdays: list):   #typowanie listy
     next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
     availability, slots = prepare_availability(weekdays)  #availability - weekdays with free slots
     schedule = dict.fromkeys(weekdays) #returned schedule
@@ -13,11 +13,12 @@ def assign_next_week(user, weekdays):
     for preference_name in preferences_set:         
         if (getattr(preference, preference_name+"_preference") == 3):
             availability = filter_workspaces(preference_name, preference, availability, slots, False)
-    p = list(availability.values())
+    p = list(availability.values())     #uwaga na pustą listę
     results = set(p[0])   #available slots
     for s in p[1:]:
         results.intersection_update(s)
     try:
+        #przydzielać jeśli jest chociaż jeden dzień
         slot = Workweek.objects.get(workstation = user.favourite_workspace, start_date = next_monday)
         if slot in results:
             for day in schedule.keys():
@@ -68,7 +69,7 @@ def match_slot_to_day(preference, day, availability, preferences_set):
     return possible_slots[0]
     
 def select_matching_workspace(preference, availability, results):
-    preferences_set = ["is_mac", "window", "noise", "large_screen"]
+    preferences_set = ["is_mac", "window", "noise", "large_screen"] # wsadzić od razu do listy
     for preference_name in preferences_set:
         if (getattr(preference, preference_name+"_preference") == 1):
             availability = filter_workspaces(preference_name, preference, availability, results, True)

@@ -30,4 +30,3 @@ manage.py
 settings.py
 db.sqlite3
 wsgi.py
-urls.py

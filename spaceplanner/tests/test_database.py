@@ -5,6 +5,7 @@ from django.db import transaction
 from spaceplanner.models import User, Workstation, Workweek, Preferences
 from spaceplanner.app_logic import assigner
 
+#Hypotesis
 class AvailabilityTest(TestCase):
     def setUp(self):
         Workstation.objects.create(ws_id = 1)

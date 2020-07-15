@@ -4,7 +4,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from datetime import datetime, timedelta
 
 class Workstation(models.Model):
-    ws_id = models.IntegerField(primary_key=True, unique = True)
+    ws_id = models.IntegerField(primary_key=True, name=_("ws_id"))
+    # relacje properties to workstation
     window = models.BooleanField(default = False)
     noise = models.BooleanField(default = False)
     large_screen = models.BooleanField(default = False)
@@ -31,8 +32,6 @@ class User(models.Model):
     
     def __str__(self):
         return str(self.name)
-
-    #def save(self, *args, **kwargs):
     
 class Preferences(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
@@ -48,7 +47,7 @@ class Preferences(models.Model):
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
     workstation = models.ForeignKey(Workstation, on_delete=models.CASCADE)
-    start_date = models.DateField() #date of week's monday
+    start_date = models.DateField() #date of week's monday, change to week
     monday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
     related_name='monday')
     tuesday = models.ForeignKey(User, blank = True, null = True, on_delete=models.SET_NULL,
