@@ -7,10 +7,10 @@ from spaceplanner.models import User, Workweek, Preferences
 def assign_next_week(user, weekdays):
     next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
     availability, slots = prepare_availability(weekdays)  #availability - weekdays with free slots
-    schedule = dict.fromkeys(weekdays)
+    schedule = dict.fromkeys(weekdays) #returned schedule
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
     preference = Preferences.objects.get(user = user)
-    for preference_name in preferences_set:
+    for preference_name in preferences_set:         
         if (getattr(preference, preference_name+"_preference") == 3):
             availability = filter_workspaces(preference_name, preference, availability, slots, False)
     p = list(availability.values())
@@ -48,7 +48,24 @@ def assign_next_week(user, weekdays):
             schedule[day] = chosen_slot
         assign_user_to_workstation(user, schedule)
         return schedule
-        
+    if not results:
+        for day in schedule.keys():
+            schedule[day] = match_slot_to_day(preference, day, availability, preferences_set)
+        assign_user_to_workstation(user, schedule)
+        return schedule
+           
+def match_slot_to_day(preference, day, availability, preferences_set):
+    possible_slots = availability[day]
+    for preference_name in preferences_set:
+        if (getattr(preference, preference_name+"_preference") == 1):
+            temp_slots = []
+            for slot in possible_slots:
+                workstation = slot.workstation
+                if (getattr(preference, preference_name) == getattr(workstation, preference_name)):
+                    temp_slots.append(slot)
+            if temp_slots:
+                possible_slots = temp_slots
+    return possible_slots[0]
     
 def select_matching_workspace(preference, availability, results):
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
@@ -88,10 +105,10 @@ def filter_workspaces(preference_name, preference, availability, slots, empty_pe
         if (getattr(preference, preference_name) == getattr(workstation, preference_name)):
             temp_slots.add(slot)
     
-    for day in availability.keys():
+    for day in availability.keys():        
         weekday = availability[day]
-        new_weekday = [x for x in weekday if x in temp_slots]
-        if new_weekday or empty_permission_flag:
+        new_weekday = [x for x in weekday if x in temp_slots]     
+        if new_weekday or empty_permission_flag:    #returns slots matching preferences
             availability[day] = new_weekday
 
     return availability

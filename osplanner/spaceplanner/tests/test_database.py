@@ -99,7 +99,7 @@ class SlotFilteringTest(TestCase):
         self.assertEqual(availability, expected_availability)
 
 
-class SelectingWorkspaceTests(TestCase):
+class SelectingSingleWorkspaceTests(TestCase):
 
     def setUp(self):
         workstation1 = Workstation.objects.create(ws_id = 1)
@@ -172,3 +172,36 @@ class SelectingWorkspaceTests(TestCase):
         for day in expected_schedule.keys():
             expected_schedule[day] = Workweek.objects.get(workstation = workstation1, start_date = next_monday)
         self.assertEqual(schedule, expected_schedule)
+
+class SelectingDiffrentWorkspacesTests(TestCase):
+    
+    def setUp(self):
+        workstation1 = Workstation.objects.create(ws_id = 1)
+        workstation1.large_screen = True
+        workstation1.is_mac = True
+        workstation1.save()
+        Workstation.objects.create(ws_id = 2)
+        Preferences.objects.create(user = User.objects.create(name = "Andrzej"), 
+        large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 2)
+        Preferences.objects.create(user = User.objects.create(name = "Rafał"), 
+        large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 1)
+        
+    def test_diffrent_day_assignment(self):
+        next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
+        working_days1 = ["monday", "wednesday", "saturday"]
+        working_days2 = ["monday", "tuesday", "friday"]
+        user1 = User.objects.get(name = "Andrzej")
+        workstation1 = Workstation.objects.get(ws_id = 1)
+        schedule1 = assigner.assign_next_week(user1, working_days1)
+        expected_schedule1 = dict.fromkeys(working_days1)
+        for day in expected_schedule1.keys():
+            expected_schedule1[day] = Workweek.objects.get(workstation = workstation1, start_date = next_monday)
+        user2 = User.objects.get(name = "Rafał")
+        workstation2 = Workstation.objects.get(ws_id = 2)
+        schedule2 = assigner.assign_next_week(user2, working_days2)
+        expected_schedule2 = dict.fromkeys(working_days2)
+        expected_schedule2["monday"] = Workweek.objects.get(workstation = workstation2, start_date = next_monday)
+        expected_schedule2["tuesday"] = Workweek.objects.get(workstation = workstation1, start_date = next_monday)
+        expected_schedule2["friday"] = Workweek.objects.get(workstation = workstation1, start_date = next_monday)
+        self.assertEqual(schedule1, expected_schedule1)
+        self.assertEqual(schedule2, expected_schedule2)
