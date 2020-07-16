@@ -2,14 +2,14 @@ from datetime import datetime, timedelta
 from statistics import mode
 import random
 
-from spaceplanner.models import User, Workweek, Preferences
+from spaceplanner.models import Employee, Workweek, EmployeePreferences
 
 def assign_next_week(user, weekdays: list):   #typowanie listy
     next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
     availability, slots = prepare_availability(weekdays)  #availability - weekdays with free slots
     schedule = dict.fromkeys(weekdays) #returned schedule
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
-    preference = Preferences.objects.get(user = user)
+    preference = EmployeePreferences.objects.get(user = user)
     for preference_name in preferences_set:         
         if (getattr(preference, preference_name+"_preference") == 3):
             availability = filter_workspaces(preference_name, preference, availability, slots, False)

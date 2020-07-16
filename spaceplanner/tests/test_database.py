@@ -2,7 +2,7 @@ from django.test import TestCase
 from datetime import datetime, timedelta
 from django.db import transaction
 
-from spaceplanner.models import User, Workstation, Workweek, Preferences
+from spaceplanner.models import Employee, Workstation, Workweek, EmployeePreferences
 from spaceplanner.app_logic import assigner
 
 #Hypotesis
@@ -10,7 +10,7 @@ class AvailabilityTest(TestCase):
     def setUp(self):
         Workstation.objects.create(ws_id = 1)
         Workstation.objects.create(ws_id = 2)
-        User.objects.create(name = "Andrzej")
+        Employee.objects.create(name = "Andrzej")
 
     def test_get_free_slots_from_empty_schedule(self):
         working_days = ["monday", "wednesday", "saturday"]
@@ -30,7 +30,7 @@ class AvailabilityTest(TestCase):
         working_days = ["monday", "wednesday"]
         workstation = Workstation.objects.get(ws_id = 2)
         slot2 = Workweek.objects.get(start_date = next_monday, workstation = workstation)
-        user = User.objects.get(name = "Andrzej")
+        user = Employee.objects.get(name = "Andrzej")
         slot2.wednesday = user
         slot2.save()
         availability, slots = assigner.prepare_availability(working_days)
@@ -47,7 +47,7 @@ class AvailabilityTest(TestCase):
         working_days = ["monday", "wednesday"]
         workstation = Workstation.objects.get(ws_id = 2)
         slot = Workweek.objects.get(start_date = next_monday, workstation = workstation)
-        user = User.objects.get(name = "Andrzej")
+        user = Employee.objects.get(name = "Andrzej")
         slot.wednesday = user
         slot.monday = user
         slot.save()
@@ -65,12 +65,12 @@ class SlotFilteringTest(TestCase):
     def setUp(self):
         Workstation.objects.create(ws_id = 1)
         Workstation.objects.create(ws_id = 2)
-        Preferences.objects.create(user = User.objects.create(name = "Andrzej"),
+        EmployeePreferences.objects.create(user = Employee.objects.create(name = "Andrzej"),
             large_screen = True, is_mac = True)
     
     def test_filter_matching_workspace(self):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
-        preference = Preferences.objects.get(user = User.objects.get(name = "Andrzej"))
+        preference = EmployeePreferences.objects.get(user = Employee.objects.get(name = "Andrzej"))
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation1.large_screen = True
         workstation1.is_mac = True
@@ -86,8 +86,8 @@ class SlotFilteringTest(TestCase):
 
     def test_no_matching_workspaces_found(self):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
-        user = User.objects.get(name = "Andrzej")
-        preference = Preferences.objects.get(user = user)
+        user = Employee.objects.get(name = "Andrzej")
+        preference = EmployeePreferences.objects.get(user = user)
         workstation = Workstation.objects.get(ws_id = 1)
         slot = Workweek.objects.get(start_date = next_monday, workstation = workstation)
         slot.wednesday = user
@@ -112,15 +112,15 @@ class SelectingSingleWorkspaceTests(TestCase):
         workstation3.large_screen = False
         workstation3.is_mac = True
         workstation3.save()
-        Preferences.objects.create(user = User.objects.create(name = "Andrzej"), 
+        EmployeePreferences.objects.create(user = Employee.objects.create(name = "Andrzej"), 
         large_screen = True, is_mac = True, is_mac_preference = 3, large_screen_preference = 2)
-        Preferences.objects.create(user = User.objects.create(name = "Rafał"), 
+        EmployeePreferences.objects.create(user = Employee.objects.create(name = "Rafał"), 
         large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 1)
     
     def test_filter_favourite_workspace(self):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
         working_days = ["monday", "wednesday", "saturday"]
-        user = User.objects.get(name = "Andrzej")
+        user = Employee.objects.get(name = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
         user.favourite_workspace = workstation1
         user.save()
@@ -133,7 +133,7 @@ class SelectingSingleWorkspaceTests(TestCase):
     def test_matching_workspaces_present(self):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
         working_days = ["monday", "wednesday", "saturday"]
-        user = User.objects.get(name = "Andrzej")
+        user = Employee.objects.get(name = "Andrzej")
         user.favourite_workspace = None
         user.save()
         workstation1 = Workstation.objects.get(ws_id = 1)
@@ -147,13 +147,13 @@ class SelectingSingleWorkspaceTests(TestCase):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
         working_days1 = ["monday", "wednesday", "saturday"]
         working_days2 = ["monday", "tuesday", "friday"]
-        user1 = User.objects.get(name = "Andrzej")
+        user1 = Employee.objects.get(name = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
         schedule1 = assigner.assign_next_week(user1, working_days1)
         expected_schedule1 = dict.fromkeys(working_days1)
         for day in expected_schedule1.keys():
             expected_schedule1[day] = Workweek.objects.get(workstation = workstation1, start_date = next_monday)
-        user2 = User.objects.get(name = "Rafał")
+        user2 = Employee.objects.get(name = "Rafał")
         workstation2 = Workstation.objects.get(ws_id = 3)
         schedule2 = assigner.assign_next_week(user2, working_days2)
         expected_schedule2 = dict.fromkeys(working_days2)
@@ -166,7 +166,7 @@ class SelectingSingleWorkspaceTests(TestCase):
     def test_assign_with_1_priority(self):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
         working_days = ["monday", "wednesday", "saturday"]
-        user = User.objects.get(name = "Rafał")
+        user = Employee.objects.get(name = "Rafał")
         workstation1 = Workstation.objects.get(ws_id = 1)
         schedule = assigner.assign_next_week(user, working_days)
         expected_schedule = dict.fromkeys(working_days)
@@ -182,22 +182,22 @@ class SelectingDiffrentWorkspacesTests(TestCase):
         workstation1.is_mac = True
         workstation1.save()
         Workstation.objects.create(ws_id = 2)
-        Preferences.objects.create(user = User.objects.create(name = "Andrzej"), 
+        EmployeePreferences.objects.create(user = Employee.objects.create(name = "Andrzej"), 
         large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 2)
-        Preferences.objects.create(user = User.objects.create(name = "Rafał"), 
+        EmployeePreferences.objects.create(user = Employee.objects.create(name = "Rafał"), 
         large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 1)
         
     def test_diffrent_day_assignment(self):
         next_monday = datetime.today() + timedelta(days=-datetime.today().weekday(), weeks=1)
         working_days1 = ["monday", "wednesday", "saturday"]
         working_days2 = ["monday", "tuesday", "friday"]
-        user1 = User.objects.get(name = "Andrzej")
+        user1 = Employee.objects.get(name = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
         schedule1 = assigner.assign_next_week(user1, working_days1)
         expected_schedule1 = dict.fromkeys(working_days1)
         for day in expected_schedule1.keys():
             expected_schedule1[day] = Workweek.objects.get(workstation = workstation1, start_date = next_monday)
-        user2 = User.objects.get(name = "Rafał")
+        user2 = Employee.objects.get(name = "Rafał")
         workstation2 = Workstation.objects.get(ws_id = 2)
         schedule2 = assigner.assign_next_week(user2, working_days2)
         expected_schedule2 = dict.fromkeys(working_days2)

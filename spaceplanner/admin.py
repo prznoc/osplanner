@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Workstation, User, Workweek
+from .models import Workstation, Employee, Workweek
 
 admin.site.register(Workstation)
-admin.site.register(User)
+admin.site.register(Employee)
+admin.site.register(Workweek)
