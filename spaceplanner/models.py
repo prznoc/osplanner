@@ -12,7 +12,7 @@ class Workstation(models.Model):
     def __str__(self):
         return str(self.ws_id)
 
-#ash for inheritance technique
+#zapytać o podejście do dziedziczenia tabel
 class WorkstationPreferences(models.Model):
     workstation = models.ForeignKey(Workstation, name=_('workstation'), on_delete=models.CASCADE)
 
@@ -30,7 +30,7 @@ class SGWorkstationPreferences(WorkstationPreferences):
 class Employee(models.Model):
     us_id = models.AutoField(primary_key=True)
     username = models.CharField(_('username'), max_length=200)
-    favourite_workspace = models.ManyToManyField(Workstation)   #name in manytomany
+    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace")) 
 
     def __str__(self):
         return str(self.username)
