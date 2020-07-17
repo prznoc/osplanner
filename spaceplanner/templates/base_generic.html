@@ -17,10 +17,10 @@
         <ul class="sidebar-nav">
           <li><a href="{% url 'home' %}">Home</a></li>
           {% if user.is_authenticated %}
-            <li>User: {{ user.get_username }}</li>
-            <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>   
+            <li><a href="{% url 'user_panel'%}">User: {{ user.get_username }}</a></li>
+            <li><a href="{% url 'logout'%}">Logout</a></li>   
           {% else %}
-            <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>   
+            <li><a href="{% url 'login'%}">Login</a></li>   
           {% endif %} 
         </ul>
      {% endblock %}

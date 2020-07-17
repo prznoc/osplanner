@@ -6,5 +6,6 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('user_panel/', views.user_panel, name='user_panel'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
