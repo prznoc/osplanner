@@ -1,21 +1,23 @@
 from datetime import datetime, timedelta
 from statistics import mode
 from abc import ABC, abstractmethod
+from django.contrib.auth.models import User
+
 
 import random
 
-from spaceplanner.models import Employee, Workweek, SGEmployeePreferences, Workstation, SGWorkstationPreferences
+from spaceplanner.models import Workweek, EmployeePreferences, Workstation, WorkstationPreferences
 
 class BaseAssigner(ABC):
 
-    def assign_next_week(self, user: Employee, weekdays: list) -> dict:
+    def assign_next_week(self, user: User, weekdays: list) -> dict:
         week_after_today = datetime.today() + timedelta (days = 7)
         week_number = week_after_today.isocalendar()[1]
         year = week_after_today.isocalendar()[0]
         return self.assign_week(user, weekdays, week_number, year)
 
     @abstractmethod
-    def assign_week(self, user: Employee, weekdays: list, week_number: int, year: int) -> dict:
+    def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
         pass
 
     def get_all_slots(self, week_number: int, year: int) -> [list, bool]:
@@ -50,12 +52,12 @@ class SGAssigner(BaseAssigner):
 
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
 
-    def assign_week(self, user: Employee, weekdays: list, week_number: int, year: int) -> dict:
+    def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
         if not weekdays: return  #jakoś blokować pustą listę
         all_slots, created = self.get_all_slots(week_number, year)
         availability, slots = self.prepare_availability(weekdays, all_slots)
         schedule = dict.fromkeys(weekdays) #schedule to return
-        preference = SGEmployeePreferences.objects.get(employee = user)
+        preference = EmployeePreferences.objects.get(employee = user)
 
         # None for days with no matching workstation
         temp_weekdays = weekdays.copy()
@@ -76,7 +78,7 @@ class SGAssigner(BaseAssigner):
         for s in p[1:]:
             results.intersection_update(s) #workstations available on all days
         try:
-            favourites = user.favourite_workspace.all()
+            favourites = preference.favourite_workspace.all()
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
             common = list(set(results).intersection(favourites))
             if common:
@@ -90,7 +92,7 @@ class SGAssigner(BaseAssigner):
         #assign favourites to days with one
         #może zmienić algorytm żeby liczył pasującę
         try:
-            favourites = user.favourite_workspace.all()
+            favourites = preferences.favourite_workspace.all()
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
             temp_weekdays = weekdays.copy()
             for day in temp_weekdays:
@@ -139,7 +141,7 @@ class SGAssigner(BaseAssigner):
    
         for slot in slots:
             workstation = slot.workstation
-            workstation_preference = SGWorkstationPreferences.objects.get(workstation = workstation)
+            workstation_preference = WorkstationPreferences.objects.get(workstation = workstation)
             if (getattr(preference, preference_name) == getattr(workstation_preference, preference_name)):
                 temp_slots.add(slot)
     
@@ -167,7 +169,7 @@ class SGAssigner(BaseAssigner):
                 temp_slots = []
                 for slot in possible_slots:
                     workstation = slot.workstation
-                    workstation_preference = SGWorkstationPreferences.objects.get(workstation = workstation)
+                    workstation_preference = WorkstationPreferences.objects.get(workstation = workstation)
                     if (getattr(preference, preference_name) == getattr(workstation_preference, preference_name)):
                         temp_slots.append(slot)
                 if temp_slots:

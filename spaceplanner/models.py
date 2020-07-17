@@ -1,8 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext as _
-
-from composite_field import CompositeField
+from django.conf import settings
 
 from datetime import datetime, timedelta
 
@@ -12,38 +11,18 @@ class Workstation(models.Model):
     def __str__(self):
         return str(self.ws_id)
 
-#zapytać o podejście do dziedziczenia tabel
+
 class WorkstationPreferences(models.Model):
     workstation = models.ForeignKey(Workstation, name=_('workstation'), on_delete=models.CASCADE)
-
-    class Meta:
-        abstract = True
-
-
-class SGWorkstationPreferences(WorkstationPreferences):
     window = models.BooleanField(_('window'), default=False)
     noise = models.BooleanField(_('noise'), default=False)
     large_screen = models.BooleanField(_('large_screen'), default=False)
     is_mac = models.BooleanField(_('is_mac'), default=False)
 
 
-class Employee(models.Model):
-    us_id = models.AutoField(primary_key=True)
-    username = models.CharField(_('username'), max_length=200)
-    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace")) 
-
-    def __str__(self):
-        return str(self.username)
-    
-
 class EmployeePreferences(models.Model):
-    employee = models.ForeignKey(Employee, name=_("employee"), on_delete=models.CASCADE)
-
-    class Meta:
-        abstract = True
-
-
-class SGEmployeePreferences(EmployeePreferences):
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
+    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace")) 
     window = models.BooleanField(_('window'), default = False)
     window_preference = models.IntegerField(_('window_preference'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
@@ -57,24 +36,25 @@ class SGEmployeePreferences(EmployeePreferences):
     is_mac_preference = models.IntegerField(_('is_mac_preference'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
 
+
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
     workstation = models.ForeignKey(Workstation, name=_("workstation"), on_delete=models.CASCADE)
     year =  models.IntegerField(_('year'))
     week = models.IntegerField(_('week'))
-    monday = models.ForeignKey(Employee, name=_("monday"), blank = True, null = True, 
+    monday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("monday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name= "monday")
-    tuesday = models.ForeignKey(Employee, name=_("tuesday"), blank = True, null = True, 
+    tuesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("tuesday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name="tuesday")
-    wednesday = models.ForeignKey(Employee, name=_("wednesday"), blank = True, null = True, 
+    wednesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("wednesday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name = 'wednesday')
-    thursday = models.ForeignKey(Employee, name=_("thursday"), blank = True, null = True, 
+    thursday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("thursday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name = 'thursday')
-    friday = models.ForeignKey(Employee, name=_("friday"), blank = True, null = True,
+    friday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("friday"), blank = True, null = True,
             on_delete=models.SET_NULL, related_name = 'friday')
-    saturday = models.ForeignKey(Employee, name=_("saturday"), blank = True, null = True, 
+    saturday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("saturday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name = 'saturday')
-    sunday = models.ForeignKey(Employee, name=_("sunday"), blank = True, null = True, 
+    sunday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("sunday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name = 'sunday')
 
     def __str__(self):
