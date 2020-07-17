@@ -12,6 +12,7 @@ class Workstation(models.Model):
     def __str__(self):
         return str(self.ws_id)
 
+#ash for inheritance technique
 class WorkstationPreferences(models.Model):
     workstation = models.ForeignKey(Workstation, name=_('workstation'), on_delete=models.CASCADE)
 
@@ -56,15 +57,11 @@ class SGEmployeePreferences(EmployeePreferences):
     is_mac_preference = models.IntegerField(_('is_mac_preference'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
 
-
-class DateField(CompositeField):
-    year = models.IntegerField(_('year'))
-    week = models.IntegerField(_('week'))
-
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
     workstation = models.ForeignKey(Workstation, name=_("workstation"), on_delete=models.CASCADE)
-    date = models.DateField() 
+    year =  models.IntegerField(_('year'))
+    week = models.IntegerField(_('week'))
     monday = models.ForeignKey(Employee, name=_("monday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name= "monday")
     tuesday = models.ForeignKey(Employee, name=_("tuesday"), blank = True, null = True, 
@@ -81,7 +78,7 @@ class Workweek(models.Model):
             on_delete=models.SET_NULL, related_name = 'sunday')
 
     def __str__(self):
-        return str(str(self.workstation) + str(self.start_date) + str(self.week_id))
+        return str(str(self.workstation) + str(self.year)+ str(self.week))
 
     class Meta:
-        unique_together = ('workstation', 'date')
+        unique_together = ('workstation', 'year', 'week')
