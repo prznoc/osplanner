@@ -12,12 +12,9 @@ class ScheduleTable(tables.Table):
     friday = tables.Column(orderable = False)
     saturday = tables.Column(orderable = False)
     sunday = tables.Column(orderable = False)
-    '''
     generate_schedule = tables.TemplateColumn(
-        template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False,
-        linkify=("schedule_week",tables.A("pk"))
-    )
-'''
+        template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False)
+
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
 
