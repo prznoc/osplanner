@@ -3,6 +3,8 @@
 {% block content %}
 <body>
     <p>Schedule week page</p>
+    <p>Date: {{ userweek.monday_date }}</p>
+    <p>User: {{ userweek.employee.get_username }}</p>
 </body>
 </html>
 {% endblock %}
