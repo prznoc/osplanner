@@ -5,6 +5,16 @@
     <p>Schedule week page</p>
     <p>Date: {{ userweek.monday_date }}</p>
     <p>User: {{ userweek.employee.get_username }}</p>
+    <form method="POST" class="schedule-form">
+        {% csrf_token %}
+        {{ editform.as_p }}
+        <button type="submit" class="save btn btn-default" name="editweek">Save</button>
+    </form>
+    <form method='POST'>
+        {% csrf_token %}
+        {{ generateform.as_p }}
+        <button type="submit" class="save btn btn-default" name="generateweek">Save</button>
+    </form>
 </body>
 </html>
 {% endblock %}

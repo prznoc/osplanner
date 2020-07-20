@@ -44,7 +44,8 @@ class BaseAssigner(ABC):
             if schedule[day]:
                 setattr(schedule[day], day, user)
                 setattr(userweek, day, schedule[day].workstation)
-        schedule[day].save()
+                userweek.save()
+                schedule[day].save()
 
     
 class SGAssigner(BaseAssigner):
@@ -57,7 +58,7 @@ class SGAssigner(BaseAssigner):
         availability, slots = self.prepare_availability(weekdays, all_slots)
         schedule = dict.fromkeys(weekdays) #schedule to return
         preference = EmployeePreferences.objects.get(employee = user)
-
+        print(availability)
         # None for days with no matching workstation
         temp_weekdays = weekdays.copy()
         for day in temp_weekdays:

@@ -43,20 +43,20 @@ class Workweek(models.Model):
     workstation = models.ForeignKey(Workstation, name=_("workstation"), on_delete=models.CASCADE)
     year =  models.IntegerField(_('year'))
     week = models.IntegerField(_('week'))
-    monday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("monday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name= "monday")
-    tuesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("tuesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name="tuesday")
-    wednesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("wednesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'wednesday')
-    thursday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("thursday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'thursday')
-    friday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("friday"), blank = True, null = True,
-            on_delete=models.SET_NULL, related_name = 'friday')
-    saturday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("saturday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'saturday')
-    sunday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("sunday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'sunday')
+    Monday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Monday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name= "Monday")
+    Tuesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Tuesday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name="Tuesday")
+    Wednesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Wednesday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Wednesday')
+    Thursday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Thursday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Thursday')
+    Friday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Friday"), blank = True, null = True,
+            on_delete=models.SET_NULL, related_name = 'Friday')
+    Saturday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Saturday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Saturday')
+    Sunday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Sunday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Sunday')
 
     def __str__(self):
         return str(str(self.workstation) + str(self.year)+ str(self.week))
@@ -69,20 +69,20 @@ class Userweek(models.Model):
     year =  models.IntegerField(_('year'))
     week = models.IntegerField(_('week'))
     monday_date = models.DateField(_("monday_date"))
-    monday = models.ForeignKey(Workstation, name=_("monday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name= "monday")
-    tuesday = models.ForeignKey(Workstation, name=_("tuesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name="tuesday")
-    wednesday = models.ForeignKey(Workstation, name=_("wednesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'wednesday')
-    thursday = models.ForeignKey(Workstation, name=_("thursday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'thursday')
-    friday = models.ForeignKey(Workstation, name=_("friday"), blank = True, null = True,
-            on_delete=models.SET_NULL, related_name = 'friday')
-    saturday = models.ForeignKey(Workstation, name=_("saturday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'saturday')
-    sunday = models.ForeignKey(Workstation, name=_("sunday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'sunday')
+    monday = models.ForeignKey(Workstation, name=_("Monday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name= "Monday")
+    tuesday = models.ForeignKey(Workstation, name=_("Tuesday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name="Tuesday")
+    wednesday = models.ForeignKey(Workstation, name=_("Wednesday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Wednesday')
+    thursday = models.ForeignKey(Workstation, name=_("Thursday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Thursday')
+    friday = models.ForeignKey(Workstation, name=_("Friday"), blank = True, null = True,
+            on_delete=models.SET_NULL, related_name = 'Friday')
+    saturday = models.ForeignKey(Workstation, name=_("Saturday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Saturday')
+    sunday = models.ForeignKey(Workstation, name=_("Sunday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'Sunday')
 
     def save(self, *args, **kwargs):
         if self._state.adding is True:
