@@ -37,10 +37,9 @@ def user_panel(request):
     return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences})
 
 
-<<<<<<< HEAD
-def schedule_week(request):
-    #userweek = get_object_or_404(Userweek, pk=pk)
-    return render(request, 'spaceplanner/schedule_week.html', {})
+def schedule_week(request, pk):
+    userweek = get_object_or_404(Userweek, pk=pk)
+    return render(request, 'spaceplanner/schedule_week.html', {'userweek': userweek})
 
 def edit_preferences(request):
     user = request.user
@@ -54,8 +53,3 @@ def edit_preferences(request):
     else:
         form = UserPreferencesForm(instance=preferences)
     return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
-=======
-def schedule_week(request, pk):
-    userweek = get_object_or_404(Userweek, pk=pk)
-    return render(request, 'spaceplanner/schedule_week.html', {{'userweek': userweek}})
->>>>>>> d275dd5... Schedule doesnt works
