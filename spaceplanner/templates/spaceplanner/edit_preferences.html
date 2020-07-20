@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<body>
+    <p>Edit preferences page</p>
+    <p>User: {{user.get_username}}</p>
+    <form method="POST" class="preferences-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+</body>
+</html>
+{% endblock %}

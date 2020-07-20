@@ -8,5 +8,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('user_panel/', views.user_panel, name='user_panel'),
     path('schedule_week/', views.schedule_week, name='schedule_week'),
+    path('edit_preferences/', views.edit_preferences, name='edit_preferences'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]

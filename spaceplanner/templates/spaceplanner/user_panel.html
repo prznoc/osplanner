@@ -6,7 +6,8 @@
     <p>User panel page</p>
     <p>User: {{ user.get_username }}</p>
     {% render_table table %}
-    
+    {% render_table preferences %}
+    <a class="btn btn-primary" href="{% url 'edit_preferences' %}">Edit preferences</a>
 </body>
 </html>
 {% endblock %}

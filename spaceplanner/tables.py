@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Userweek
+from .models import Userweek, EmployeePreferences
 from django_tables2.utils import A
 from datetime import datetime, timedelta
 
@@ -23,3 +23,8 @@ class ScheduleTable(tables.Table):
         fields = ['data_range' ,'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
                 'saturday', 'sunday']
         model = Userweek
+
+class PreferencesTable(tables.Table):
+
+    class Meta:
+        model = EmployeePreferences
