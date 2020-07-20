@@ -2,8 +2,9 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext as _
 from django.conf import settings
-
 from datetime import datetime, timedelta
+
+from .app_logic import calendar_functions
 
 class Workstation(models.Model):
     ws_id = models.IntegerField(primary_key=True)
@@ -62,3 +63,28 @@ class Workweek(models.Model):
 
     class Meta:
         unique_together = ('workstation', 'year', 'week')
+
+class Userweek(models.Model):
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
+    year =  models.IntegerField(_('year'))
+    week = models.IntegerField(_('week'))
+    monday_date = models.DateField(_("monday_date"))
+    monday = models.ForeignKey(Workstation, name=_("monday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name= "monday")
+    tuesday = models.ForeignKey(Workstation, name=_("tuesday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name="tuesday")
+    wednesday = models.ForeignKey(Workstation, name=_("wednesday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'wednesday')
+    thursday = models.ForeignKey(Workstation, name=_("thursday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'thursday')
+    friday = models.ForeignKey(Workstation, name=_("friday"), blank = True, null = True,
+            on_delete=models.SET_NULL, related_name = 'friday')
+    saturday = models.ForeignKey(Workstation, name=_("saturday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'saturday')
+    sunday = models.ForeignKey(Workstation, name=_("sunday"), blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = 'sunday')
+
+    def save(self, *args, **kwargs):
+        if self._state.adding is True:
+            self.monday_date = calendar_functions.date_from_isoweek(self.year, self.week, 1) #monday - 1
+        super(Userweek, self).save(*args, **kwargs)

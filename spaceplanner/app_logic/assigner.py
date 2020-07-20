@@ -3,10 +3,7 @@ from statistics import mode
 from abc import ABC, abstractmethod
 from django.contrib.auth.models import User
 
-
-import random
-
-from spaceplanner.models import Workweek, EmployeePreferences, Workstation, WorkstationPreferences
+from spaceplanner.models import Workweek, EmployeePreferences, Workstation, WorkstationPreferences, Userweek
 
 class BaseAssigner(ABC):
 
@@ -16,6 +13,7 @@ class BaseAssigner(ABC):
         year = week_after_today.isocalendar()[0]
         return self.assign_week(user, weekdays, week_number, year)
 
+    @staticmethod
     @abstractmethod
     def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
         pass
@@ -40,14 +38,15 @@ class BaseAssigner(ABC):
             availability[weekday] = free_workstations
         return availability, free_slots
 
-    def assign_user_to_workstation(self, user, schedule):
+    def assign_user_to_workstation(self, user, schedule, week, year):
+        userweek, created = Userweek.objects.get_or_create(employee = user, week = week, year = year)
         for day in schedule.keys():
             if schedule[day]:
                 setattr(schedule[day], day, user)
+                setattr(userweek, day, schedule[day].workstation)
         schedule[day].save()
 
     
-
 class SGAssigner(BaseAssigner):
 
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
@@ -66,7 +65,7 @@ class SGAssigner(BaseAssigner):
                 weekdays.remove(day)
                 availability.pop(day, None)
             if not weekdays:
-                self.assign_user_to_workstation(user, schedule)
+                self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
 
         # return favourite if matching all days
@@ -84,7 +83,7 @@ class SGAssigner(BaseAssigner):
             if common:
                 for day in weekdays:
                     schedule[day] = common[0]
-                self.assign_user_to_workstation(user, schedule)
+                self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
         except:
             pass
@@ -102,7 +101,7 @@ class SGAssigner(BaseAssigner):
                     weekdays.remove(day)
                     availability.pop(day, None)
             if not weekdays:
-                self.assign_user_to_workstation(user, schedule)
+                self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
         except:
             pass
@@ -120,7 +119,7 @@ class SGAssigner(BaseAssigner):
             chosen_slot = results.pop()
             for day in weekdays:
                 schedule[day] = chosen_slot
-            self.assign_user_to_workstation(user, schedule)
+            self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule 
         if len(results) > 1:             #if more than one matching, match most suitable with priority 1
             for day in weekdays:
@@ -128,12 +127,12 @@ class SGAssigner(BaseAssigner):
             chosen_slot = self.select_matching_workspace(preference, availability, results)
             for day in weekdays:
                 schedule[day] = chosen_slot
-            self.assign_user_to_workstation(user, schedule)
+            self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
         if not results:                  #if none matching, select separatly for each day
             for day in weekdays:
                 schedule[day] = self.match_slot_to_day(preference, day, availability)
-            self.assign_user_to_workstation(user, schedule)
+            self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
 
     def filter_workspaces(self, preference_name, preference, availability, slots, empty_permission_flag):
