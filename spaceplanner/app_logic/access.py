@@ -3,7 +3,7 @@ import calendar
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 
-from .assigner import SGAssigner
+from .assigner import Assigner
 from spaceplanner.models import Userweek
 
 class Access():

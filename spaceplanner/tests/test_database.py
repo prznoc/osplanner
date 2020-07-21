@@ -4,12 +4,12 @@ from django.db import transaction
 from django.contrib.auth.models import User
 
 from spaceplanner.models import Workstation, Workweek, EmployeePreferences, WorkstationPreferences
-from spaceplanner.app_logic.assigner import SGAssigner
+from spaceplanner.app_logic.assigner import Assigner
 
 
 #Hypotesis
 
-class SetupTests(TestCase, SGAssigner):
+class SetupTests(TestCase, Assigner):
     
     def setUp(self):
         Workstation.objects.create(ws_id = 1)
@@ -25,7 +25,7 @@ class SetupTests(TestCase, SGAssigner):
         self.assertEqual(created2, False)
 
 
-class AvailabilityTest(TestCase, SGAssigner):
+class AvailabilityTest(TestCase, Assigner):
     def setUp(self):
         Workstation.objects.create(ws_id = 1)
         Workstation.objects.create(ws_id = 2)
@@ -77,7 +77,7 @@ class AvailabilityTest(TestCase, SGAssigner):
         self.assertEqual(available_slots, set([slot]))
 
 
-class SlotFilteringTest(TestCase, SGAssigner):
+class SlotFilteringTest(TestCase, Assigner):
     def setUp(self):
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Andrzej"),
             large_screen = True, is_mac = True)
@@ -118,7 +118,7 @@ class SlotFilteringTest(TestCase, SGAssigner):
         self.assertEqual(availability, expected_availability)
 
 
-class SelectingSingleWorkspaceTests(TestCase, SGAssigner):
+class SelectingSingleWorkspaceTests(TestCase, Assigner):
 
     def setUp(self):
         WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 1))
@@ -246,7 +246,7 @@ class SelectingSingleWorkspaceTests(TestCase, SGAssigner):
         self.assertEqual(schedule, expected_schedule)
 
 
-class SelectingDiffrentWorkspacesTests(TestCase, SGAssigner):
+class SelectingDiffrentWorkspacesTests(TestCase, Assigner):
     
     def setUp(self):
         WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 1))

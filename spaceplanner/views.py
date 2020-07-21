@@ -8,9 +8,9 @@ from datetime import datetime, timedelta
 from django.shortcuts import redirect
 
 
-from .models import Userweek, Workweek, EmployeePreferences
+from .models import Userweek, Workweek, EmployeePreferences, Workstation
 from .tables import ScheduleTable, PreferencesTable
-from .app_logic.assigner import SGAssigner
+from .app_logic.assigner import Assigner
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm
 
 
@@ -46,6 +46,7 @@ def schedule_week(request, pk):
     if request.method == "POST":
         if 'editweek' in request.POST:
             editform = ScheduleForm(request.POST, instance=userweek)
+            print(editform.instance)
             clear_workweek(userweek)
             if editform.is_valid():
                 userweek = editform.save(commit=False)
@@ -55,7 +56,7 @@ def schedule_week(request, pk):
                         workweek, created = Workweek.objects.get_or_create(workstation = workstation, week = userweek.week, year = userweek.year)
                         setattr(workweek, weekday, user)
                         workweek.save()
-                        generateform = WeekdaysForm()
+                generateform = WeekdaysForm()
                 userweek.save()
                 return redirect('user_panel')
         if 'generateweek' in request.POST:
@@ -64,7 +65,7 @@ def schedule_week(request, pk):
                 weekdays = generateform.cleaned_data.get('weekdays')
                 clear_workweek(userweek)
                 clear_userweek(userweek)
-                assigner = SGAssigner()
+                assigner = Assigner()
                 assigner.assign_week(user,weekdays,userweek.week, userweek.year)
                 editform = ScheduleForm(instance=userweek)
                 return redirect('user_panel')  
@@ -93,9 +94,9 @@ def clear_workweek(userweek):
         if workstation:
             workweek, created = Workweek.objects.get_or_create(workstation = workstation, week = userweek.week, year = userweek.year)
             setattr(workweek, weekday, None)
-    workweek.save()
+            workweek.save()
 
 def clear_userweek(userweek):
     for weekday in list(calendar.day_name):
         setattr(userweek, weekday, None)
-    userweek.save()
+        userweek.save()

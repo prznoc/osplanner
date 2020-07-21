@@ -5,50 +5,8 @@ from django.contrib.auth.models import User
 
 from spaceplanner.models import Workweek, EmployeePreferences, Workstation, WorkstationPreferences, Userweek
 
-class BaseAssigner(ABC):
 
-    def assign_next_week(self, user: User, weekdays: list) -> dict:
-        week_after_today = datetime.today() + timedelta (days = 7)
-        week_number = week_after_today.isocalendar()[1]
-        year = week_after_today.isocalendar()[0]
-        return self.assign_week(user, weekdays, week_number, year)
-
-    @staticmethod
-    @abstractmethod
-    def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
-        pass
-
-    def get_all_slots(self, week_number: int, year: int) -> [list, bool]:
-        slots = []
-        for station in Workstation.objects.all():
-            slot, created = Workweek.objects.get_or_create(workstation=station ,year = year, 
-                        week = week_number)
-            slots.append(slot)
-        return slots, created
-        
-    def prepare_availability(self, weekdays: list, slots: list):
-        availability = {}
-        free_slots = set()
-        for weekday in weekdays:
-            free_workstations = []
-            for slot in slots:
-                if getattr(slot, weekday) is None:
-                    free_workstations.append(slot)
-                    free_slots.add(slot)
-            availability[weekday] = free_workstations
-        return availability, free_slots
-
-    def assign_user_to_workstation(self, user, schedule, week, year):
-        userweek, created = Userweek.objects.get_or_create(employee = user, week = week, year = year)
-        for day in schedule.keys():
-            if schedule[day]:
-                setattr(schedule[day], day, user)
-                setattr(userweek, day, schedule[day].workstation)
-                userweek.save()
-                schedule[day].save()
-
-    
-class SGAssigner(BaseAssigner):
+class Assigner():
 
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
 
@@ -58,7 +16,6 @@ class SGAssigner(BaseAssigner):
         availability, slots = self.prepare_availability(weekdays, all_slots)
         schedule = dict.fromkeys(weekdays) #schedule to return
         preference = EmployeePreferences.objects.get(employee = user)
-        print(availability)
         # None for days with no matching workstation
         temp_weekdays = weekdays.copy()
         for day in temp_weekdays:
@@ -135,6 +92,41 @@ class SGAssigner(BaseAssigner):
                 schedule[day] = self.match_slot_to_day(preference, day, availability)
             self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
+
+    def assign_next_week(self, user: User, weekdays: list) -> dict:
+        week_after_today = datetime.today() + timedelta (days = 7)
+        week_number = week_after_today.isocalendar()[1]
+        year = week_after_today.isocalendar()[0]
+        return self.assign_week(user, weekdays, week_number, year)
+
+    def get_all_slots(self, week_number: int, year: int) -> [list, bool]:
+        slots = []
+        for station in Workstation.objects.all():
+            slot, created = Workweek.objects.get_or_create(workstation=station ,year = year, 
+                        week = week_number)
+            slots.append(slot)
+        return slots, created
+        
+    def prepare_availability(self, weekdays: list, slots: list):
+        availability = {}
+        free_slots = set()
+        for weekday in weekdays:
+            free_workstations = []
+            for slot in slots:
+                if getattr(slot, weekday) is None:
+                    free_workstations.append(slot)
+                    free_slots.add(slot)
+            availability[weekday] = free_workstations
+        return availability, free_slots
+
+    def assign_user_to_workstation(self, user, schedule, week, year):
+        userweek, created = Userweek.objects.get_or_create(employee = user, week = week, year = year)
+        for day in schedule.keys():
+            if schedule[day]:
+                setattr(schedule[day], day, user)
+                setattr(userweek, day, schedule[day].workstation)
+                userweek.save()
+                schedule[day].save()
 
     def filter_workspaces(self, preference_name, preference, availability, slots, empty_permission_flag):
         temp_slots = set()
