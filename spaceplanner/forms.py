@@ -7,15 +7,16 @@ class UserPreferencesForm(forms.ModelForm):
         model = EmployeePreferences
         fields = ('favourite_workspace', 'window', 'window_preference', 'noise', 'noise_preference', 'large_screen', 'large_screen_preference', 'is_mac', 'is_mac_preference')
 
-#skomplikowane filtrowanie
+#złożone filtrowanie
 class ScheduleForm(forms.ModelForm):
     '''
-    monday_request = Workweek.objects.filter(Monday=None)
+    monday_request = Workweek.objects.filter(Monday=None, year=self.instance.year, week=self.instance.week)
     Monday = forms.ModelChoiceField(queryset = Workstation.objects.filter(
-        ws_id__in= [obj.workstation.ws_id for obj in monday_request])
+        ws_id__in= [obj.workstation.ws_id for obj in monday_request]), required=False
     )
     '''
-    Monday = forms.ModelChoiceField(queryset = Workstation.objects.filter(ws_id=1))
+    Monday = forms.ModelChoiceField(queryset = Workstation.objects.filter(ws_id=1), required=False)
+
     class Meta:
         model = Userweek
         fields = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')

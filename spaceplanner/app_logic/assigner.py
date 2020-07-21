@@ -49,7 +49,7 @@ class Assigner():
         #assign favourites to days with one
         #może zmienić algorytm żeby liczył pasującę
         try:
-            favourites = preferences.favourite_workspace.all()
+            favourites = preference.favourite_workspace.all()
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
             temp_weekdays = weekdays.copy()
             for day in temp_weekdays:

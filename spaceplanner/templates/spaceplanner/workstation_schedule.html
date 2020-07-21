@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<body>
+    <p>Workstations schedule</p>
+    <p>Week: {{date_range}}</p>
+    {% render_table table %}
+</body>
+</html>
+{% endblock %}

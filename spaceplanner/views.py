@@ -7,9 +7,8 @@ from django_tables2 import SingleTableView, RequestConfig
 from datetime import datetime, timedelta
 from django.shortcuts import redirect
 
-
 from .models import Userweek, Workweek, EmployeePreferences, Workstation
-from .tables import ScheduleTable, PreferencesTable
+from .tables import ScheduleTable, PreferencesTable, WorkstationsScheduleTable
 from .app_logic.assigner import Assigner
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm
 
@@ -31,7 +30,8 @@ def user_panel(request):
     preferences = EmployeePreferences.objects.filter(employee = user)
     generate_nonexistent_userweeks(user, datetime.today(), 3)
     last_monday = datetime.today() + timedelta(days=-datetime.today().weekday())
-    data = Userweek.objects.filter(employee=user).exclude(monday_date__lt=last_monday).order_by('monday_date')[:3]
+    data = Userweek.objects.filter(employee=user).exclude(
+            monday_date__lt=last_monday).order_by('monday_date')[:3]
     data = Userweek.objects.filter(id__in=data)
     table = ScheduleTable(data)
     RequestConfig(request).configure(table)
@@ -44,22 +44,26 @@ def schedule_week(request, pk):
     user = request.user
     userweek = get_object_or_404(Userweek, pk=pk)
     if request.method == "POST":
+        generateform = WeekdaysForm()
         if 'editweek' in request.POST:
             editform = ScheduleForm(request.POST, instance=userweek)
-            print(editform.instance)
             clear_workweek(userweek)
             if editform.is_valid():
                 userweek = editform.save(commit=False)
                 for weekday in list(calendar.day_name):
                     workstation = getattr(userweek, weekday)
                     if workstation:
-                        workweek, created = Workweek.objects.get_or_create(workstation = workstation, week = userweek.week, year = userweek.year)
-                        setattr(workweek, weekday, user)
-                        workweek.save()
-                generateform = WeekdaysForm()
+                        workweek, created = Workweek.objects.get_or_create(
+                                workstation = workstation, week = userweek.week, year = userweek.year)
+                        if not getattr(workweek, weekday):
+                            setattr(workweek, weekday, user)
+                            workweek.save()
+                        else:
+                            setattr(userweek, weekday, None)
                 userweek.save()
                 return redirect('user_panel')
         if 'generateweek' in request.POST:
+            editform = ScheduleForm(instance=userweek)
             generateform = WeekdaysForm(request.POST)
             if generateform.is_valid():
                 weekdays = generateform.cleaned_data.get('weekdays')
@@ -67,12 +71,12 @@ def schedule_week(request, pk):
                 clear_userweek(userweek)
                 assigner = Assigner()
                 assigner.assign_week(user,weekdays,userweek.week, userweek.year)
-                editform = ScheduleForm(instance=userweek)
                 return redirect('user_panel')  
     else:
         editform = ScheduleForm(instance=userweek)        
         generateform = WeekdaysForm()
-    return render(request, 'spaceplanner/schedule_week.html', {'userweek': userweek, 'editform': editform, 'generateform': generateform})
+    return render(request, 'spaceplanner/schedule_week.html', 
+            {'userweek': userweek, 'editform': editform, 'generateform': generateform})
 
 @login_required
 def edit_preferences(request):
@@ -88,11 +92,21 @@ def edit_preferences(request):
         form = UserPreferencesForm(instance=preferences)
     return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
 
+def workstation_schedule(request):
+    workstations = Workstation.objects.all()
+    isocalendar = datetime.today().isocalendar()
+    last_monday = datetime.today() + timedelta(days=-datetime.today().weekday())
+    date_range = last_monday.strftime('%Y/%m/%d') + " - " + (last_monday + timedelta(days=6)).strftime('%Y/%m/%d')
+    data = [Workweek.objects.get_or_create(workstation=x, week=isocalendar[1], year=isocalendar[0])[0] for x in workstations]
+    table = WorkstationsScheduleTable(data)
+    return render(request, 'spaceplanner/workstation_schedule.html',{'table': table, 'date_range': date_range})
+
 def clear_workweek(userweek):
     for weekday in list(calendar.day_name):
         workstation = getattr(userweek, weekday)
         if workstation:
-            workweek, created = Workweek.objects.get_or_create(workstation = workstation, week = userweek.week, year = userweek.year)
+            workweek, created = Workweek.objects.get_or_create(workstation = workstation, 
+                    week = userweek.week, year = userweek.year)
             setattr(workweek, weekday, None)
             workweek.save()
 
@@ -100,3 +114,4 @@ def clear_userweek(userweek):
     for weekday in list(calendar.day_name):
         setattr(userweek, weekday, None)
         userweek.save()
+

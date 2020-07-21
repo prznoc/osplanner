@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Userweek, EmployeePreferences
+from .models import Userweek, EmployeePreferences, Workweek
 from django_tables2.utils import A
 from datetime import datetime, timedelta
 
@@ -16,6 +16,7 @@ class ScheduleTable(tables.Table):
     generate_schedule = tables.TemplateColumn(
         template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False)
     '''
+
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
 
@@ -29,3 +30,12 @@ class PreferencesTable(tables.Table):
 
     class Meta:
         model = EmployeePreferences
+
+class WorkstationsScheduleTable(tables.Table):
+
+    workstation = tables.Column(verbose_name="Workstation ID")
+
+    class Meta:
+        model = Workweek
+        fields = ['workstation','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+                'Saturday', 'Sunday']
