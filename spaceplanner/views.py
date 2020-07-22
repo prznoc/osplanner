@@ -28,6 +28,7 @@ def home(request):
 def user_panel(request):
     user = request.user
     preferences = EmployeePreferences.objects.filter(employee = user)
+    preferences = PreferencesTable(preferences)
     generate_nonexistent_userweeks(user, datetime.today(), 3)
     last_monday = datetime.today() + timedelta(days=-datetime.today().weekday())
     data = Userweek.objects.filter(employee=user).exclude(
