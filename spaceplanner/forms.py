@@ -1,3 +1,5 @@
+import calendar
+
 from django import forms
 from django.db.models import Q
 from .models import EmployeePreferences, Userweek, Workstation, Workweek
@@ -36,25 +38,25 @@ class UserPreferencesForm(forms.ModelForm):
 
 #złożone filtrowanie
 class ScheduleForm(forms.ModelForm):
-    '''
-    monday_request = Workweek.objects.filter(Monday=None, year=self.instance.year, week=self.instance.week)
-    Monday = forms.ModelChoiceField(queryset = Workstation.objects.filter(
-        ws_id__in= [obj.workstation.ws_id for obj in monday_request]), required=False
-    )
-    '''
-    Monday = forms.ModelChoiceField(queryset = Workstation.objects.filter(ws_id=1), required=False)
 
     class Meta:
         model = Userweek
         fields = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+    
+    def __init__(self, *args, **kwargs):
+        super(ScheduleForm, self).__init__(*args, **kwargs)
+        for weekday in list(calendar.day_name):
+            workweeks = Workweek.objects.filter(year=self.instance.year, week=self.instance.week)
+            request = []
+            for workweek in workweeks:
+                attr = getattr(workweek, weekday)
+                if not attr or attr == self.instance.employee:
+                    request.append(workweek.workstation)
+            request = Workstation.objects.filter(ws_id__in=[rq.ws_id for rq in request])
+            self.initial[weekday] = getattr(self.instance, weekday)
+            self.fields[weekday] = forms.ModelChoiceField(queryset= request, required=False)
 
-    '''
-    def __init__
-
-        self.instance
-        self.initial
-    '''
-
+    
 class WeekdaysForm(forms.Form):
     OPTIONS = (
         ("Monday", "Monday"),

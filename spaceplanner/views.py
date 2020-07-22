@@ -121,19 +121,16 @@ def edit_preferences(request):
         form = UserPreferencesForm(instance=preferences)
     return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
 
+@login_required
 def workstation_schedule(request):
     monday = datetime.today() + timedelta(days=-datetime.today().weekday())
-    date_range, table = render_schedule_week_table(monday)
-    if(request.GET.get('mybtn')):
-        monday = monday + timedelta(days = 7)
-        date_range, table = render_schedule_week_table(monday)
-        return redirect('workstation_schedule')
-    return render(request, 'spaceplanner/workstation_schedule.html',{'table': table, 'date_range': date_range})
+    date_range, table = get_schedule_week_table(monday)
+    return render(request, 'spaceplanner/workstation_schedule.html',{'table': table, 'date_range': date_range,})
 
-def render_schedule_week_table(monday):
+def get_schedule_week_table(monday):
     workstations = Workstation.objects.all()
     isocalendar = monday.isocalendar()
-    date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
+    date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d') + ", " + str(isocalendar[1]) + '/' + str(isocalendar[0])
     data = [Workweek.objects.get_or_create(workstation=x, week=isocalendar[1], year=isocalendar[0])[0] for x in workstations]
     table = WorkstationsScheduleTable(data)
     return date_range, table
