@@ -86,5 +86,8 @@ class Userweek(models.Model):
 
     def save(self, *args, **kwargs):
         if self._state.adding is True:
-            self.monday_date = calendar_functions.date_from_isoweek(self.year, self.week, 1) #monday - 1
+            self.monday_date = calendar_functions.date_from_isoweek(self.year, self.week, 0)
         super(Userweek, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ('employee', 'year', 'week')

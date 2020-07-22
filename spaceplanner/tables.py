@@ -12,6 +12,7 @@ class ScheduleTable(tables.Table):
     Friday = tables.Column(orderable = False)
     Saturday = tables.Column(orderable = False)
     Sunday = tables.Column(orderable = False)
+    #jeśli chcę guzik trzeba manualnie zdefiniować url w szablonie
     '''
     generate_schedule = tables.TemplateColumn(
         template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False)
@@ -28,13 +29,7 @@ class ScheduleTable(tables.Table):
 
 class PreferencesTable(tables.Table):
 
-    #user = tables.Column(accessor='employee', verbose_name='Empolyee')
     favourite_list = tables.Column(accessor='favourite_workspace', verbose_name='Favourite Workspaces')
-
-    '''
-    def render_user(self, record):
-        return record.employee.first_name + ' ' + record.employee.last_name
-    '''
 
     def render_favourite_list(self, record):
         return ', '.join([str(a) for a in record.favourite_workspace.all()])

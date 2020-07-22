@@ -48,6 +48,13 @@ class ScheduleForm(forms.ModelForm):
         model = Userweek
         fields = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
 
+    '''
+    def __init__
+
+        self.instance
+        self.initial
+    '''
+
 class WeekdaysForm(forms.Form):
     OPTIONS = (
         ("Monday", "Monday"),
