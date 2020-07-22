@@ -17,6 +17,8 @@ def generate_nonexistent_userweeks(user, first_monday, last_monday)->int:
     while first_monday != last_monday:
         calendar = first_monday.isocalendar()
         Userweek.objects.get_or_create(employee=user, year=calendar[0], week=calendar[1])
+        for workstation in Workstation.objects.all():
+            Workweek.objects.get_or_create(workstation= workstation, year=calendar[0], week=calendar[1])
         first_monday = first_monday + timedelta(weeks=1)
         week_counter = week_counter + 1
     return week_counter

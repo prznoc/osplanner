@@ -41,7 +41,7 @@ class ScheduleForm(forms.ModelForm):
 
     class Meta:
         model = Userweek
-        fields = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+        exclude = ('employee', 'year', 'week', 'monday_date')
     
     def __init__(self, *args, **kwargs):
         super(ScheduleForm, self).__init__(*args, **kwargs)
