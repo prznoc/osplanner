@@ -12,8 +12,8 @@ class Assigner():
 
     def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
         if not weekdays: return  #jakoś blokować pustą listę
-        all_slots, created = self.get_all_slots(week_number, year)
-        availability, slots = self.prepare_availability(weekdays, all_slots)
+        all_slots, created = self.get_all_slots(week_number, year)      #List of all WORKWEEKS matching week and year
+        availability, slots = self.prepare_availability(weekdays, all_slots)     #Availability is Weekday: slot
         schedule = dict.fromkeys(weekdays) #schedule to return
         preference = EmployeePreferences.objects.get(employee = user)
         # None for days with no matching workstation
@@ -82,8 +82,7 @@ class Assigner():
         if len(results) > 1:             #if more than one matching, match most suitable with priority 1
             for day in weekdays:
                 availability[day] = list(results.intersection(availability[day]))
-            results = list(results)
-            chosen_slot = self.select_matching_workspace(preference, availability, results)
+            chosen_slot = self.select_matching_workspace(preference, availability, results, slots)
             for day in weekdays:
                 schedule[day] = chosen_slot
             self.assign_user_to_workstation(user, schedule, week_number, year)
@@ -145,18 +144,20 @@ class Assigner():
                 availability[day] = new_weekday
         return availability
 
-    def select_matching_workspace(self, preference, availability, results):
+    def select_matching_workspace(self, preference, availability: dict, results: set, slots: set):
         for preference_name in self.preferences_set:
             if (getattr(preference, preference_name+"_preference") == 1):
-                availability = self.filter_workspaces(preference_name, preference, availability, results, True)
+                availability = self.filter_workspaces(preference_name, preference, availability, slots, True)
         slots_list = [item for sublist in availability.values() for item in sublist]
         if not slots_list:
+            results = list(results)
             return results[0]
         else: 
             return mode(slots_list)
    
     def match_slot_to_day(self, preference, day, availability):
         possible_slots = availability[day]
+        print(possible_slots)
         for preference_name in self.preferences_set:
             if (getattr(preference, preference_name+"_preference") == 1):
                 temp_slots = []
