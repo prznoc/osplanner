@@ -23,7 +23,7 @@ class ScheduleTable(tables.Table):
 
     class Meta:
         template_name = "django_tables2/bootstrap.html"
-        fields = ['data_range' ,'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+        fields = ['data_range' ,'year','week','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
                 'Saturday', 'Sunday']
         model = Userweek
 

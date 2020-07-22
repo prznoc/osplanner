@@ -82,6 +82,7 @@ class Assigner():
         if len(results) > 1:             #if more than one matching, match most suitable with priority 1
             for day in weekdays:
                 availability[day] = list(results.intersection(availability[day]))
+            results = list(results)
             chosen_slot = self.select_matching_workspace(preference, availability, results)
             for day in weekdays:
                 schedule[day] = chosen_slot

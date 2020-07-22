@@ -12,11 +12,14 @@ from .app_logic.assigner import Assigner
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm
 
 
-def generate_nonexistent_userweeks(user, today, weeks_amount):
-    for i in range (weeks_amount):
-        calendar = today.isocalendar()
+def generate_nonexistent_userweeks(user, first_monday, last_monday)->int:
+    week_counter = 0
+    while first_monday != last_monday:
+        calendar = first_monday.isocalendar()
         Userweek.objects.get_or_create(employee=user, year=calendar[0], week=calendar[1])
-        today = today + timedelta(weeks=1)
+        first_monday = first_monday + timedelta(weeks=1)
+        week_counter = week_counter + 1
+    return week_counter
 
 
 def home(request):
@@ -27,14 +30,20 @@ def user_panel(request):
     user = request.user
     preferences, created  = EmployeePreferences.objects.get_or_create(employee = user)
     preferences = PreferencesTable([preferences])
-    generate_nonexistent_userweeks(user, datetime.today(), 3)
-    last_monday = datetime.today() + timedelta(days=-datetime.today().weekday())
+    today = datetime.today()
+    first_day = today.replace(day=1)
+    first_monday = first_day + timedelta(days=-first_day.weekday())
+    last_day = calendar.monthrange(today.year, today.month)[1]
+    last_day = today.replace(day=last_day)
+    last_monday = last_day + timedelta(days=-last_day.weekday(), weeks=1)
+    week_counter = generate_nonexistent_userweeks(user, first_monday, last_monday)
     data = Userweek.objects.filter(employee=user).exclude(
-            monday_date__lt=last_monday).order_by('monday_date')[:3]
+            monday_date__lt=first_monday).order_by('monday_date')[:week_counter]
     data = Userweek.objects.filter(id__in=data)
-    table = ScheduleTable(data)
+    table = ScheduleTable(data, order_by=('data_range'))
     RequestConfig(request).configure(table)
-    return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences})
+    month_name = today.strftime('%B')
+    return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 'month': month_name})
 
 #rozdzielić na 2 formy
 @login_required
@@ -70,11 +79,18 @@ def schedule_week(request, pk):
                 assigner = Assigner()
                 assigner.assign_week(user,weekdays,userweek.week, userweek.year)
                 return redirect('user_panel')  
+        if 'mybtn' in request.POST:
+            editform = ScheduleForm(instance=userweek)
+            generateform = WeekdaysForm() 
+            clear_workweek(userweek)
+            clear_userweek(userweek)
+            return redirect('user_panel')  
     else:
-        editform = ScheduleForm(instance=userweek)        
+        editform = ScheduleForm(instance=userweek)       
         generateform = WeekdaysForm()
     return render(request, 'spaceplanner/schedule_week.html', 
             {'userweek': userweek, 'editform': editform, 'generateform': generateform})
+
 
 def clear_workweek(userweek):
     for weekday in list(calendar.day_name):

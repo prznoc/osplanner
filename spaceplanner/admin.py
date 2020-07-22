@@ -11,7 +11,7 @@ class UnitInlineEmployee(admin.TabularInline):
     model = EmployeePreferences
 
 class CustomerAdminWorkstation(admin.ModelAdmin):
-    inlines = [UnitInlineWorkstation,]
+    inlines = [UnitInlineWorkstation]
 
 class CustomerAdminEmployee(AuthUserAdmin):
     inlines = [UnitInlineEmployee,]

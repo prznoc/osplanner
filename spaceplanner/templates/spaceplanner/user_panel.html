@@ -9,6 +9,7 @@
 <body>
     <p>User panel page</p>
     <p>User: {{ user.first_name }}  {{user.last_name}}</p>
+    <p>{{month}}</p>
     {% render_table table %}
     {% render_table preferences %}
     <a class="btn btn-primary" href="{% url 'edit_preferences' %}">Edit preferences</a>
