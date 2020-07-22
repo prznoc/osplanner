@@ -14,7 +14,7 @@ class Workstation(models.Model):
 
 
 class WorkstationPreferences(models.Model):
-    workstation = models.ForeignKey(Workstation, name=_('workstation'), on_delete=models.CASCADE)
+    workstation = models.OneToOneField(Workstation, name=_('workstation'), on_delete=models.CASCADE)
     window = models.BooleanField(_('window'), default=False)
     noise = models.BooleanField(_('noise'), default=False)
     large_screen = models.BooleanField(_('large_screen'), default=False)
@@ -22,8 +22,8 @@ class WorkstationPreferences(models.Model):
 
 
 class EmployeePreferences(models.Model):
-    employee = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
-    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace")) 
+    employee = models.OneToOneField(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
+    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace"), default = None) 
     window = models.BooleanField(_('window'), default = False)
     window_preference = models.IntegerField(_('window_preference'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])

@@ -22,15 +22,11 @@ def generate_nonexistent_userweeks(user, today, weeks_amount):
 def home(request):
     return render(request, 'spaceplanner/home.html', {})
 
-#preferencje w adminie od strony workstation
-#wyświetlić week number
-#labele do wszystkiego
-#widok miesiąca
 @login_required
 def user_panel(request):
     user = request.user
-    preferences = EmployeePreferences.objects.filter(employee = user)
-    preferences = PreferencesTable(preferences)
+    preferences, created  = EmployeePreferences.objects.get_or_create(employee = user)
+    preferences = PreferencesTable([preferences])
     generate_nonexistent_userweeks(user, datetime.today(), 3)
     last_monday = datetime.today() + timedelta(days=-datetime.today().weekday())
     data = Userweek.objects.filter(employee=user).exclude(
