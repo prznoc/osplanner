@@ -13,7 +13,7 @@
     {% render_table table %}
     {% render_table preferences %}
     <a class="btn btn-primary" href="{% url 'edit_preferences' %}">Edit preferences</a>
-    <a class="btn btn-primary" href="{% url 'workstation_schedule' %}">Workstations schedule</a>
+    <a class="btn btn-primary" href="{% url 'workstation_schedule' date=date %}">Workstations schedule</a>
 </body>
 </html>
 {% endblock %}

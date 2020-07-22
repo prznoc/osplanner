@@ -8,8 +8,10 @@
 </head>
 <body>
     <p>Workstations schedule</p>
-    <form action="#" method="get">
-        <input type="submit" class="btn" value='Next' name="mybtn">
+    <form action="#" method="POST">
+        {% csrf_token %}
+        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=previous_date %}">Previous</a>
+        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=next_date %}">Next</a>
     </form>
     <p>Week: {{date_range}}</p>
     {% render_table table %}

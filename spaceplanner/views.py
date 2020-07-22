@@ -33,19 +33,20 @@ def user_panel(request):
     preferences, created  = EmployeePreferences.objects.get_or_create(employee = user)
     preferences = PreferencesTable([preferences])
     today = datetime.today()
-    first_day = today.replace(day=1)
-    first_monday = first_day + timedelta(days=-first_day.weekday())
+    date = (today + timedelta(days=-today.weekday())).strftime('%Y-%m-%d')
+    first_monday = today.replace(day=1) + timedelta(days=-today.replace(day=1).weekday())
     last_day = calendar.monthrange(today.year, today.month)[1]
     last_day = today.replace(day=last_day)
     last_monday = last_day + timedelta(days=-last_day.weekday(), weeks=1)
     week_counter = generate_nonexistent_userweeks(user, first_monday, last_monday)
-    data = Userweek.objects.filter(employee=user).exclude(
+    schedule = Userweek.objects.filter(employee=user).exclude(
             monday_date__lt=first_monday).order_by('monday_date')[:week_counter]
-    data = Userweek.objects.filter(id__in=data)
-    table = ScheduleTable(data, order_by=('data_range'))
+    schedule = Userweek.objects.filter(id__in=schedule)
+    table = ScheduleTable(schedule, order_by=('data_range'))
     RequestConfig(request).configure(table)
     month_name = today.strftime('%B')
-    return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 'month': month_name})
+    print(date)
+    return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 'month': month_name, 'date':date})
 
 #rozdzielić na 2 formy
 @login_required
@@ -124,15 +125,19 @@ def edit_preferences(request):
     return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
 
 @login_required
-def workstation_schedule(request):
-    monday = datetime.today() + timedelta(days=-datetime.today().weekday())
+def workstation_schedule(request, date):
+    monday = datetime.strptime(date, '%Y-%m-%d')
     date_range, table = get_schedule_week_table(monday)
-    return render(request, 'spaceplanner/workstation_schedule.html',{'table': table, 'date_range': date_range,})
+    monday = monday + timedelta(weeks=1)
+    next_date = monday.strftime('%Y-%m-%d')
+    monday = monday - timedelta(days=14)
+    previous_date = monday.strftime('%Y-%m-%d')
+    return render(request, 'spaceplanner/workstation_schedule.html',{'table': table, 'date_range': date_range, 'next_date': next_date, 'previous_date': previous_date})
 
 def get_schedule_week_table(monday):
     workstations = Workstation.objects.all()
     isocalendar = monday.isocalendar()
-    date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d') + ", " + str(isocalendar[1]) + '/' + str(isocalendar[0])
+    date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d') + ", " + str(isocalendar[1]) + '|' + str(isocalendar[0])
     data = [Workweek.objects.get_or_create(workstation=x, week=isocalendar[1], year=isocalendar[0])[0] for x in workstations]
     table = WorkstationsScheduleTable(data)
     return date_range, table
