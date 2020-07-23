@@ -3,8 +3,10 @@ import calendar
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django_tables2 import SingleTableView, RequestConfig
-from datetime import datetime, timedelta
+from django.views.generic import FormView
+from django.views.generic.base import TemplateView
 from django.shortcuts import redirect
+from datetime import datetime, timedelta
 
 from .models import Userweek, Workweek, EmployeePreferences, Workstation
 from .tables import ScheduleTable, PreferencesTable, WorkstationsScheduleTable
@@ -57,6 +59,23 @@ def user_panel(request, date=''):
     return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 
             'date_name': date_name, 'date':date, 'previous_date':previous_date, 'next_date':next_date})
 
+
+'''
+class ScheduleWeekView(TemplateView):
+
+    editform_class = UserPreferencesForm
+    generateform_class = ScheduleForm
+    template_name = 'spaceplanner/schedule_week.html'
+
+    def get(self, request, pk):
+        userweek = get_object_or_404(Userweek, pk=pk)
+        generateform = WeekdaysForm(self.request.GET or None)
+        editform = ScheduleForm(self.request.GET or None, instance=userweek)
+        context = {'userweek': userweek, 'editform': editform, 'generateform': generateform}
+        return self.render_to_response(context)
+'''
+
+
 #rozdzielić na 2 formy
 @login_required
 def schedule_week(request, pk):
@@ -68,31 +87,13 @@ def schedule_week(request, pk):
             editform = ScheduleForm(request.POST, instance=userweek)
             clear_workweek(userweek)
             if editform.is_valid():
-                userweek = editform.save(commit=False)
-                for weekday in list(calendar.day_name):
-                    workstation = getattr(userweek, weekday)
-                    if workstation:
-                        workweek, created = Workweek.objects.get_or_create(
-                                workstation = workstation, week = userweek.week, year = userweek.year)
-                        if not getattr(workweek, weekday):
-                            setattr(workweek, weekday, user)
-                            workweek.save()
-                        else:
-                            setattr(userweek, weekday, None)
-                userweek.save()
+                editweek_form_processing(editform, user)
                 return redirect('user_panel')
         if 'generateweek' in request.POST:
             editform = ScheduleForm(instance=userweek)
             generateform = WeekdaysForm(request.POST)
             if generateform.is_valid():
-                weekdays = generateform.cleaned_data.get('weekdays')
-                clear_workweek(userweek)
-                clear_userweek(userweek)
-                assigner = Assigner()
-                assigner.assign_week(user,weekdays,userweek.week, userweek.year)
-                for weekday in weekdays:
-                    if not getattr(userweek, weekday):
-                        pass
+                generateweek_form_processing(generateform, userweek, user)
                 return redirect('user_panel')  
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek)
@@ -106,6 +107,29 @@ def schedule_week(request, pk):
     return render(request, 'spaceplanner/schedule_week.html', 
             {'userweek': userweek, 'editform': editform, 'generateform': generateform})
 
+def editweek_form_processing(editform, user):
+    userweek = editform.save(commit=False)
+    for weekday in list(calendar.day_name):
+        workstation = getattr(userweek, weekday)
+        if workstation:
+            workweek, created = Workweek.objects.get_or_create(
+                    workstation = workstation, week = userweek.week, year = userweek.year)
+            if not getattr(workweek, weekday):
+                setattr(workweek, weekday, user)
+                workweek.save()
+            else:
+                setattr(userweek, weekday, None)
+    userweek.save()
+
+def generateweek_form_processing(generateform, userweek, user):
+    weekdays = generateform.cleaned_data.get('weekdays')
+    clear_workweek(userweek)
+    clear_userweek(userweek)
+    assigner = Assigner()
+    assigner.assign_week(user,weekdays,userweek.week, userweek.year)
+    for weekday in weekdays:
+        if not getattr(userweek, weekday):
+            pass
 
 def clear_workweek(userweek):
     for weekday in list(calendar.day_name):
