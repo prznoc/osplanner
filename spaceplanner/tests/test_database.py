@@ -94,7 +94,7 @@ class SlotFilteringTest(TestCase, Assigner):
         workstation1_preferences.save()
         working_days = ["Monday", "Wednesday", "Saturday"]
         availability, slots = self.prepare_availability(working_days, slots)
-        availability = self.filter_workspaces("is_mac", preference, availability, slots, False)
+        availability = self.filter_workspaces("is_mac", preference, availability, slots)
         slot = Workweek.objects.get(year = 2022, week = 3, workstation = workstation1)
         expected_availability = {}
         for day in working_days:
@@ -114,7 +114,7 @@ class SlotFilteringTest(TestCase, Assigner):
         working_days = ["Monday", "Wednesday"]
         availability, slots = self.prepare_availability(working_days, slots)
         expected_availability = availability
-        availability = self.filter_workspaces("is_mac", preference, availability, slots, False)
+        availability = self.filter_workspaces("is_mac", preference, availability, slots)
         self.assertEqual(availability, expected_availability)
 
 
@@ -332,6 +332,5 @@ class MiscFunctions(TestCase, Assigner):
         all_slots, created = self.get_all_slots(3, 2022)
         availability, slots = self.prepare_availability(["Monday", "Wednesday"], all_slots)
         match = self.match_slot_to_day(preference, "Monday", availability)
-        print(match)
         self.assertEqual(match, Workweek.objects.get(workstation=workstation1, week=3, year=2022))
     

@@ -137,18 +137,15 @@ class Assigner():
         return availability
 
     def select_matching_workspace(self, preference, availability: dict, results: set, slots: set):
-        print(preference)
         for preference_name in self.preferences_set:
-            print(preference_name)
             if (getattr(preference, preference_name+"_preference") == 1):
                 availability = self.filter_workspaces(preference_name, preference, availability, slots)
-        print(availability)
         slots_list = [item for sublist in availability.values() for item in sublist]
         if not slots_list:
             results = list(results)
             return results[0]
-        else: 
-            return mode(slots_list)
+        else:      
+            return max(set(slots_list), key = slots_list.count)     # change to 'return mode(slots_list)' after migration to python 3.8
    
     def match_slot_to_day(self, preference, day, availability):
         possible_slots = availability[day]
