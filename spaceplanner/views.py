@@ -28,25 +28,32 @@ def home(request):
     return render(request, 'spaceplanner/home.html', {})
 
 @login_required
-def user_panel(request):
+def user_panel(request, date=''):
     user = request.user
     preferences, created  = EmployeePreferences.objects.get_or_create(employee = user)
     preferences = PreferencesTable([preferences])
-    today = datetime.today()
+    if date:   
+        today = datetime.strptime(date, '%Y-%m')
+    else: today = datetime.today()
     date = (today + timedelta(days=-today.weekday())).strftime('%Y-%m-%d')
+    
     first_monday = today.replace(day=1) + timedelta(days=-today.replace(day=1).weekday())
     last_day = calendar.monthrange(today.year, today.month)[1]
     last_day = today.replace(day=last_day)
     last_monday = last_day + timedelta(days=-last_day.weekday(), weeks=1)
     week_counter = generate_nonexistent_userweeks(user, first_monday, last_monday)
+
     schedule = Userweek.objects.filter(employee=user).exclude(
             monday_date__lt=first_monday).order_by('monday_date')[:week_counter]
     schedule = Userweek.objects.filter(id__in=schedule)
     table = ScheduleTable(schedule, order_by=('data_range'))
     RequestConfig(request).configure(table)
     month_name = today.strftime('%B')
-    print(date)
-    return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 'month': month_name, 'date':date})
+    year = today.strftime('%Y')
+    next_date = (today.replace(day=1) + timedelta(days=31)).strftime('%Y-%m')
+    previous_date = (today.replace(day=1) - timedelta(days=1)).strftime('%Y-%m')
+    return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 
+            'month': month_name, 'date':date, 'year':year, 'previous_date':previous_date, 'next_date':next_date})
 
 #rozdzielić na 2 formy
 @login_required

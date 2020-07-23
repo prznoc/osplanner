@@ -9,7 +9,9 @@
 <body>
     <p>User panel page</p>
     <p>User: {{ user.first_name }}  {{user.last_name}}</p>
-    <p>{{month}}</p>
+    <p>{{month}} {{year}}</p>
+    <a class="btn btn-primary" href="{% url 'user_panel' date=previous_date %}">Previous</a>
+    <a class="btn btn-primary" href="{% url 'user_panel' date=next_date %}">Next</a>
     {% render_table table %}
     {% render_table preferences %}
     <a class="btn btn-primary" href="{% url 'edit_preferences' %}">Edit preferences</a>
