@@ -16,11 +16,6 @@
     {% render_table preferences %}
     <a class="btn btn-primary" href="{% url 'edit_preferences' %}">Edit preferences</a>
     <a class="btn btn-primary" href="{% url 'workstation_schedule' date=date %}">Workstations schedule</a>
-    <!--
-    {% if alert_flag %}
-    <script>alert("Some Message.")</script>  
-    {% endif %}
-    -->
 </body>
 </html>
 {% endblock %}

@@ -40,7 +40,7 @@ class EmployeePreferences(models.Model):
 
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
-    workstation = models.ForeignKey(Workstation, name=_("workstation"), on_delete=models.CASCADE)
+    workstation = models.ForeignKey(Workstation, name=_("workstation"), on_delete=models.CASCADE, verbose_name='workstation')
     year =  models.IntegerField(_('year'))
     week = models.IntegerField(_('week'))
     Monday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Monday"), blank = True, null = True, 
@@ -65,7 +65,7 @@ class Workweek(models.Model):
         unique_together = ('workstation', 'year', 'week')
 
 class Userweek(models.Model):
-    employee = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE, verbose_name='employee')
     year =  models.IntegerField(_('year'))
     week = models.IntegerField(_('week'))
     monday_date = models.DateField(_("monday_date"))

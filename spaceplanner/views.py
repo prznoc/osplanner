@@ -6,6 +6,7 @@ from django_tables2 import SingleTableView, RequestConfig
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView
 from django.shortcuts import redirect
+from django.contrib import messages
 from datetime import datetime, timedelta
 
 from .models import Userweek, Workweek, EmployeePreferences, Workstation
@@ -59,7 +60,6 @@ def user_panel(request, date=''):
     return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 
             'date_name': date_name, 'date':date, 'previous_date':previous_date, 'next_date':next_date})
 
-
 '''
 class ScheduleWeekView(TemplateView):
 
@@ -74,7 +74,6 @@ class ScheduleWeekView(TemplateView):
         context = {'userweek': userweek, 'editform': editform, 'generateform': generateform}
         return self.render_to_response(context)
 '''
-
 
 #rozdzielić na 2 formy
 @login_required
@@ -94,6 +93,7 @@ def schedule_week(request, pk):
             generateform = WeekdaysForm(request.POST)
             if generateform.is_valid():
                 generateweek_form_processing(generateform, userweek, user)
+                messages.success(request, 'Form submission successful')
                 return redirect('user_panel')  
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek)
@@ -127,7 +127,7 @@ def generateweek_form_processing(generateform, userweek, user):
     clear_userweek(userweek)
     assigner = Assigner()
     assigner.assign_week(user,weekdays,userweek.week, userweek.year)
-    for weekday in weekdays:
+    for weekday in weekdays:    #do sth if day not scheduled
         if not getattr(userweek, weekday):
             pass
 
