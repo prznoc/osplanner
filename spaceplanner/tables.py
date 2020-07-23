@@ -1,17 +1,13 @@
 import django_tables2 as tables
+import calendar
+
 from .models import Userweek, EmployeePreferences, Workweek
 from django_tables2.utils import A
 from datetime import datetime, timedelta
 
+
 class ScheduleTable(tables.Table):
     data_range = tables.Column(accessor='monday_date', verbose_name='dates', linkify=("schedule_week", (tables.A("pk"), )))
-    Monday = tables.Column(orderable = False)
-    Tuesday = tables.Column(orderable = False)
-    Wednesday = tables.Column(orderable = False)
-    Thursday = tables.Column(orderable = False)
-    Friday = tables.Column(orderable = False)
-    Saturday = tables.Column(orderable = False)
-    Sunday = tables.Column(orderable = False)
     #jeśli chcę guzik trzeba manualnie zdefiniować url w szablonie
     '''
     generate_schedule = tables.TemplateColumn(
@@ -21,11 +17,31 @@ class ScheduleTable(tables.Table):
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        today_weekday = list(calendar.day_name)[datetime.today().weekday()]
+        for weekday in list(calendar.day_name):
+            self.base_columns[weekday].orderable = False
+        #self.week = datetime.today().isocalendar()[1]
+        #self.base_columns[today_weekday].attrs={'td': {'bgcolor': 'lightgreen'}}
+
+    '''
+    def render_Thursday(self, value, record, column):
+        today_week = datetime.today().isocalendar()[1]
+        if getattr(record, 'week') == self.week:
+            column.attrs = {'td': {'bgcolor': 'lightblue'}}
+        else:
+            column.attrs = {'td': {}}
+        return value
+    '''
+    
+    
     class Meta:
         template_name = "django_tables2/bootstrap.html"
         fields = ['data_range' ,'year','week','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
                 'Saturday', 'Sunday']
         model = Userweek
+
 
 class PreferencesTable(tables.Table):
 

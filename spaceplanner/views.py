@@ -92,9 +92,13 @@ def schedule_week(request, pk):
             editform = ScheduleForm(instance=userweek)
             generateform = WeekdaysForm(request.POST)
             if generateform.is_valid():
-                generateweek_form_processing(generateform, userweek, user)
-                messages.success(request, 'Form submission successful')
-                return redirect('user_panel')  
+                wrong_weekdays = generateweek_form_processing(generateform, userweek, user)
+                if not wrong_weekdays: return redirect('user_panel')
+                else:
+                    message = generate_message(wrong_weekdays)
+                    print(message)
+                    messages.info(request, message)
+                    return redirect('schedule_week', pk=pk)
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek)
             generateform = WeekdaysForm() 
@@ -106,6 +110,12 @@ def schedule_week(request, pk):
         generateform = WeekdaysForm()
     return render(request, 'spaceplanner/schedule_week.html', 
             {'userweek': userweek, 'editform': editform, 'generateform': generateform})
+
+def generate_message(wrong_weekdays):
+    message= "Following days could not be scheduled: "
+    for day in wrong_weekdays:
+        message = message + day + ", "
+    return message
 
 def editweek_form_processing(editform, user):
     userweek = editform.save(commit=False)
@@ -126,10 +136,15 @@ def generateweek_form_processing(generateform, userweek, user):
     clear_workweek(userweek)
     clear_userweek(userweek)
     assigner = Assigner()
-    assigner.assign_week(user,weekdays,userweek.week, userweek.year)
-    for weekday in weekdays:    #do sth if day not scheduled
-        if not getattr(userweek, weekday):
-            pass
+    schedule = assigner.assign_week(user,weekdays,userweek.week, userweek.year)
+    completion_flag = True
+    wrong_weekdays = []
+    for weekday in schedule.keys():    #do sth if day not scheduled
+        if not schedule[weekday]:
+            completion_flag = False
+            wrong_weekdays.append(weekday)
+    if not completion_flag: return wrong_weekdays
+    else: return None
 
 def clear_workweek(userweek):
     for weekday in list(calendar.day_name):
