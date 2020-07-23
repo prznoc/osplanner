@@ -32,6 +32,7 @@ def user_panel(request, date=''):
     user = request.user
     preferences, created  = EmployeePreferences.objects.get_or_create(employee = user)
     preferences = PreferencesTable([preferences])
+
     if date:   
         today = datetime.strptime(date, '%Y-%m')
     else: today = datetime.today()
@@ -41,19 +42,20 @@ def user_panel(request, date=''):
     last_day = calendar.monthrange(today.year, today.month)[1]
     last_day = today.replace(day=last_day)
     last_monday = last_day + timedelta(days=-last_day.weekday(), weeks=1)
-    week_counter = generate_nonexistent_userweeks(user, first_monday, last_monday)
+    week_counter = generate_nonexistent_userweeks(user, first_monday, last_monday)  #generates userweeks for displayed month and amount of weeks in month
 
     schedule = Userweek.objects.filter(employee=user).exclude(
             monday_date__lt=first_monday).order_by('monday_date')[:week_counter]
-    schedule = Userweek.objects.filter(id__in=schedule)
-    table = ScheduleTable(schedule, order_by=('data_range'))
+    schedule = Userweek.objects.filter(id__in=schedule)       #filtering for displayed userweeks
+    table = ScheduleTable(schedule, order_by=('data_range'))  
     RequestConfig(request).configure(table)
-    month_name = today.strftime('%B')
-    year = today.strftime('%Y')
+
+    date_name = today.strftime('%B') + ' ' +today.strftime('%Y')
     next_date = (today.replace(day=1) + timedelta(days=31)).strftime('%Y-%m')
     previous_date = (today.replace(day=1) - timedelta(days=1)).strftime('%Y-%m')
+
     return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 
-            'month': month_name, 'date':date, 'year':year, 'previous_date':previous_date, 'next_date':next_date})
+            'date_name': date_name, 'date':date, 'previous_date':previous_date, 'next_date':next_date})
 
 #rozdzielić na 2 formy
 @login_required
@@ -88,6 +90,9 @@ def schedule_week(request, pk):
                 clear_userweek(userweek)
                 assigner = Assigner()
                 assigner.assign_week(user,weekdays,userweek.week, userweek.year)
+                for weekday in weekdays:
+                    if not getattr(userweek, weekday):
+                        pass
                 return redirect('user_panel')  
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek)

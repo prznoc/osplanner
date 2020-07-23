@@ -5,51 +5,51 @@ from django.contrib.auth.models import User
 
 from spaceplanner.models import Workweek, EmployeePreferences, Workstation, WorkstationPreferences, Userweek
 
-
+#Zastanowić się nad algorytmem przydziału przy priorytetach
 class Assigner():
 
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
 
     def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
-        if not weekdays: return  #jakoś blokować pustą listę
+        if not weekdays: return  #jakoś blokować pustą listę, choć teoretycznie nie powinno takiej być
         all_slots, created = self.get_all_slots(week_number, year)      #List of all WORKWEEKS matching week and year
-        availability, slots = self.prepare_availability(weekdays, all_slots)     #Availability is Weekday: slot
+        availability, slots = self.prepare_availability(weekdays, all_slots)     #Availability is {Weekday: slot}
         schedule = dict.fromkeys(weekdays) #schedule to return
         preference = EmployeePreferences.objects.get(employee = user)
+
         # None for days with no matching workstation
         temp_weekdays = weekdays.copy()
         for day in temp_weekdays:
             if not availability[day]:
                 weekdays.remove(day)
                 availability.pop(day, None)
-            if not weekdays:
-                self.assign_user_to_workstation(user, schedule, week_number, year)
-                return schedule
+        if not weekdays:
+            self.assign_user_to_workstation(user, schedule, week_number, year)
+            return schedule
 
         # return favourite if matching all days
-        for preference_name in self.preferences_set:         
-            if (getattr(preference, preference_name+"_preference") == 3):
-                availability = self.filter_workspaces(preference_name, preference, availability, slots, False)
-        p = list(availability.values())
-        results = set(p[0])
-        for s in p[1:]:
-            results.intersection_update(s) #workstations available on all days
-        try:
-            favourites = preference.favourite_workspace.all()
+        favourites = preference.favourite_workspace.all()
+        if favourites:
+            for preference_name in self.preferences_set:         
+                if (getattr(preference, preference_name+"_preference") == 3):
+                    availability = self.filter_workspaces(preference_name, preference, availability, slots)
+            p = list(availability.values())
+            results = set(p[0])
+            for s in p[1:]:
+                results.intersection_update(s)      #workstations available on all days
+        
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
-            common = list(set(results).intersection(favourites))
+            common = list(set(results).intersection(favourites))        #List of workstations both available on all days and in favourites
             if common:
                 for day in weekdays:
                     schedule[day] = common[0]
                 self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
-        except:
-            pass
 
         #assign favourites to days with one
         #może zmienić algorytm żeby liczył pasującę
-        try:
-            favourites = preference.favourite_workspace.all()
+        favourites = preference.favourite_workspace.all()
+        if favourites:
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
             temp_weekdays = weekdays.copy()
             for day in temp_weekdays:
@@ -61,13 +61,11 @@ class Assigner():
             if not weekdays:
                 self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
-        except:
-            pass
 
-        #assign one workspace matching with priority 2
+        #find workspaces with priority 2
         for preference_name in self.preferences_set:         
             if (getattr(preference, preference_name+"_preference") == 2):
-                availability = self.filter_workspaces(preference_name, preference, availability, slots, False)
+                availability = self.filter_workspaces(preference_name, preference, availability, slots)
 
         p = list(availability.values())
         results = set(p[0])
@@ -92,12 +90,6 @@ class Assigner():
                 schedule[day] = self.match_slot_to_day(preference, day, availability)
             self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
-
-    def assign_next_week(self, user: User, weekdays: list) -> dict:
-        week_after_today = datetime.today() + timedelta (days = 7)
-        week_number = week_after_today.isocalendar()[1]
-        year = week_after_today.isocalendar()[0]
-        return self.assign_week(user, weekdays, week_number, year)
 
     def get_all_slots(self, week_number: int, year: int) -> [list, bool]:
         slots = []
@@ -128,7 +120,7 @@ class Assigner():
                 userweek.save()
                 schedule[day].save()
 
-    def filter_workspaces(self, preference_name, preference, availability, slots, empty_permission_flag):
+    def filter_workspaces(self, preference_name, preference, availability, slots):
         temp_slots = set()
    
         for slot in slots:
@@ -140,14 +132,17 @@ class Assigner():
         for day in availability.keys():        
             weekday = availability[day]
             new_weekday = [x for x in weekday if x in temp_slots]     
-            if new_weekday or empty_permission_flag:    #returns slots matched to preferences
+            if new_weekday:    #returns slots matched to preferences
                 availability[day] = new_weekday
         return availability
 
     def select_matching_workspace(self, preference, availability: dict, results: set, slots: set):
+        print(preference)
         for preference_name in self.preferences_set:
+            print(preference_name)
             if (getattr(preference, preference_name+"_preference") == 1):
-                availability = self.filter_workspaces(preference_name, preference, availability, slots, True)
+                availability = self.filter_workspaces(preference_name, preference, availability, slots)
+        print(availability)
         slots_list = [item for sublist in availability.values() for item in sublist]
         if not slots_list:
             results = list(results)
@@ -157,7 +152,6 @@ class Assigner():
    
     def match_slot_to_day(self, preference, day, availability):
         possible_slots = availability[day]
-        print(possible_slots)
         for preference_name in self.preferences_set:
             if (getattr(preference, preference_name+"_preference") == 1):
                 temp_slots = []

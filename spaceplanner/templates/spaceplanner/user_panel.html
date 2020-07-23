@@ -9,13 +9,18 @@
 <body>
     <p>User panel page</p>
     <p>User: {{ user.first_name }}  {{user.last_name}}</p>
-    <p>{{month}} {{year}}</p>
+    <p>{{date_name}}</p>
     <a class="btn btn-primary" href="{% url 'user_panel' date=previous_date %}">Previous</a>
     <a class="btn btn-primary" href="{% url 'user_panel' date=next_date %}">Next</a>
     {% render_table table %}
     {% render_table preferences %}
     <a class="btn btn-primary" href="{% url 'edit_preferences' %}">Edit preferences</a>
     <a class="btn btn-primary" href="{% url 'workstation_schedule' date=date %}">Workstations schedule</a>
+    <!--
+    {% if alert_flag %}
+    <script>alert("Some Message.")</script>  
+    {% endif %}
+    -->
 </body>
 </html>
 {% endblock %}

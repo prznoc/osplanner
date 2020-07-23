@@ -6,7 +6,7 @@ from .models import EmployeePreferences, Userweek, Workstation, Workweek
 
 class UserPreferencesForm(forms.ModelForm):
     favourites = forms.ModelMultipleChoiceField(queryset=Workstation.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.CheckboxSelectMultiple, required=False)
 
     class Meta:
         model = EmployeePreferences
@@ -36,7 +36,6 @@ class UserPreferencesForm(forms.ModelForm):
         return instance
     
 
-#złożone filtrowanie
 class ScheduleForm(forms.ModelForm):
 
     class Meta:
