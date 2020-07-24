@@ -7,7 +7,7 @@
 </head>
 <body>
     <p>Schedule week page</p>
-    <p>Date: {{ userweek.monday_date }}</p>
+    <p>Date: {{ userweek.year }}|{{userweek.week}}, {{date_range}} </p>
     <p>User: {{ userweek.employee.get_username }}</p>
     <form method="POST" class="schedule-form">
         {% csrf_token %}

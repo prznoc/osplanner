@@ -64,6 +64,9 @@ def user_panel(request, date = None):
 def schedule_week(request, pk):
     user = request.user
     userweek = get_object_or_404(Userweek, pk=pk)
+    monday = datetime.today() + timedelta(days=-datetime.today().weekday())
+    isocalendar = monday.isocalendar()
+    date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:
             generateform = WeekdaysForm()
@@ -92,7 +95,7 @@ def schedule_week(request, pk):
         editform = ScheduleForm(instance=userweek)       
         generateform = WeekdaysForm()
     return render(request, 'spaceplanner/schedule_week.html', 
-            {'userweek': userweek, 'editform': editform, 'generateform': generateform})
+            {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': date_range})
 
 def generate_message(wrong_weekdays):
     message= "Following days could not be scheduled: "
