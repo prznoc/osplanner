@@ -8,9 +8,11 @@ from datetime import datetime, timedelta
 
 class WeekdayColumn(tables.Column):
     def render(self, value, record, column):
-        today_weekday = list(calendar.day_name)[datetime.today().weekday()]
-        if getattr(record, 'week') == datetime.today().isocalendar()[1] and \
-            getattr(record, 'year') == datetime.today().isocalendar()[0] and \
+        today = datetime.today()
+        today_weekday = list(calendar.day_name)[today.weekday()]
+        today = today.isocalendar()
+        if getattr(record, 'year') == today[0] and \
+            getattr(record, 'week') == today[1] and \
                 self.verbose_name == today_weekday:
                     self.attrs = {'td': {'bgcolor': 'lightblue'}}
         else:
@@ -32,12 +34,11 @@ class ScheduleTable(tables.Table):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         for weekday in list(calendar.day_name):
             self.base_columns[weekday] = WeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
                     verbose_name=weekday)
+        super().__init__(*args, **kwargs)
         
-
     class Meta:
         template_name = "django_tables2/bootstrap.html"
         exclude = ['monday_date', 'id', 'employee']
