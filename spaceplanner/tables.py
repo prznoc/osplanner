@@ -6,6 +6,20 @@ from django_tables2.utils import A
 from datetime import datetime, timedelta
 
 
+class WeekdayColumn(tables.Column):
+    def render(self, value, record, column):
+        today_weekday = list(calendar.day_name)[datetime.today().weekday()]
+        if getattr(record, 'week') == datetime.today().isocalendar()[1] and \
+            getattr(record, 'year') == datetime.today().isocalendar()[0] and \
+                self.verbose_name == today_weekday:
+                    self.attrs = {'td': {'bgcolor': 'lightblue'}}
+        else:
+            column.attrs = {'td': {}}
+        if not value:
+            return '---'
+        return value
+
+
 class ScheduleTable(tables.Table):
     data_range = tables.Column(accessor='monday_date', verbose_name='dates', linkify=("schedule_week", (tables.A("pk"), )))
     #jeśli chcę guzik trzeba manualnie zdefiniować url w szablonie
@@ -19,27 +33,15 @@ class ScheduleTable(tables.Table):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        today_weekday = list(calendar.day_name)[datetime.today().weekday()]
         for weekday in list(calendar.day_name):
-            self.base_columns[weekday].orderable = False
-        #self.week = datetime.today().isocalendar()[1]
-        #self.base_columns[today_weekday].attrs={'td': {'bgcolor': 'lightgreen'}}
+            self.base_columns[weekday] = WeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
+                    verbose_name=weekday)
+        
 
-    '''
-    def render_Thursday(self, value, record, column):
-        today_week = datetime.today().isocalendar()[1]
-        if getattr(record, 'week') == self.week:
-            column.attrs = {'td': {'bgcolor': 'lightblue'}}
-        else:
-            column.attrs = {'td': {}}
-        return value
-    '''
-    
-    
     class Meta:
         template_name = "django_tables2/bootstrap.html"
-        fields = ['data_range' ,'year','week','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
-                'Saturday', 'Sunday']
+        exclude = ['monday_date', 'id', 'employee']
+        sequence = ['data_range', '...']
         model = Userweek
 
 
