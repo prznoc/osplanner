@@ -16,6 +16,7 @@ class UserPreferencesForm(forms.ModelForm):
         if kwargs.get('instance'):
             initial = kwargs.setdefault('initial', {})
             initial['favourites'] = [t.pk for t in kwargs['instance'].favourite_workspace.all()]
+            #initial['favourites'].verbose_name = "Favourite workstations"
 
         forms.ModelForm.__init__(self, *args, **kwargs)
 

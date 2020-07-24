@@ -12,29 +12,35 @@ class Workstation(models.Model):
     def __str__(self):
         return str(self.ws_id)
 
+    '''
+    def save(self, *args, **kwargs):
+        super(Workstation, self).save(*args, **kwargs)
+        if self._state.adding is True:
+            WorkstationPreferences.objects.get_or_create(workstation=self)
+    '''
 
 class WorkstationPreferences(models.Model):
     workstation = models.OneToOneField(Workstation, name=_('workstation'), on_delete=models.CASCADE)
-    window = models.BooleanField(_('window'), default=False)
-    noise = models.BooleanField(_('noise'), default=False)
-    large_screen = models.BooleanField(_('large_screen'), default=False)
-    is_mac = models.BooleanField(_('is_mac'), default=False)
+    window = models.BooleanField(_('Window'), default=False)
+    noise = models.BooleanField(_('Noise'), default=False)
+    large_screen = models.BooleanField(_('Large_screen'), default=False)
+    is_mac = models.BooleanField(_('Mac'), default=False)
 
 
 class EmployeePreferences(models.Model):
     employee = models.OneToOneField(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
     favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace"), default = None) 
-    window = models.BooleanField(_('window'), default = False)
-    window_preference = models.IntegerField(_('window_preference'), default = 0, validators=[MinValueValidator(0), 
+    window = models.BooleanField(_('Window'), default = False)
+    window_preference = models.IntegerField(_('Window priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
-    noise = models.BooleanField(_('noise'), default = False)
-    noise_preference = models.IntegerField(_('noise_preference'), default = 0, validators=[MinValueValidator(0), 
+    noise = models.BooleanField(_('Noise'), default = False)
+    noise_preference = models.IntegerField(_('Noise priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
-    large_screen = models.BooleanField(_('large_screen'), default = False)
-    large_screen_preference = models.IntegerField(_('large_screen_preference'), default = 0, validators=[MinValueValidator(0), 
+    large_screen = models.BooleanField(_('Large screen'), default = False)
+    large_screen_preference = models.IntegerField(_('Large_screen priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
-    is_mac = models.BooleanField(_('is_mac'), default = False)
-    is_mac_preference = models.IntegerField(_('is_mac_preference'), default = 0, validators=[MinValueValidator(0), 
+    is_mac = models.BooleanField(_('Mac'), default = False)
+    is_mac_preference = models.IntegerField(_('Mac priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
 
 

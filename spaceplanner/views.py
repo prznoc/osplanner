@@ -31,7 +31,7 @@ def home(request):
     return render(request, 'spaceplanner/home.html', {})
 
 @login_required
-def user_panel(request, date=''):
+def user_panel(request, date = None):
     user = request.user
     preferences, created  = EmployeePreferences.objects.get_or_create(employee = user)
     preferences = PreferencesTable([preferences])
@@ -60,22 +60,6 @@ def user_panel(request, date=''):
     return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 
             'date_name': date_name, 'date':date, 'previous_date':previous_date, 'next_date':next_date})
 
-'''
-class ScheduleWeekView(TemplateView):
-
-    editform_class = UserPreferencesForm
-    generateform_class = ScheduleForm
-    template_name = 'spaceplanner/schedule_week.html'
-
-    def get(self, request, pk):
-        userweek = get_object_or_404(Userweek, pk=pk)
-        generateform = WeekdaysForm(self.request.GET or None)
-        editform = ScheduleForm(self.request.GET or None, instance=userweek)
-        context = {'userweek': userweek, 'editform': editform, 'generateform': generateform}
-        return self.render_to_response(context)
-'''
-
-#rozdzielić na 2 formy
 @login_required
 def schedule_week(request, pk):
     user = request.user
@@ -96,7 +80,6 @@ def schedule_week(request, pk):
                 if not wrong_weekdays: return redirect('user_panel')
                 else:
                     message = generate_message(wrong_weekdays)
-                    print(message)
                     messages.info(request, message)
                     return redirect('schedule_week', pk=pk)
         if 'mybtn' in request.POST:
@@ -137,9 +120,10 @@ def generateweek_form_processing(generateform, userweek, user):
     clear_userweek(userweek)
     assigner = Assigner()
     schedule = assigner.assign_week(user,weekdays,userweek.week, userweek.year)
+    print(schedule)
     completion_flag = True
     wrong_weekdays = []
-    for weekday in schedule.keys():    #do sth if day not scheduled
+    for weekday in schedule.keys():
         if not schedule[weekday]:
             completion_flag = False
             wrong_weekdays.append(weekday)
