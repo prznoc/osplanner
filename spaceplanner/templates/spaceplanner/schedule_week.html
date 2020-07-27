@@ -14,6 +14,13 @@
         {{ editform.as_p }}
         <button type="submit" class="save btn btn-default" name="editweek">Save</button>
     </form>
+    {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <form method='POST'>
         {% csrf_token %}
         {{ generateform.as_p }}
@@ -23,13 +30,7 @@
         {% csrf_token %}
         <input type="submit" class="btn" value="Clear Schedule" name="mybtn">
     </form>
-    {% if messages %}
-        <ul class="messages">
-        {% for message in messages %}
-            <script>{alert("{{message}}");}</script>
-        {% endfor %}
-    </ul>
-    {% endif %}
+
 </body>
 </html>
 {% endblock %}
