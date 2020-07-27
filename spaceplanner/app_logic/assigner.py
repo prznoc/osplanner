@@ -67,9 +67,9 @@ class Assigner():
             if (getattr(preference, preference_name+"_preference") == 2):
                 availability = self.filter_workspaces(preference_name, preference, availability, slots)
 
-        p = list(availability.values())
+        p = list(availability.values())     
         results = set(p[0])
-        for s in p[1:]:
+        for s in p[1:]:                  #workweeks matching all days
             results.intersection_update(s)
         if len(results) == 1:            #if one matching, match
             chosen_slot = results.pop()

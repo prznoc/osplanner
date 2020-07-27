@@ -7,7 +7,7 @@
 </head>
 <body>
     <p>Edit preferences page</p>
-    <p>User: {{user.get_username}}</p>
+    <p>User: {{user.get_full_name}}</p>
     <form method="POST" class="preferences-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Save</button>

@@ -36,7 +36,7 @@ class ScheduleTable(tables.Table):
             self.base_columns[weekday] = WeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
                     verbose_name=weekday)
         super().__init__(*args, **kwargs)
-            
+    
     class Meta:
         template_name = "django_tables2/bootstrap.html"
         exclude = ['monday_date', 'id', 'employee']
@@ -55,7 +55,7 @@ class PreferencesTable(tables.Table):
         exclude = ('id', 'employee')
         model = EmployeePreferences
 
-'''
+
 class WorkstationWeekdayColumn(tables.Column):
     def render(self, value, record, column):
         today = datetime.today()
@@ -69,8 +69,8 @@ class WorkstationWeekdayColumn(tables.Column):
             column.attrs = {'td': {}}
         if not value:
             return '---'
-        return value
-'''
+        return value.first_name + ' ' + value.last_name
+
 
 class WorkstationsScheduleTable(tables.Table):
 
@@ -78,11 +78,10 @@ class WorkstationsScheduleTable(tables.Table):
     
     def __init__(self, *args, **kwargs):
         for weekday in list(calendar.day_name):
-            self.base_columns[weekday] = WeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
+            self.base_columns[weekday] = WorkstationWeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
                     verbose_name=weekday)
         super().__init__(*args, **kwargs)
     
     class Meta:
         model = Workweek
-        fields = ['workstation','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
-                'Saturday', 'Sunday']
+        exclude = ['week_id', 'year', 'week']

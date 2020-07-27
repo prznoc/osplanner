@@ -57,6 +57,9 @@ def user_panel(request, date = None):
     next_date = (today.replace(day=1) + timedelta(days=31)).strftime('%Y-%m')
     previous_date = (today.replace(day=1) - timedelta(days=1)).strftime('%Y-%m')
 
+    today = datetime.today()
+    date = (today + timedelta(days=-today.weekday())).strftime('%Y-%m-%d')
+
     return render(request, 'spaceplanner/user_panel.html', {'table':table, 'preferences':preferences, 
             'date_name': date_name, 'date':date, 'previous_date':previous_date, 'next_date':next_date})
 

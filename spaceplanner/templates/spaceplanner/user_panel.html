@@ -8,7 +8,7 @@
 </head>
 <body>
     <p>User panel page</p>
-    <p>User: {{ user.first_name }}  {{user.last_name}}</p>
+    <p>User: {{ user.get_full_name }}</p>
     <p>{{date_name}}</p>
     <a class="btn btn-primary" href="{% url 'user_panel' date=previous_date %}">Previous</a>
     <a class="btn btn-primary" href="{% url 'user_panel' date=next_date %}">Next</a>
