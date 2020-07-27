@@ -1,48 +1,63 @@
-.sidebar-nav {
-    background-color: #5cb4ca;
-    margin-top: 0;
+.html {
+  }
+.body {
+    background-color: #b4b6a5;
+  }
+
+.page-header {
+    background-color: hsl(189, 100%, 38%);
     padding: 20px 20px 20px 40px;
     text-align: center
 }
 
-.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
-    color: #ffffff;
-    font-size: 36pt;
-    text-decoration: none;
+.container-fluid {
 }
 
-.content {
-    margin-left: 40px;
+.col-sm-2 {
+    min-width: min-content;
+    float:left;
 }
 
-h1, h2, h3, h4 {
+.sidebar-nav {
+    background-color: #bfca5c;
+    padding: 20px 20px 20px 40px;
     font-family: 'Lobster', cursive;
+    text-align: center;
+    min-width: min-content;
+    margin-top: 10px;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0; 
 }
 
-.date {
-    color: rgb(27, 116, 34);
+.col-sm-10 {
+    float:left;
+    margin:auto;
+    text-align: center;
 }
 
-.post-form textarea, .post-form input {
-    width: 100%;
-}
-
-.post {
-    margin-bottom: 70px;
-}
-
-.post h2 a, .post h2 a:visited {
-    color: #000000;
-}
-
-.blue_glyf{
-    color: blue;
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active{
+    font-family: 'Lobster', cursive;
+    color: rgb(255, 255, 255)
 }
 
 .today {
-    color: #bbbbbb
+    background-color: rgba(255, 215, 0, 0.4);
 }
 
-.tr[week= 31] {
-    background-color: #f2dede;
+.btn-primary {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#workstation_schedule_btn {
+    width: 185px;
+}
+
+#edit_preferences_btn {
+    width: 185px;
+}
+
+#change_date {
+    width: 85px;
 }

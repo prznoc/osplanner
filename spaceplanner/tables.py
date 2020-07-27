@@ -14,7 +14,7 @@ class WeekdayColumn(tables.Column):
         if getattr(record, 'year') == today[0] and \
             getattr(record, 'week') == today[1] and \
                 self.verbose_name == today_weekday:
-                    self.attrs = {'td': {'bgcolor': 'lightblue'}}
+                    self.attrs = {'td': {'class': 'today'}}
         else:
             column.attrs = {'td': {}}
         if not value:
@@ -23,7 +23,7 @@ class WeekdayColumn(tables.Column):
 
 
 class ScheduleTable(tables.Table):
-    data_range = tables.Column(accessor='monday_date', verbose_name='Dates', linkify=("schedule_week", (tables.A("pk"), )))
+    data_range = tables.Column(accessor='monday_date', verbose_name='Dates')
     generate_schedule = tables.TemplateColumn(
         template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False)
 
@@ -64,12 +64,12 @@ class WorkstationWeekdayColumn(tables.Column):
         if getattr(record, 'year') == today[0] and \
             getattr(record, 'week') == today[1] and \
                 self.verbose_name == today_weekday:
-                    self.attrs = {'td': {'bgcolor': 'lightblue'}}
+                    self.attrs = {'td': {'class': 'today'}}
         else:
             column.attrs = {'td': {}}
         if not value:
             return '---'
-        return value.first_name + ' ' + value.last_name
+        return value.get_full_name
 
 
 class WorkstationsScheduleTable(tables.Table):
