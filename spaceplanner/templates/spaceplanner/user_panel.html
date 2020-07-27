@@ -1,17 +1,24 @@
 {% extends "base_generic.html" %}
 {% load render_table from django_tables2 %}
+{% load staticfiles %}
 
 {% block content %}
-<body class='user-body'>
-    <p>User panel page</p>
-    <p>User: {{ user.get_full_name }}</p>
-    <p>{{date_name}}</p>
-    <a class="btn btn-primary" href="{% url 'user_panel' date=previous_date %}" id='change_date' >Previous</a>
-    <a class="btn btn-primary" href="{% url 'user_panel' date=next_date %}" id='change_date'>Next</a>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<body>
+<div class='user-body'>
+    <p>Logged in as {{ user.get_full_name }}</p>
+    <a class='up-month-name'>{{date_name}}</a>
+    <div class=up-date-buttons>
+        <a class="btn btn-primary" href="{% url 'user_panel' date=previous_date %}" id='change_date' >Previous</a>
+        <a class="btn btn-primary" href="{% url 'user_panel' date=next_date %}" id='change_date'>Next</a>
+    </div>
     {% render_table table %}
     {% render_table preferences %}
-    <a class="btn btn-primary" href="{% url 'edit_preferences' %}" id='edit_preferences_btn'>Edit preferences</a>
-    <a class="btn btn-primary" href="{% url 'workstation_schedule' date=date %}", id='edit_preferences_btn'>Workstations schedule</a>
+    <div class=up-preference-buttons>
+        <a class="btn btn-primary" href="{% url 'edit_preferences' %}" id='edit_preferences_btn'>Edit preferences</a>
+        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=date %}", id='edit_preferences_btn'>Workstations schedule</a>
+    </div>
+</div>
 </body>
 </html>
 {% endblock %}

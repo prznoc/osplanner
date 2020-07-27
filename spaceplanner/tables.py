@@ -24,8 +24,11 @@ class WeekdayColumn(tables.Column):
 
 class ScheduleTable(tables.Table):
     data_range = tables.Column(accessor='monday_date', verbose_name='Dates')
+    year=tables.Column(orderable=False)
+    week=tables.Column(orderable=False)
     generate_schedule = tables.TemplateColumn(
         template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False)
+
 
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')

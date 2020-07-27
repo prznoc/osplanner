@@ -1,16 +1,11 @@
-.html {
-  }
-.body {
-    background-color: #b4b6a5;
+.main-body {
+    background-color: #dbd9d9;
   }
 
 .page-header {
     background-color: hsl(189, 100%, 38%);
     padding: 20px 20px 20px 40px;
     text-align: center
-}
-
-.container-fluid {
 }
 
 .col-sm-2 {
@@ -21,28 +16,48 @@
 .sidebar-nav {
     background-color: #bfca5c;
     padding: 20px 20px 20px 40px;
-    font-family: 'Lobster', cursive;
-    text-align: center;
+    text-align: left;
     min-width: min-content;
     margin-top: 10px;
     position: sticky;
     position: -webkit-sticky;
     top: 0; 
+    border: 3px solid #73AD21;
 }
 
 .col-sm-10 {
     float:left;
     margin:auto;
+}
+
+.user-body, .workstation-schedule-body {
     text-align: center;
 }
 
+.up-month-name {
+    position: relative;
+    float: right;
+    right: 10px;
+}
+
+.up-date-buttons {
+    float: left;
+    left: 10px;
+    margin-bottom: 10px
+}
+
+.up-preference-buttons {
+    float: left;
+    left: 10px;
+    margin-top: 10px
+}
+
 .page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active{
-    font-family: 'Lobster', cursive;
     color: rgb(255, 255, 255)
 }
 
 .today {
-    background-color: rgba(255, 215, 0, 0.4);
+    background-color: rgba(255, 215, 0, 0.2);
 }
 
 .btn-primary {
@@ -61,3 +76,4 @@
 #change_date {
     width: 85px;
 }
+
