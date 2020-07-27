@@ -101,6 +101,7 @@ def generate_message(wrong_weekdays):
     message= "Following days could not be scheduled: "
     for day in wrong_weekdays:
         message = message + day + ", "
+    message = message[:-2]
     return message
 
 def editweek_form_processing(editform, user):
