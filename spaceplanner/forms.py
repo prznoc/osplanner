@@ -2,11 +2,16 @@ import calendar
 
 from django import forms
 from django.db.models import Q
+from django.utils.safestring import mark_safe
+
 from .models import EmployeePreferences, Userweek, Workstation, Workweek
 
 class UserPreferencesForm(forms.ModelForm):
+
+    preferences_set = ["is_mac", "window", "noise", "large_screen"]
+
     favourites = forms.ModelMultipleChoiceField(queryset=Workstation.objects.all(),
-        widget=forms.CheckboxSelectMultiple, required=False)
+        widget=forms.CheckboxSelectMultiple, required=False, label="Choose favourite workstations")
 
     class Meta:
         model = EmployeePreferences
@@ -16,9 +21,10 @@ class UserPreferencesForm(forms.ModelForm):
         if kwargs.get('instance'):
             initial = kwargs.setdefault('initial', {})
             initial['favourites'] = [t.pk for t in kwargs['instance'].favourite_workspace.all()]
-            #initial['favourites'].verbose_name = "Favourite workstations"
-
         forms.ModelForm.__init__(self, *args, **kwargs)
+        for preference in self.preferences_set:
+            self.fields[preference+'_preference'].label = mark_safe(preference.capitalize() + " priority" ':' + '<br />')
+
 
     
     def save(self, commit=True):
@@ -53,9 +59,9 @@ class ScheduleForm(forms.ModelForm):
                 if not attr or attr == self.instance.employee:
                     request.append(workweek.workstation)
             request = Workstation.objects.filter(ws_id__in=[rq.ws_id for rq in request])
+            self.fields[weekday] = forms.ModelChoiceField(queryset= request, required=False, label=mark_safe(weekday + ':' + '<br />'))
             self.initial[weekday] = getattr(self.instance, weekday)
-            self.fields[weekday] = forms.ModelChoiceField(queryset= request, required=False)
-
+            
     
 class WeekdaysForm(forms.Form):
     OPTIONS = (
@@ -68,4 +74,4 @@ class WeekdaysForm(forms.Form):
         ("Sunday", "Sunday"),
     )
     weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
-                                          choices=OPTIONS)
+                                          choices=OPTIONS, label="Choose days to schedule")

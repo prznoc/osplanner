@@ -15,7 +15,7 @@ class Assigner():
         all_slots, created = self.get_all_slots(week_number, year)      #List of all WORKWEEKS matching week and year
         availability, slots = self.prepare_availability(weekdays, all_slots)     #Availability is {Weekday: slot}
         schedule = dict.fromkeys(weekdays) #schedule to return
-        preference = EmployeePreferences.objects.get(employee = user)
+        preference, created = EmployeePreferences.objects.get_or_create(employee = user)
 
         # None for days with no matching workstation
         temp_weekdays = weekdays.copy()

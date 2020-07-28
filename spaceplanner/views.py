@@ -127,7 +127,6 @@ def generateweek_form_processing(generateform, userweek, user):
     clear_userweek(userweek)
     assigner = Assigner()
     schedule = assigner.assign_week(user,weekdays,userweek.week, userweek.year)
-    print(schedule)
     completion_flag = True
     wrong_weekdays = []
     for weekday in schedule.keys():
@@ -155,7 +154,7 @@ def clear_userweek(userweek):
 @login_required
 def edit_preferences(request):
     user = request.user
-    preferences = get_object_or_404(EmployeePreferences, employee=user)
+    preferences, created = EmployeePreferences.objects.get_or_create(employee=user)
     if request.method == "POST":
         form = UserPreferencesForm(request.POST, instance=preferences)
         if form.is_valid():
