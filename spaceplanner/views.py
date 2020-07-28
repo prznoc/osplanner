@@ -169,6 +169,7 @@ def edit_preferences(request):
 def workstation_schedule(request, date):
     monday = datetime.strptime(date, '%Y-%m-%d')
     date_range, table = get_schedule_week_table(monday)
+    RequestConfig(request).configure(table)
     monday = monday + timedelta(weeks=1)
     next_date = monday.strftime('%Y-%m-%d')
     monday = monday - timedelta(days=14)

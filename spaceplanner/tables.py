@@ -29,11 +29,9 @@ class ScheduleTable(tables.Table):
     generate_schedule = tables.TemplateColumn(
         template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False)
 
-
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
-
-    
+ 
     def __init__(self, *args, **kwargs):
         for weekday in list(calendar.day_name):
             self.base_columns[weekday] = WeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
@@ -77,7 +75,7 @@ class WorkstationWeekdayColumn(tables.Column):
 
 class WorkstationsScheduleTable(tables.Table):
 
-    workstation = tables.Column(verbose_name="Workstation ID")
+    workstation = tables.Column(verbose_name="Workstation ID", accessor = 'workstation.ws_id')
     
     def __init__(self, *args, **kwargs):
         for weekday in list(calendar.day_name):
