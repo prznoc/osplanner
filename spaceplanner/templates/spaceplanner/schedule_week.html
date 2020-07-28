@@ -1,12 +1,10 @@
 {% extends "base_generic.html" %}
 
 {% load staticfiles %}
-{% load crispy_forms_tags %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <body>
-    <p>Logged in as: {{ userweek.employee.get_full_name }}</p>
     <p>Date: {{ userweek.year }}|{{userweek.week}}, {{date_range}} </p>
     <p>Choose workstation manually:</p>
     <form method="POST" class="schedule-form">
@@ -24,9 +22,10 @@
     </ul>
     {% endif %}
     <p class="empty-space"></p>
+    <p>Authomatic scheduler</p>
     <form method='POST'>
         {% csrf_token %}
-        {{ generateform.as_ul }}
+        {{ generateform.as_p }}
         <button type="submit" class="button" name="generateweek">Save</button>
     </form>
     <p class="empty-space"></p>

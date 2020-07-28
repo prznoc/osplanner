@@ -74,6 +74,10 @@
     overflow: hidden;
 }
 
+.headline {
+    text-align: center;
+}
+
 #workstation_schedule_btn, #edit_preferences_btn {
     width: 185px;
 }

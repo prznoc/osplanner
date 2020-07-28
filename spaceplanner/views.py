@@ -67,8 +67,10 @@ def user_panel(request, date = None):
 def schedule_week(request, pk):
     user = request.user
     userweek = get_object_or_404(Userweek, pk=pk)
-    monday = datetime.today() + timedelta(days=-datetime.today().weekday())
-    isocalendar = monday.isocalendar()
+    monday = userweek.monday_date
+    last_monday = datetime.today() - timedelta(days=datetime.today().weekday())
+    if monday < last_monday.date():
+        return redirect('workstation_schedule', date=last_monday.strftime('%Y-%m-%d'))
     date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:

@@ -125,7 +125,7 @@ class Assigner():
    
         for slot in slots:
             workstation = slot.workstation
-            workstation_preference = WorkstationPreferences.objects.get(workstation = workstation)
+            workstation_preference, created = WorkstationPreferences.objects.get_or_create(workstation = workstation)
             if (getattr(preference, preference_name) == getattr(workstation_preference, preference_name)):
                 temp_slots.add(slot)
     
@@ -154,7 +154,7 @@ class Assigner():
                 temp_slots = []
                 for slot in possible_slots:
                     workstation = slot.workstation
-                    workstation_preference = WorkstationPreferences.objects.get(workstation = workstation)
+                    workstation_preference, created = WorkstationPreferences.objects.get_or_create(workstation = workstation)
                     if (getattr(preference, preference_name) == getattr(workstation_preference, preference_name)):
                         temp_slots.append(slot)
                 if temp_slots:
