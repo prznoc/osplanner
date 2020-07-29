@@ -70,7 +70,7 @@ def schedule_week(request, pk):
     monday = userweek.monday_date
     last_monday = datetime.today() - timedelta(days=datetime.today().weekday())
     if monday < last_monday.date():
-        return redirect('workstation_schedule', date=last_monday.strftime('%Y-%m-%d'), past_flag=True)
+        return redirect('workstation_schedule', date=monday.strftime('%Y-%m-%d'), past_flag=True)
     date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:
