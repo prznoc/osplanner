@@ -2,9 +2,10 @@ import django_tables2 as tables
 import calendar
 
 from .models import Userweek, EmployeePreferences, Workweek
+from django.shortcuts import render
 from django_tables2.utils import A
 from datetime import datetime, timedelta
-
+from django.utils.safestring import mark_safe
 
 class WeekdayColumn(tables.Column):
     def render(self, value, record, column):
@@ -22,12 +23,20 @@ class WeekdayColumn(tables.Column):
         return value
 
 
+class ScheduleButtonColumn(tables.TemplateColumn):
+    def render(self, record, table, value, bound_column, **kwargs):
+        last_monday = (datetime.today() - timedelta(days=datetime.today().weekday())).date()
+        if (record.monday_date < last_monday):
+            self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">View Schedule</a>'
+        else: self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>'
+        return super(ScheduleButtonColumn, self).render(record, table, value, bound_column, **kwargs)
+
+
 class ScheduleTable(tables.Table):
     data_range = tables.Column(accessor='monday_date', verbose_name='Dates')
     year=tables.Column(orderable=False)
     week=tables.Column(orderable=False)
-    generate_schedule = tables.TemplateColumn(
-        template_name="spaceplanner/schedule_button.html", verbose_name="Get schedule", orderable=False)
+    generate_schedule = ScheduleButtonColumn('<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>', orderable=False)
 
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
@@ -37,7 +46,8 @@ class ScheduleTable(tables.Table):
             self.base_columns[weekday] = WeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
                     verbose_name=weekday)
         super().__init__(*args, **kwargs)
-    
+
+
     class Meta:
         template_name = "django_tables2/bootstrap.html"
         exclude = ['monday_date', 'id', 'employee']
