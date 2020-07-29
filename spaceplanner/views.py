@@ -70,7 +70,7 @@ def schedule_week(request, pk):
     monday = userweek.monday_date
     last_monday = datetime.today() - timedelta(days=datetime.today().weekday())
     if monday < last_monday.date():
-        return redirect('workstation_schedule', date=monday.strftime('%Y-%m-%d'), past_flag=True)
+        return redirect('workstation_schedule', date=monday.strftime('%Y-%m-%d'))
     date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:
@@ -168,7 +168,7 @@ def edit_preferences(request):
     return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
 
 @login_required
-def workstation_schedule(request, date, past_flag=None):
+def workstation_schedule(request, date):
     monday = datetime.strptime(date, '%Y-%m-%d')
     date_range, table = get_schedule_week_table(monday)
     RequestConfig(request).configure(table)
@@ -176,8 +176,6 @@ def workstation_schedule(request, date, past_flag=None):
     next_date = monday.strftime('%Y-%m-%d')
     monday = monday - timedelta(days=14)
     previous_date = monday.strftime('%Y-%m-%d')
-    if past_flag:
-        messages.warning(request, "Sorry, scheduling past weeks is unavailable")
     return render(request, 'spaceplanner/workstation_schedule.html',{'table': table, 'date_range': date_range, 'next_date': next_date, 'previous_date': previous_date})
 
 def get_schedule_week_table(monday):
