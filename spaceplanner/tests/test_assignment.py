@@ -347,13 +347,4 @@ class MiscFunctions(TestCase, Assigner):
             results.intersection_update(s)
         match = self.select_matching_workspace(preference, availability, results, slots)
         self.assertEqual(match, Workweek.objects.get(workstation=workstation1, week=3, year=2022))
-
-    def test_match_slot_to_day(self):
-        preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
-        workstation1 = Workstation.objects.get(ws_id = 1)
-        workstation2 = Workstation.objects.get(ws_id = 2)
-        all_slots, created = self.get_all_slots(3, 2022)
-        availability, slots = self.prepare_availability(["Monday", "Wednesday"], all_slots)
-        match = self.match_slot_to_day(preference, "Monday", availability)
-        self.assertEqual(match, Workweek.objects.get(workstation=workstation1, week=3, year=2022))
     

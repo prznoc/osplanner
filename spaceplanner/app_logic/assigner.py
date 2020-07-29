@@ -1,3 +1,5 @@
+import calendar
+
 from datetime import datetime, timedelta
 from statistics import mode
 from abc import ABC, abstractmethod
@@ -86,8 +88,16 @@ class Assigner():
             self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
         if not results:                  #if none matching, select separatly for each day
-            for day in weekdays:
-                schedule[day] = self.match_slot_to_day(preference, day, availability)
+            preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 1]
+            if preference_names:
+                availability = self.filter_workspaces(preference_names, preference, availability, slots)
+            previous_day = None
+            for day in list(calendar.day_name):
+                if day in availability.keys():
+                    if schedule.get(previous_day) in availability[day]:
+                        schedule[day] = schedule.get(previous_day)
+                    else: schedule[day] = availability[day][0]
+                previous_day=day
             self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
 
@@ -162,16 +172,3 @@ class Assigner():
         else:      
             return max(set(slots_list), key = slots_list.count)     # change to 'return mode(slots_list)' after migration to python 3.8
    
-    def match_slot_to_day(self, preference, day, availability):
-        possible_slots = availability[day]
-        for preference_name in self.preferences_set:
-            if (getattr(preference, preference_name+"_preference") == 1):
-                temp_slots = []
-                for slot in possible_slots:
-                    workstation = slot.workstation
-                    workstation_preference, created = WorkstationPreferences.objects.get_or_create(workstation = workstation)
-                    if (getattr(preference, preference_name) == getattr(workstation_preference, preference_name)):
-                        temp_slots.append(slot)
-                if temp_slots:
-                    possible_slots = temp_slots
-        return possible_slots[0]
