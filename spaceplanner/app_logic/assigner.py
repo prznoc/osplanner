@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from statistics import mode
 from abc import ABC, abstractmethod
 from django.contrib.auth.models import User
+from collections import Counter
 
 from spaceplanner.models import Workweek, EmployeePreferences, Workstation, WorkstationPreferences, Userweek
 
@@ -11,7 +12,7 @@ class Assigner():
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
 
     def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
-        if not weekdays: return  #jakoś blokować pustą listę, choć teoretycznie nie powinno takiej być
+        if not weekdays: return dict() #jakoś blokować pustą listę, choć teoretycznie nie powinno takiej być
         all_slots, created = self.get_all_slots(week_number, year)      #List of all WORKWEEKS matching week and year
         availability, slots = self.prepare_availability(weekdays, all_slots)     #Availability is {Weekday: slot}
         schedule = dict.fromkeys(weekdays) #schedule to return
@@ -28,16 +29,15 @@ class Assigner():
             return schedule
 
         # return favourite if matching all days
+        preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 3]
+        if preference_names:
+            availability = self.filter_workspaces(preference_names, preference, availability, slots)
+        p = list(availability.values())
+        results = set(p[0])
+        for s in p[1:]:
+            results.intersection_update(s)      #workstations available on all days
         favourites = preference.favourite_workspace.all()
         if favourites:
-            for preference_name in self.preferences_set:         
-                if (getattr(preference, preference_name+"_preference") == 3):
-                    availability = self.filter_workspaces(preference_name, preference, availability, slots)
-            p = list(availability.values())
-            results = set(p[0])
-            for s in p[1:]:
-                results.intersection_update(s)      #workstations available on all days
-        
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
             common = list(set(results).intersection(favourites))        #List of workstations both available on all days and in favourites
             if common:
@@ -63,9 +63,9 @@ class Assigner():
                 return schedule
 
         #find workspaces with priority 2
-        for preference_name in self.preferences_set:         
-            if (getattr(preference, preference_name+"_preference") == 2):
-                availability = self.filter_workspaces(preference_name, preference, availability, slots)
+        preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 2]
+        if preference_names:
+            availability = self.filter_workspaces(preference_names, preference, availability, slots)
 
         p = list(availability.values())     
         results = set(p[0])
@@ -120,26 +120,41 @@ class Assigner():
                 userweek.save()
                 schedule[day].save()
 
-    def filter_workspaces(self, preference_name, preference, availability, slots):
-        temp_slots = set()
-   
-        for slot in slots:
-            workstation = slot.workstation
-            workstation_preference, created = WorkstationPreferences.objects.get_or_create(workstation = workstation)
-            if (getattr(preference, preference_name) == getattr(workstation_preference, preference_name)):
-                temp_slots.add(slot)
-    
-        for day in availability.keys():        
-            weekday = availability[day]
-            new_weekday = [x for x in weekday if x in temp_slots]     
-            if new_weekday:    #returns slots matched to preferences
-                availability[day] = new_weekday
+    def most_frequent_elements(self, test_list:list):    #replace with statistics.multimode(list) in Python 3.8
+        res = [] 
+        test_list1 = Counter(test_list)  
+        temp = test_list1.most_common(1)[0][1]  
+        for ele in test_list: 
+            if test_list.count(ele) == temp: 
+                res.append(ele) 
+        res = list(set(res)) 
+        return res
+
+    def filter_workspaces(self, preference_names, preference, availability, slots):
+
+        matching_slots = []
+        for preference_name in preference_names:
+            temp_slots = []
+            for slot in slots:
+                workstation = slot.workstation
+                workstation_preference, created = WorkstationPreferences.objects.get_or_create(workstation = workstation)
+                if (getattr(preference, preference_name) == getattr(workstation_preference, preference_name)):
+                    temp_slots.append(slot)
+            matching_slots = matching_slots + temp_slots
+        if matching_slots:
+            temp_slots = self.most_frequent_elements(matching_slots)
+            for day in availability.keys():        
+                weekday = availability[day]
+                new_weekday = [x for x in weekday if x in temp_slots]     
+                if new_weekday:    #returns slots matched to preferences
+                    availability[day] = new_weekday
+
         return availability
 
     def select_matching_workspace(self, preference, availability: dict, results: set, slots: set):
-        for preference_name in self.preferences_set:
-            if (getattr(preference, preference_name+"_preference") == 1):
-                availability = self.filter_workspaces(preference_name, preference, availability, slots)
+        preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 1]
+        if preference_names:
+            availability = self.filter_workspaces(preference_names, preference, availability, slots)
         slots_list = [item for sublist in availability.values() for item in sublist]
         if not slots_list:
             results = list(results)

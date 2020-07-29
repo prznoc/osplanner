@@ -83,7 +83,30 @@ class SlotFilteringTest(TestCase, Assigner):
             large_screen = True, is_mac = True)
         WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 1))
         WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 2))
+        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 3))
     
+    def test_filter_with_three_preferences(self):
+        slots, created = self.get_all_slots(3, 2022)
+        preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
+        workstation1 = Workstation.objects.get(ws_id = 1)
+        workstation1_preferences = WorkstationPreferences.objects.get(workstation = workstation1)
+        workstation1_preferences.large_screen = True
+        workstation1_preferences.is_mac = True
+        workstation1_preferences.save()
+        workstation2 = Workstation.objects.get(ws_id = 2)
+        workstation2_preferences = WorkstationPreferences.objects.get(workstation = workstation2)
+        workstation2_preferences.large_screen = False
+        workstation2_preferences.is_mac = True
+        workstation2_preferences.save()
+        working_days = ["Monday", "Wednesday", "Saturday"]
+        availability, slots = self.prepare_availability(working_days, slots)
+        availability = self.filter_workspaces(["is_mac", 'large_screen', 'noise'], preference, availability, slots)
+        slot = Workweek.objects.get(year = 2022, week = 3, workstation = workstation1)
+        expected_availability = {}
+        for day in working_days:
+            expected_availability[day] = [slot]
+        self.assertEqual(availability, expected_availability)
+
     def test_filter_matching_workspace(self):
         slots, created = self.get_all_slots(3, 2022)
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
@@ -94,7 +117,7 @@ class SlotFilteringTest(TestCase, Assigner):
         workstation1_preferences.save()
         working_days = ["Monday", "Wednesday", "Saturday"]
         availability, slots = self.prepare_availability(working_days, slots)
-        availability = self.filter_workspaces("is_mac", preference, availability, slots)
+        availability = self.filter_workspaces(["is_mac"], preference, availability, slots)
         slot = Workweek.objects.get(year = 2022, week = 3, workstation = workstation1)
         expected_availability = {}
         for day in working_days:
@@ -114,7 +137,7 @@ class SlotFilteringTest(TestCase, Assigner):
         working_days = ["Monday", "Wednesday"]
         availability, slots = self.prepare_availability(working_days, slots)
         expected_availability = availability
-        availability = self.filter_workspaces("is_mac", preference, availability, slots)
+        availability = self.filter_workspaces(["is_mac"], preference, availability, slots)
         self.assertEqual(availability, expected_availability)
 
 
