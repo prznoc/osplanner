@@ -78,6 +78,11 @@
     text-align: center;
 }
 
+.oor-body {
+    align-content: center;
+    background-color: indigo;
+}
+
 #workstation_schedule_btn, #edit_preferences_btn {
     width: 185px;
 }
@@ -90,4 +95,8 @@
     display:inline-block;
     left: 10px;
     margin-right: 15px;
+}
+
+#oor-button {
+    left:50%;
 }

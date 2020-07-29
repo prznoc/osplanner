@@ -39,6 +39,9 @@ def user_panel(request, date = None):
     if date:   
         today = datetime.strptime(date, '%Y-%m')
     else: today = datetime.today()
+    if today < datetime(1970, 1, 1) or today > datetime(2100, 12, 31): 
+        return redirect('out_of_range')
+
     date = (today + timedelta(days=-today.weekday())).strftime('%Y-%m-%d')
     
     first_monday = today.replace(day=1) + timedelta(days=-today.replace(day=1).weekday())
@@ -185,3 +188,7 @@ def get_schedule_week_table(monday):
     data = [Workweek.objects.get_or_create(workstation=x, week=isocalendar[1], year=isocalendar[0])[0] for x in workstations]
     table = WorkstationsScheduleTable(data)
     return date_range, table
+
+@login_required
+def out_of_range(request):
+    return render(request, 'spaceplanner/out_of_range.html',{})
