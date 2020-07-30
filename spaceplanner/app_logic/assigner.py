@@ -49,17 +49,21 @@ class Assigner():
                 return schedule
 
         #assign favourites to days with one
-        #może zmienić algorytm żeby liczył pasującę
         favourites = preference.favourite_workspace.all()
         if favourites:
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
-            temp_weekdays = weekdays.copy()
-            for day in temp_weekdays:
-                common = list(set(availability[day]).intersection(favourites))
-                if common:
-                    schedule[day] = common[0]
-                    weekdays.remove(day)
-                    availability.pop(day, None)
+            previous_day = None
+            for day in list(calendar.day_name):
+                if day in availability.keys():
+                    common = list(set(availability[day]).intersection(favourites))
+                    if common:
+                        if schedule.get(previous_day) in common:
+                            schedule[day] = schedule.get(previous_day)
+                        else:
+                            schedule[day] = common[0]
+                        weekdays.remove(day)
+                        availability.pop(day, None)
+                previous_day=day
             if not weekdays:
                 self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
@@ -141,7 +145,6 @@ class Assigner():
         return res
 
     def filter_workspaces(self, preference_names, preference, availability, slots):
-
         matching_slots = []
         for preference_name in preference_names:
             temp_slots = []
@@ -152,7 +155,7 @@ class Assigner():
                     temp_slots.append(slot)
             matching_slots = matching_slots + temp_slots
         if matching_slots:
-            temp_slots = self.most_frequent_elements(matching_slots)
+            temp_slots = self.most_frequent_elements(matching_slots)        #replace in python 3.8
             for day in availability.keys():        
                 weekday = availability[day]
                 new_weekday = [x for x in weekday if x in temp_slots]     
@@ -161,6 +164,7 @@ class Assigner():
 
         return availability
 
+    #Może zmień podejście na gradację, sprawdź wszystkie po kolei czy coś
     def select_matching_workspace(self, preference, availability: dict, results: set, slots: set):
         preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 1]
         if preference_names:
