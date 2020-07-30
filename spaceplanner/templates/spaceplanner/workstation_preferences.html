@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+{% load render_table from django_tables2 %}
+{% load staticfiles %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<body>
+<div class='workstation-schedule-body'>
+    <p>Workstations preferences</p>
+    {% render_table table %}
+</div>
+</body>
+</html>
+{% endblock %}

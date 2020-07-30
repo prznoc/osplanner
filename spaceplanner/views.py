@@ -9,8 +9,8 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime, timedelta
 
-from .models import Userweek, Workweek, EmployeePreferences, Workstation
-from .tables import ScheduleTable, PreferencesTable, WorkstationsScheduleTable
+from .models import Userweek, Workweek, EmployeePreferences, Workstation, WorkstationPreferences
+from .tables import ScheduleTable, PreferencesTable, WorkstationsScheduleTable, WorkstationPreferencesTable
 from .app_logic.assigner import Assigner
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm
 
@@ -192,3 +192,10 @@ def get_schedule_week_table(monday):
 @login_required
 def out_of_range(request):
     return render(request, 'spaceplanner/out_of_range.html',{})
+
+@login_required
+def workstation_preferences(request):
+    data = WorkstationPreferences.objects.all()
+    table = WorkstationPreferencesTable(data)
+    RequestConfig(request).configure(table)
+    return render(request, 'spaceplanner/workstation_preferences.html',{'table':table})

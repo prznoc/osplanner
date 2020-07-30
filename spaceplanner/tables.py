@@ -1,7 +1,7 @@
 import django_tables2 as tables
 import calendar
 
-from .models import Userweek, EmployeePreferences, Workweek
+from .models import Userweek, EmployeePreferences, Workweek, WorkstationPreferences
 from django.shortcuts import render
 from django_tables2.utils import A
 from datetime import datetime, timedelta
@@ -27,6 +27,8 @@ class ScheduleButtonColumn(tables.TemplateColumn):
     def render(self, record, table, value, bound_column, **kwargs):
         last_monday = (datetime.today() - timedelta(days=datetime.today().weekday())).date()
         if (record.monday_date < last_monday):
+            #date=record.monday_date.strftime('%Y-%m-%d')
+            #self.template_code = '<a class="btn btn-primary" href="{% url "workstation_schedule" chosen %}">View Schedule</a>'
             self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">View Schedule</a>'
         else: self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>'
         return super(ScheduleButtonColumn, self).render(record, table, value, bound_column, **kwargs)
@@ -65,6 +67,12 @@ class PreferencesTable(tables.Table):
     class Meta:
         exclude = ('id', 'employee')
         model = EmployeePreferences
+
+class WorkstationPreferencesTable(tables.Table):
+
+    class Meta:
+        model = WorkstationPreferences
+        exclude = ['id']
 
 
 class WorkstationWeekdayColumn(tables.Column):

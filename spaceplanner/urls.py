@@ -12,6 +12,6 @@ urlpatterns = [
     path('schedule_week/<int:pk>/', views.schedule_week, name='schedule_week'),
     path('edit_preferences/', views.edit_preferences, name='edit_preferences'),
     path('workstation_schedule/<date>', views.workstation_schedule, name='workstation_schedule'),
-    path('workstation_schedule/<date>/<past_flag>', views.workstation_schedule, name='workstation_schedule'),
+    path('workstation_preferences', views.workstation_preferences, name='workstation_preferences'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
