@@ -88,11 +88,10 @@ def schedule_week(request, pk):
             generateform = WeekdaysForm(request.POST)
             if generateform.is_valid():
                 wrong_weekdays = generateweek_form_processing(generateform, userweek, user)
-                if not wrong_weekdays: return redirect('user_panel')
-                else:
+                if wrong_weekdays: 
                     message = generate_message(wrong_weekdays)
                     messages.info(request, message)
-                    return redirect('schedule_week', pk=pk)
+                return redirect('user_panel')
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek)
             generateform = WeekdaysForm() 
@@ -173,6 +172,8 @@ def edit_preferences(request):
 @login_required
 def workstation_schedule(request, date):
     monday = datetime.strptime(date, '%Y-%m-%d')
+    if monday < datetime(1970, 1, 1) or monday > datetime(2100, 12, 31): 
+        return redirect('out_of_range')
     date_range, table = get_schedule_week_table(monday)
     RequestConfig(request).configure(table)
     monday = monday + timedelta(weeks=1)

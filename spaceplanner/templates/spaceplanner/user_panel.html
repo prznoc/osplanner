@@ -6,6 +6,14 @@
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <body>
 <div class='user-body'>
+    {% if messages %}
+        <ul class="messages" name="schedule_message">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <a class='up-month-name'>{{date_name}}</a>
     <div class=up-date-buttons>
         <a class="btn btn-primary" href="{% url 'user_panel' date=previous_date %}" id='change_date' >Previous</a>

@@ -14,14 +14,8 @@
         {% endfor %}
         <button type="submit" class="button" name="editweek">Save</button>
     </form>
-    {% if messages %}
-        <ul class="messages">
-        {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
     <p class="empty-space"></p>
+    
     <p>Authomatic scheduler</p>
     <form method='POST'>
         {% csrf_token %}

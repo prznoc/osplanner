@@ -83,6 +83,10 @@
     background-color: indigo;
 }
 
+.messages {
+    text-align: left;
+}
+
 #workstation_schedule_btn, #edit_preferences_btn {
     width: 210px;
 }
