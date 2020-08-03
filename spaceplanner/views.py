@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from .models import Userweek, Workweek, EmployeePreferences, Workstation, WorkstationPreferences
 from .tables import ScheduleTable, PreferencesTable, WorkstationsScheduleTable, WorkstationPreferencesTable
 from .app_logic.assigner import Assigner
-from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm
+from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm, UserForm
 
 
 def generate_nonexistent_userweeks(user, first_monday, last_monday)->int:
@@ -28,6 +28,18 @@ def generate_nonexistent_userweeks(user, first_monday, last_monday)->int:
 
 def home(request):
     return render(request, 'spaceplanner/home.html', {})
+
+@login_required
+def edit_information(request):
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            request.user = form.save(commit=False)
+            request.user.save()
+            return redirect('user_panel')
+    else:
+        form = UserForm(instance=request.user)
+    return render(request, 'spaceplanner/edit_information.html', {'form': form})
 
 @login_required
 def user_panel(request, date = None):

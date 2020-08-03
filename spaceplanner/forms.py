@@ -1,6 +1,7 @@
 import calendar
 
 from django import forms
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 
@@ -75,3 +76,17 @@ class WeekdaysForm(forms.Form):
     )
     weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                           choices=OPTIONS, label="Choose days to schedule")
+
+            
+class UserForm(forms.ModelForm):
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+    '''
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        for field in self.fields.keys():
+            self.fields[field] = forms.Field(required=False, label=mark_safe(field + ':' + '<br />'))
+    '''
