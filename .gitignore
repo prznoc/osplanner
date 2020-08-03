@@ -32,4 +32,3 @@ manage.py
 db.sqlite3
 
 to-do-list
-settings.py
