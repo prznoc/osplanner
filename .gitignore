@@ -22,15 +22,14 @@ wheels/
 .mypy_cache
 .pylintrc
 
-myenv
+myvenv
 .venv
 venv/
 ENV/
 .vscode
 
 manage.py
-settings.py
 db.sqlite3
-wsgi.py
 
 to-do-list
+settings.py
