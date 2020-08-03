@@ -15,7 +15,7 @@ class Assigner():
 
     def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
         if not weekdays: return dict() #jakoś blokować pustą listę, choć teoretycznie nie powinno takiej być
-        all_slots, created = self.get_all_slots(week_number, year)      #List of all WORKWEEKS matching week and year
+        all_slots = self.get_all_slots(week_number, year)      #List of all WORKWEEKS matching week and year
         availability, slots = self.prepare_availability(weekdays, all_slots)     #Availability is {Weekday: slot}
         schedule = dict.fromkeys(weekdays) #schedule to return
         preference, created = EmployeePreferences.objects.get_or_create(employee = user)
@@ -33,15 +33,15 @@ class Assigner():
         # return favourite if matching all days
         preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 3]
         if preference_names:
-            availability = self.filter_workspaces(preference_names, preference, availability, slots)
+            availability = self.filter_workspaces(preference_names, preference, availability, slots)    #filter slots by preference
         p = list(availability.values())
         results = set(p[0])
         for s in p[1:]:
-            results.intersection_update(s)      #workstations available on all days
+            results.intersection_update(s)      #slots available on all days
         favourites = preference.favourite_workspace.all()
         if favourites:
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
-            common = list(set(results).intersection(favourites))        #List of workstations both available on all days and in favourites
+            common = list(set(results).intersection(favourites))        #List of slots both available on all days and in favourites
             if common:
                 for day in weekdays:
                     schedule[day] = common[0]
@@ -53,7 +53,7 @@ class Assigner():
         if favourites:
             favourites = [Workweek.objects.get(workstation = x, year = year, week = week_number) for x in favourites]
             previous_day = None
-            for day in list(calendar.day_name):
+            for day in list(calendar.day_name):     #iteration to keep same workstation on consecutive days if possible
                 if day in availability.keys():
                     common = list(set(availability[day]).intersection(favourites))
                     if common:
@@ -75,7 +75,7 @@ class Assigner():
 
         p = list(availability.values())     
         results = set(p[0])
-        for s in p[1:]:                  #workweeks matching all days
+        for s in p[1:]:                  #slots matching all days
             results.intersection_update(s)
         if len(results) == 1:            #if one matching, match
             chosen_slot = results.pop()
@@ -92,7 +92,7 @@ class Assigner():
             self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
         if not results:                  #if none matching, select separatly for each day
-            preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 1]
+            preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 1]       #pytanie czy chcę w takim wypadku filtrować z 1
             if preference_names:
                 availability = self.filter_workspaces(preference_names, preference, availability, slots)
             previous_day = None
@@ -105,15 +105,15 @@ class Assigner():
             self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
 
-    def get_all_slots(self, week_number: int, year: int) -> [list, bool]:
+    def get_all_slots(self, week_number: int, year: int) -> list:
         slots = []
         for station in Workstation.objects.all():
             slot, created = Workweek.objects.get_or_create(workstation=station ,year = year, 
                         week = week_number)
             slots.append(slot)
-        return slots, created
+        return slots
         
-    def prepare_availability(self, weekdays: list, slots: list):
+    def prepare_availability(self, weekdays: list, slots: list) -> [dict, set]:
         availability = {}
         free_slots = set()
         for weekday in weekdays:
@@ -125,7 +125,7 @@ class Assigner():
             availability[weekday] = free_workstations
         return availability, free_slots
 
-    def assign_user_to_workstation(self, user, schedule, week, year):
+    def assign_user_to_workstation(self, user: User, schedule: dict(), week: int, year: int):
         userweek, created = Userweek.objects.get_or_create(employee = user, week = week, year = year)
         for day in schedule.keys():
             if schedule[day]:
@@ -144,7 +144,7 @@ class Assigner():
         res = list(set(res)) 
         return res
 
-    def filter_workspaces(self, preference_names, preference, availability, slots):
+    def filter_workspaces(self, preference_names: list, preference: EmployeePreferences, availability: dict, slots: list) -> dict:
         matching_slots = []
         for preference_name in preference_names:
             temp_slots = []
@@ -155,7 +155,7 @@ class Assigner():
                     temp_slots.append(slot)
             matching_slots = matching_slots + temp_slots
         if matching_slots:
-            temp_slots = self.most_frequent_elements(matching_slots)        #replace in python 3.8
+            temp_slots = self.most_frequent_elements(matching_slots)        #replace in python 3.8 (statistics.multimode())
             for day in availability.keys():        
                 weekday = availability[day]
                 new_weekday = [x for x in weekday if x in temp_slots]     
@@ -164,12 +164,11 @@ class Assigner():
 
         return availability
 
-    #Może zmień podejście na gradację, sprawdź wszystkie po kolei czy coś
-    def select_matching_workspace(self, preference, availability: dict, results: set, slots: set):
+    def select_matching_workspace(self, preference: EmployeePreferences, availability: dict, results: set, slots: set) -> Workweek:
         preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 1]
         if preference_names:
             availability = self.filter_workspaces(preference_names, preference, availability, slots)
-        slots_list = [item for sublist in availability.values() for item in sublist]
+        slots_list = [item for sublist in availability.values() for item in sublist]    #decompose 2-dimensional list to 1-dimensional list
         if not slots_list:
             results = list(results)
             return results[0]

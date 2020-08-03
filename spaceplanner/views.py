@@ -26,7 +26,6 @@ def generate_nonexistent_userweeks(user, first_monday, last_monday)->int:
         week_counter = week_counter + 1
     return week_counter
 
-
 def home(request):
     return render(request, 'spaceplanner/home.html', {})
 
@@ -97,7 +96,7 @@ def schedule_week(request, pk):
             generateform = WeekdaysForm() 
             clear_workweek(userweek)
             clear_userweek(userweek)
-            return redirect('user_panel')  
+            return redirect('schedule_week', pk=pk)  
     else:
         editform = ScheduleForm(instance=userweek)       
         generateform = WeekdaysForm()
@@ -135,10 +134,8 @@ def generateweek_form_processing(generateform, userweek, user):
     wrong_weekdays = []
     for weekday in schedule.keys():
         if not schedule[weekday]:
-            completion_flag = False
             wrong_weekdays.append(weekday)
-    if not completion_flag: return wrong_weekdays
-    else: return None
+    return wrong_weekdays
 
 def clear_workweek(userweek):
     for weekday in list(calendar.day_name):

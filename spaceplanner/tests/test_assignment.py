@@ -18,11 +18,9 @@ class SetupTests(TestCase, Assigner):
     def test_generate_workweeks(self):
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation2 = Workstation.objects.get(ws_id = 2)
-        slots1, created1 = self.get_all_slots(3, 2022)
-        slots2, created2 = self.get_all_slots(3, 2022)
+        slots1 = self.get_all_slots(3, 2022)
+        slots2 = self.get_all_slots(3, 2022)
         self.assertEqual(slots1, slots2)
-        self.assertEqual(created1, True)
-        self.assertEqual(created2, False)
 
 
 class AvailabilityTest(TestCase, Assigner):
@@ -33,7 +31,7 @@ class AvailabilityTest(TestCase, Assigner):
     
     def test_get_free_slots_from_empty_schedule(self):
         working_days = ["Monday", "Wednesday", "Saturday"]
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         availability, slots = self.prepare_availability(working_days, slots)
         expected_availability = {}
         for workday in working_days:
@@ -45,7 +43,7 @@ class AvailabilityTest(TestCase, Assigner):
     
     def test_get_slots_after_edition(self):
         working_days = ["Monday", "Wednesday"]
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         workstation = Workstation.objects.get(ws_id = 2)
         user = User.objects.get(username = "Andrzej")
         slots[1].Wednesday = user
@@ -61,7 +59,7 @@ class AvailabilityTest(TestCase, Assigner):
     def test_get_slots_with_one_empty(self):
         working_days = ["Monday", "Wednesday"]
         workstation = Workstation.objects.get(ws_id = 2)
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         slot = slots[1]
         user = User.objects.get(username = "Andrzej")
         slot.Wednesday = user
@@ -86,7 +84,7 @@ class SlotFilteringTest(TestCase, Assigner):
         WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 3))
     
     def test_filter_with_three_preferences(self):
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation1_preferences = WorkstationPreferences.objects.get(workstation = workstation1)
@@ -108,7 +106,7 @@ class SlotFilteringTest(TestCase, Assigner):
         self.assertEqual(availability, expected_availability)
 
     def test_filter_matching_workspace(self):
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation1_preferences = WorkstationPreferences.objects.get(workstation = workstation1)
@@ -126,7 +124,7 @@ class SlotFilteringTest(TestCase, Assigner):
 
     
     def test_no_matching_workspaces_found(self):
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         user = User.objects.get(username = "Andrzej")
         preference = EmployeePreferences.objects.get(employee = user)
         workstation = Workstation.objects.get(ws_id = 1)
@@ -168,7 +166,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 1)
     
     def test_filter_favourite_workspace(self):
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         working_days = ["Monday", "Wednesday", "Saturday"]
         user = User.objects.get(username = "Andrzej")
         preference = EmployeePreferences.objects.get (employee = user)
@@ -182,7 +180,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         self.assertEqual(selected_workspace, schedule)
     
     def test_filter_diffrent_favourite_workspaces(self):
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         working_days = ["Monday", "Wednesday", "Saturday"]
         user = User.objects.get(username = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
@@ -214,7 +212,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         self.assertEqual(selected_workspace, schedule)
     
     def test_matching_workspaces_present(self):
-        slots, created = self.get_all_slots(3, 2022)
+        slots = self.get_all_slots(3, 2022)
         working_days = ["Monday", "Wednesday", "Saturday"]
         user = User.objects.get(username = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
@@ -325,7 +323,7 @@ class MiscFunctions(TestCase, Assigner):
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation2 = Workstation.objects.get(ws_id = 2)
-        all_slots, created = self.get_all_slots(3, 2022)
+        all_slots = self.get_all_slots(3, 2022)
         availability, slots = self.prepare_availability(["Monday", "Wednesday"], all_slots)
         p = list(availability.values())
         results = set(p[0])
@@ -339,7 +337,7 @@ class MiscFunctions(TestCase, Assigner):
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation2 = Workstation.objects.get(ws_id = 2)
-        all_slots, created = self.get_all_slots(3, 2022)
+        all_slots = self.get_all_slots(3, 2022)
         availability, slots = self.prepare_availability(["Monday", "Wednesday"], all_slots)
         p = list(availability.values())
         results = set(p[0])
