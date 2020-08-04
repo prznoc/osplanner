@@ -92,15 +92,15 @@ def schedule_week(request, pk):
     date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:
-            generateform = WeekdaysForm()
+            generateform = WeekdaysForm(instance=userweek)
             editform = ScheduleForm(request.POST, instance=userweek, flag = this_week_flag)
             clear_workweek(userweek)
             if editform.is_valid():
                 editweek_form_processing(editform, user)
                 return redirect('user_panel')
         if 'generateweek' in request.POST:
-            editform = ScheduleForm(instance=userweek)
-            generateform = WeekdaysForm(request.POST)
+            editform = ScheduleForm(instance=userweek, flag = this_week_flag)
+            generateform = WeekdaysForm(request.POST, instance=userweek)
             if generateform.is_valid():
                 wrong_weekdays = generateweek_form_processing(generateform, userweek, user)
                 if wrong_weekdays: 
@@ -109,13 +109,13 @@ def schedule_week(request, pk):
                 return redirect('user_panel')
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek, flag = this_week_flag)
-            generateform = WeekdaysForm() 
+            generateform = WeekdaysForm(instance=userweek) 
             clear_workweek(userweek)
             clear_userweek(userweek)
             return redirect('schedule_week', pk=pk)  
     else:
         editform = ScheduleForm(instance=userweek, flag = this_week_flag )       
-        generateform = WeekdaysForm()
+        generateform = WeekdaysForm(instance=userweek)
     return render(request, 'spaceplanner/schedule_week.html', 
             {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': date_range})
 

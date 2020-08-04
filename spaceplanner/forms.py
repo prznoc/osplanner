@@ -81,6 +81,12 @@ class WeekdaysForm(forms.Form):
     weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                           choices=OPTIONS, label="Choose days to schedule")
 
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance')
+        super(WeekdaysForm, self).__init__(*args, **kwargs)
+        initials = []
+        self.fields['weekdays'].initial = [weekday for weekday in list(calendar.day_name) if getattr(instance, weekday)]
+
             
 class UserForm(forms.ModelForm):
 
