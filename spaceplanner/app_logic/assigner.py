@@ -8,19 +8,18 @@ from collections import Counter
 
 from spaceplanner.models import Workweek, EmployeePreferences, Workstation, WorkstationPreferences, Userweek
 
-#Zastanowić się nad algorytmem przydziału przy priorytetach
 class Assigner():
 
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
 
     def assign_week(self, user: User, weekdays: list, week_number: int, year: int) -> dict:
-        if not weekdays: return dict() #jakoś blokować pustą listę, choć teoretycznie nie powinno takiej być
+        if not weekdays: return dict() # return empty dictionary with empty list 
         all_slots = self.get_all_slots(week_number, year)      #List of all WORKWEEKS matching week and year
         availability, slots = self.prepare_availability(weekdays, all_slots)     #Availability is {Weekday: slot}
         schedule = dict.fromkeys(weekdays) #schedule to return
         preference, created = EmployeePreferences.objects.get_or_create(employee = user)
 
-        # None for days with no matching workstation
+        # None for days with no free slot
         temp_weekdays = weekdays.copy()
         for day in temp_weekdays:
             if not availability[day]:
@@ -29,7 +28,7 @@ class Assigner():
         if not weekdays:
             return schedule
 
-        # return favourite if matching all days
+        # match preference 3, return favourite if matching all days
         preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 3]
         if preference_names:
             availability = self.filter_workspaces(preference_names, preference, availability, slots)    #filter slots by preference
@@ -146,7 +145,6 @@ class Assigner():
                 new_weekday = [x for x in weekday if x in temp_slots]     
                 if new_weekday:    #returns slots matched to preferences
                     availability[day] = new_weekday
-
         return availability
 
     def select_matching_workspace(self, preference: EmployeePreferences, availability: dict, results: set, slots: set) -> Workweek:

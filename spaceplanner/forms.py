@@ -13,7 +13,7 @@ class UserPreferencesForm(forms.ModelForm):
     preferences_set = ["is_mac", "window", "noise", "large_screen"]
 
     favourites = forms.ModelMultipleChoiceField(queryset=Workstation.objects.all(),
-        widget=forms.CheckboxSelectMultiple, required=False, label="Choose favourite workstations")
+        widget=forms.CheckboxSelectMultiple, required=False, label="Choose favourite workstations:")
 
     class Meta:
         model = EmployeePreferences
@@ -27,9 +27,7 @@ class UserPreferencesForm(forms.ModelForm):
         for preference in self.preferences_set:
             self.fields[preference+'_preference'].label = mark_safe(preference.capitalize() + " priority" ':' + '<br />')
 
-
-    
-    def save(self, commit=True):
+    def save(self, commit=True):        #Save overwrite neccessary because many-to-many relations needs them to work with forms
         instance = forms.ModelForm.save(self, False)
         old_save_m2m = self.save_m2m
         def save_m2m():
@@ -38,10 +36,8 @@ class UserPreferencesForm(forms.ModelForm):
            for favourite in self.cleaned_data['favourites']:
                 instance.favourite_workspace.add(favourite)
         self.save_m2m = save_m2m
-
         instance.save()
         self.save_m2m()
-
         return instance
     
 
@@ -54,15 +50,15 @@ class ScheduleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         this_week_flag = kwargs.pop('flag')
         super(ScheduleForm, self).__init__(*args, **kwargs)
+        workweeks = Workweek.objects.filter(year=self.instance.year, week=self.instance.week)
         for weekday in list(calendar.day_name):
-            workweeks = Workweek.objects.filter(year=self.instance.year, week=self.instance.week)
             request = []
             for workweek in workweeks:
                 attr = getattr(workweek, weekday)
                 if not attr or attr == self.instance.employee:
                     request.append(workweek.workstation)
             request = Workstation.objects.filter(ws_id__in=[rq.ws_id for rq in request])
-            self.fields[weekday] = forms.ModelChoiceField(queryset= request, required=False, label=mark_safe(weekday + ':' + '<br />'))
+            self.fields[weekday] = forms.ModelChoiceField(queryset= request, required= False, label= mark_safe(weekday + ':' + '<br />'))
             self.initial[weekday] = getattr(self.instance, weekday)
             if this_week_flag and list(calendar.day_name).index(weekday) < datetime.today().weekday():
                 self.fields[weekday].disabled = True
@@ -72,15 +68,11 @@ class WeekdayWidget(forms.CheckboxSelectMultiple):
 
     def create_option(self, *args, **kwargs):
         options_dict = super().create_option(*args, **kwargs)
-
         if self.attrs['this_week_flag'] == "True" and list(calendar.day_name).index(options_dict['value']) < datetime.today().weekday():
-            #pass
             options_dict['attrs']['disabled'] = ''
-
         return options_dict
 
 
-    
 class WeekdaysForm(forms.Form):
     OPTIONS = (
         ("Monday", "Monday"),

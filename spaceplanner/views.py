@@ -149,12 +149,10 @@ def generateweek_form_processing(generateform, userweek, user, this_week_flag):
                 if getattr(userweek, weekday):
                     schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
             else: break
-    print(schedule)
     clear_workweek(userweek)
     clear_userweek(userweek)
     assigner = Assigner()
     schedule = {**assigner.assign_week(user,weekdays,userweek.week, userweek.year), **schedule}
-    print(schedule)
     wrong_weekdays = assign_user_to_workstation(user, schedule, getattr(userweek, 'week'), getattr(userweek, 'year'))
     return wrong_weekdays
 
