@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.safestring import mark_safe
+from datetime import datetime, timedelta
 
 from .models import EmployeePreferences, Userweek, Workstation, Workweek
 
@@ -51,6 +52,7 @@ class ScheduleForm(forms.ModelForm):
         exclude = ('employee', 'year', 'week', 'monday_date')
     
     def __init__(self, *args, **kwargs):
+        this_week_flag = kwargs.pop('flag')
         super(ScheduleForm, self).__init__(*args, **kwargs)
         for weekday in list(calendar.day_name):
             workweeks = Workweek.objects.filter(year=self.instance.year, week=self.instance.week)
@@ -62,6 +64,8 @@ class ScheduleForm(forms.ModelForm):
             request = Workstation.objects.filter(ws_id__in=[rq.ws_id for rq in request])
             self.fields[weekday] = forms.ModelChoiceField(queryset= request, required=False, label=mark_safe(weekday + ':' + '<br />'))
             self.initial[weekday] = getattr(self.instance, weekday)
+            if this_week_flag and list(calendar.day_name).index(weekday) < datetime.today().weekday():
+                self.fields[weekday].disabled = True
             
     
 class WeekdaysForm(forms.Form):

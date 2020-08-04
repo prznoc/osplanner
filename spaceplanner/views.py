@@ -82,14 +82,18 @@ def schedule_week(request, pk):
     user = request.user
     userweek = get_object_or_404(Userweek, pk=pk)
     monday = userweek.monday_date
-    last_monday = datetime.today() - timedelta(days=datetime.today().weekday())
+    today = datetime.today()
+    last_monday = today - timedelta(days=today.weekday())
     if monday < last_monday.date():
         return redirect('workstation_schedule', date=monday.strftime('%Y-%m-%d'))
+    this_week_flag = None
+    if monday < today.date():
+        this_week_flag = True
     date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:
             generateform = WeekdaysForm()
-            editform = ScheduleForm(request.POST, instance=userweek)
+            editform = ScheduleForm(request.POST, instance=userweek, flag = this_week_flag)
             clear_workweek(userweek)
             if editform.is_valid():
                 editweek_form_processing(editform, user)
@@ -100,22 +104,22 @@ def schedule_week(request, pk):
             if generateform.is_valid():
                 wrong_weekdays = generateweek_form_processing(generateform, userweek, user)
                 if wrong_weekdays: 
-                    message = generate_message(wrong_weekdays)
+                    message = generate_unscheduled_days_message(wrong_weekdays)
                     messages.info(request, message)
                 return redirect('user_panel')
         if 'mybtn' in request.POST:
-            editform = ScheduleForm(instance=userweek)
+            editform = ScheduleForm(instance=userweek, flag = this_week_flag)
             generateform = WeekdaysForm() 
             clear_workweek(userweek)
             clear_userweek(userweek)
             return redirect('schedule_week', pk=pk)  
     else:
-        editform = ScheduleForm(instance=userweek)       
+        editform = ScheduleForm(instance=userweek, flag = this_week_flag )       
         generateform = WeekdaysForm()
     return render(request, 'spaceplanner/schedule_week.html', 
             {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': date_range})
 
-def generate_message(wrong_weekdays):
+def generate_unscheduled_days_message(wrong_weekdays):
     message= "Following days could not be scheduled: "
     for day in wrong_weekdays:
         message = message + day + ", "
