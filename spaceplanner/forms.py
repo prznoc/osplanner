@@ -66,7 +66,20 @@ class ScheduleForm(forms.ModelForm):
             self.initial[weekday] = getattr(self.instance, weekday)
             if this_week_flag and list(calendar.day_name).index(weekday) < datetime.today().weekday():
                 self.fields[weekday].disabled = True
-            
+
+
+class WeekdayWidget(forms.CheckboxSelectMultiple):
+
+    def create_option(self, *args, **kwargs):
+        options_dict = super().create_option(*args, **kwargs)
+
+        if self.attrs['this_week_flag'] == "True" and list(calendar.day_name).index(options_dict['value']) < datetime.today().weekday():
+            #pass
+            options_dict['attrs']['disabled'] = ''
+
+        return options_dict
+
+
     
 class WeekdaysForm(forms.Form):
     OPTIONS = (
@@ -78,14 +91,19 @@ class WeekdaysForm(forms.Form):
         ("Saturday", "Saturday"),
         ("Sunday", "Sunday"),
     )
-    weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
+    weekdays = forms.MultipleChoiceField(widget=WeekdayWidget,
                                           choices=OPTIONS, label="Choose days to schedule")
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance')
+        this_week_flag = kwargs.pop('flag')
         super(WeekdaysForm, self).__init__(*args, **kwargs)
-        initials = []
+        self.fields['weekdays'].widget = WeekdayWidget()
+        if this_week_flag: self.fields['weekdays'].widget.attrs['this_week_flag'] = 'True'
+        else: self.fields['weekdays'].widget.attrs['this_week_flag'] = 'False'
+        self.fields['weekdays'].choices = self.OPTIONS
         self.fields['weekdays'].initial = [weekday for weekday in list(calendar.day_name) if getattr(instance, weekday)]
+        self.fields['weekdays'].required = False
 
             
 class UserForm(forms.ModelForm):

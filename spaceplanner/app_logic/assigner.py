@@ -27,7 +27,6 @@ class Assigner():
                 weekdays.remove(day)
                 availability.pop(day, None)
         if not weekdays:
-            self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
 
         # return favourite if matching all days
@@ -45,7 +44,6 @@ class Assigner():
             if common:
                 for day in weekdays:
                     schedule[day] = common[0]
-                self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
 
         #assign favourites to days with one
@@ -65,7 +63,6 @@ class Assigner():
                         availability.pop(day, None)
                 previous_day=day
             if not weekdays:
-                self.assign_user_to_workstation(user, schedule, week_number, year)
                 return schedule
 
         #find workspaces with priority 2
@@ -81,7 +78,6 @@ class Assigner():
             chosen_slot = results.pop()
             for day in weekdays:
                 schedule[day] = chosen_slot
-            self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule 
         if len(results) > 1:             #if more than one matching, match most suitable with priority 1
             for day in weekdays:
@@ -89,7 +85,6 @@ class Assigner():
             chosen_slot = self.select_matching_workspace(preference, availability, results, slots)
             for day in weekdays:
                 schedule[day] = chosen_slot
-            self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
         if not results:                  #if none matching, select separatly for each day
             preference_names = [x for x in self.preferences_set if getattr(preference, x+"_preference") == 1]       #pytanie czy chcę w takim wypadku filtrować z 1
@@ -102,7 +97,6 @@ class Assigner():
                         schedule[day] = schedule.get(previous_day)
                     else: schedule[day] = availability[day][0]
                 previous_day=day
-            self.assign_user_to_workstation(user, schedule, week_number, year)
             return schedule
 
     def get_all_slots(self, week_number: int, year: int) -> list:
@@ -124,15 +118,6 @@ class Assigner():
                     free_slots.add(slot)
             availability[weekday] = free_workstations
         return availability, free_slots
-
-    def assign_user_to_workstation(self, user: User, schedule: dict(), week: int, year: int):
-        userweek, created = Userweek.objects.get_or_create(employee = user, week = week, year = year)
-        for day in schedule.keys():
-            if schedule[day]:
-                setattr(schedule[day], day, user)
-                setattr(userweek, day, schedule[day].workstation)
-                userweek.save()
-                schedule[day].save()
 
     def most_frequent_elements(self, test_list:list):    #replace with statistics.multimode(list) in Python 3.8
         res = [] 

@@ -92,7 +92,7 @@ def schedule_week(request, pk):
     date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:
-            generateform = WeekdaysForm(instance=userweek)
+            generateform = WeekdaysForm(instance=userweek, flag = this_week_flag)
             editform = ScheduleForm(request.POST, instance=userweek, flag = this_week_flag)
             clear_workweek(userweek)
             if editform.is_valid():
@@ -100,22 +100,22 @@ def schedule_week(request, pk):
                 return redirect('user_panel')
         if 'generateweek' in request.POST:
             editform = ScheduleForm(instance=userweek, flag = this_week_flag)
-            generateform = WeekdaysForm(request.POST, instance=userweek)
+            generateform = WeekdaysForm(request.POST, instance=userweek, flag = this_week_flag)
             if generateform.is_valid():
-                wrong_weekdays = generateweek_form_processing(generateform, userweek, user)
+                wrong_weekdays = generateweek_form_processing(generateform, userweek, user, this_week_flag)
                 if wrong_weekdays: 
                     message = generate_unscheduled_days_message(wrong_weekdays)
                     messages.info(request, message)
                 return redirect('user_panel')
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek, flag = this_week_flag)
-            generateform = WeekdaysForm(instance=userweek) 
+            generateform = WeekdaysForm(instance=userweek, flag = this_week_flag) 
             clear_workweek(userweek)
             clear_userweek(userweek)
             return redirect('schedule_week', pk=pk)  
     else:
         editform = ScheduleForm(instance=userweek, flag = this_week_flag )       
-        generateform = WeekdaysForm(instance=userweek)
+        generateform = WeekdaysForm(instance=userweek, flag = this_week_flag)
     return render(request, 'spaceplanner/schedule_week.html', 
             {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': date_range})
 
@@ -140,18 +140,35 @@ def editweek_form_processing(editform, user):
                 setattr(userweek, weekday, None)
     userweek.save()
 
-def generateweek_form_processing(generateform, userweek, user):
+def generateweek_form_processing(generateform, userweek, user, this_week_flag):
     weekdays = generateform.cleaned_data.get('weekdays')
+    schedule = dict()
+    if this_week_flag:
+        for weekday in list(calendar.day_name):
+            if list(calendar.day_name).index(weekday) < datetime.today().weekday():
+                if getattr(userweek, weekday):
+                    schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
+            else: break
+    print(schedule)
     clear_workweek(userweek)
     clear_userweek(userweek)
     assigner = Assigner()
-    schedule = assigner.assign_week(user,weekdays,userweek.week, userweek.year)
-    completion_flag = True
-    wrong_weekdays = []
-    for weekday in schedule.keys():
-        if not schedule[weekday]:
-            wrong_weekdays.append(weekday)
+    schedule = {**assigner.assign_week(user,weekdays,userweek.week, userweek.year), **schedule}
+    print(schedule)
+    wrong_weekdays = assign_user_to_workstation(user, schedule, getattr(userweek, 'week'), getattr(userweek, 'year'))
     return wrong_weekdays
+
+def assign_user_to_workstation(user, schedule: dict(), week: int, year: int):
+        userweek, created = Userweek.objects.get_or_create(employee = user, week = week, year = year)
+        wrong_weekdays = []
+        for day in schedule.keys():
+            if schedule[day]:
+                setattr(schedule[day], day, user)
+                setattr(userweek, day, schedule[day].workstation)
+                userweek.save()
+                schedule[day].save()
+            else: wrong_weekdays.append(day)
+        return wrong_weekdays
 
 def clear_workweek(userweek):
     for weekday in list(calendar.day_name):
