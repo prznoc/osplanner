@@ -31,7 +31,7 @@ class WorkstationPreferences(models.Model):
 
 class EmployeePreferences(models.Model):
     employee = models.OneToOneField(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
-    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace"), default = None) 
+    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace"), default = None, blank=True) 
     window = models.BooleanField(_('Window'), default = False)
     window_preference = models.IntegerField(_('Window priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
