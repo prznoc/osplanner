@@ -74,30 +74,33 @@ def schedule_week(request, pk: int):
     last_monday = today - timedelta(days=today.weekday())
     if monday < last_monday.date():
         return redirect('workstation_schedule', date=monday.strftime('%Y-%m-%d'))
+    '''
     this_week_flag = None
     if monday < today.date():
         this_week_flag = True
+    '''
     date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
     if request.method == "POST":
         if 'editweek' in request.POST:
-            generateform = WeekdaysForm(instance=userweek, flag = this_week_flag)
-            editform = ScheduleForm(request.POST, instance=userweek, flag = this_week_flag)
+            generateform = WeekdaysForm(instance=userweek)
+            editform = ScheduleForm(request.POST, instance=userweek)
             views_processing.clear_workweek(userweek)
             if editform.is_valid():
                 views_processing.editweek_form_processing(editform, user)
                 return redirect('user_panel')
         if 'generateweek' in request.POST:
-            editform = ScheduleForm(instance=userweek, flag = this_week_flag)
-            generateform = WeekdaysForm(request.POST, instance=userweek, flag = this_week_flag)
+            editform = ScheduleForm(instance=userweek)
+            generateform = WeekdaysForm(request.POST, instance=userweek)
             if generateform.is_valid():
-                wrong_weekdays = views_processing.generateweek_form_processing(generateform, userweek, user, this_week_flag)
+                wrong_weekdays = views_processing.generateweek_form_processing(generateform, userweek, user)
                 if wrong_weekdays:
                     message = views_processing.generate_unscheduled_days_message(wrong_weekdays)
                     messages.info(request, message)
                 return redirect('user_panel')
         if 'mybtn' in request.POST:
-            editform = ScheduleForm(instance=userweek, flag = this_week_flag)
-            generateform = WeekdaysForm(instance=userweek, flag = this_week_flag)
+            editform = ScheduleForm(instance=userweek)
+            generateform = WeekdaysForm(instance=userweek)
+            '''
             if this_week_flag:
                 schedule = dict()
                 for weekday in list(calendar.day_name):
@@ -106,14 +109,17 @@ def schedule_week(request, pk: int):
                             schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
                     else:
                         break
+            '''
             views_processing.clear_workweek(userweek)
             views_processing.clear_userweek(userweek)
+            '''
             if this_week_flag:
                 views_processing.assign_user_to_workstation(userweek, schedule)
+            '''
             return redirect('schedule_week', pk=pk)
     else:
-        editform = ScheduleForm(instance=userweek, flag = this_week_flag )       
-        generateform = WeekdaysForm(instance=userweek, flag = this_week_flag)
+        editform = ScheduleForm(instance=userweek)       
+        generateform = WeekdaysForm(instance=userweek)
     return render(request, 'spaceplanner/schedule_week.html',
             {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': date_range})
 

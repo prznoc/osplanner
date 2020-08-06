@@ -91,6 +91,9 @@ class Userweek(models.Model):
     sunday = models.ForeignKey(Workstation, name=_("Sunday"), blank = True, null = True, 
             on_delete=models.SET_NULL, related_name = 'Sunday')
 
+    def __str__(self):
+        return str(str(self.employee) + str(self.year)+ str(self.week))
+
     def save(self, *args, **kwargs):
         if self._state.adding is True:
             self.monday_date = calendar_functions.date_from_isoweek(self.year, self.week, 0)
