@@ -60,9 +60,7 @@ class ScheduleForm(forms.ModelForm):
             self.fields[weekday] = forms.ModelChoiceField(queryset= request, required= False, label= mark_safe(weekday + ':' + '<br />'))
             self.initial[weekday] = getattr(self.instance, weekday)
             if this_week_flag and list(calendar.day_name).index(weekday) < datetime.today().weekday():
-                #self.fields[weekday].disabled = True
-                #self.fields[weekday].required = False
-                #self.data.update({ weekday: getattr(self.instance, weekday) })
+                self.fields[weekday].read = True
                 pass
 
 

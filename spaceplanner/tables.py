@@ -24,9 +24,8 @@ class ScheduleButtonColumn(tables.TemplateColumn):
     def render(self, record, table, value, bound_column, **kwargs):
         last_monday = (datetime.today() - timedelta(days=datetime.today().weekday())).date()
         if (record.monday_date < last_monday):
-            #date=record.monday_date.strftime('%Y-%m-%d')
-            #self.template_code = '<a class="btn btn-primary" href="{% url "workstation_schedule" date={date} %}">View Schedule</a>'
-            self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">View Schedule</a>'
+            record.xdxd=record.monday_date.strftime('%Y-%m-%d')
+            self.template_code = '<a class="btn btn-primary" href="{% url "workstation_schedule" record.xdxd %}">View Schedule</a>'
         else: self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>'
         return super(ScheduleButtonColumn, self).render(record, table, value, bound_column, **kwargs)
 
