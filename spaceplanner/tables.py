@@ -2,10 +2,7 @@ import django_tables2 as tables
 import calendar
 
 from .models import Userweek, EmployeePreferences, Workweek, WorkstationPreferences
-from django.shortcuts import render
-from django_tables2.utils import A
 from datetime import datetime, timedelta
-from django.utils.safestring import mark_safe
 
 class WeekdayColumn(tables.Column):
     def render(self, value, record, column):

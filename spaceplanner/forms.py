@@ -2,9 +2,8 @@ import calendar
 
 from django import forms
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.utils.safestring import mark_safe
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from .models import EmployeePreferences, Userweek, Workstation, Workweek
 

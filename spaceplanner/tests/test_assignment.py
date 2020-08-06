@@ -1,6 +1,4 @@
 from django.test import TestCase
-from datetime import datetime, timedelta
-from django.db import transaction
 from django.contrib.auth.models import User
 
 from spaceplanner.models import Workstation, Workweek, EmployeePreferences, WorkstationPreferences
@@ -8,16 +6,16 @@ from spaceplanner.app_logic.assigner import Assigner
 from spaceplanner.views import assign_user_to_workstation
 
 
-#Hypotesis
+# Hypotesis
 
 
 class SetupTests(TestCase, Assigner):
-    
+ 
     def setUp(self):
         Workstation.objects.create(ws_id = 1)
         Workstation.objects.create(ws_id = 2)
 
-    
+
     def test_generate_workweeks(self):
         slots1 = self.get_all_slots(3, 2022)
         slots2 = self.get_all_slots(3, 2022)
@@ -29,7 +27,7 @@ class AvailabilityTest(TestCase, Assigner):
         Workstation.objects.create(ws_id = 1)
         Workstation.objects.create(ws_id = 2)
         User.objects.create(username = "Andrzej")
-    
+
     def test_get_free_slots_from_empty_schedule(self):
         working_days = ["Monday", "Wednesday", "Saturday"]
         slots = self.get_all_slots(3, 2022)
@@ -41,11 +39,10 @@ class AvailabilityTest(TestCase, Assigner):
             expected_availability[workday] = [slot1, slot2]
         self.assertEqual(availability, expected_availability)
         self.assertEqual(slots, set([slot1, slot2]))
-     
+
     def test_get_slots_after_edition(self):
         working_days = ["Monday", "Wednesday"]
         slots = self.get_all_slots(3, 2022)
-        workstation = Workstation.objects.get(ws_id = 2)
         user = User.objects.get(username = "Andrzej")
         slots[1].Wednesday = user
         slots[1].save()
@@ -331,7 +328,6 @@ class MiscFunctions(TestCase, Assigner):
     def test_select_matching_workspaces(self):
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
         workstation1 = Workstation.objects.get(ws_id = 1)
-        workstation2 = Workstation.objects.get(ws_id = 2)
         all_slots = self.get_all_slots(3, 2022)
         availability, slots = self.prepare_availability(["Monday", "Wednesday"], all_slots)
         p = list(availability.values())
@@ -345,7 +341,6 @@ class MiscFunctions(TestCase, Assigner):
     def test_no_matching_workspaces_found(self):
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
         workstation1 = Workstation.objects.get(ws_id = 1)
-        workstation2 = Workstation.objects.get(ws_id = 2)
         all_slots = self.get_all_slots(3, 2022)
         availability, slots = self.prepare_availability(["Monday", "Wednesday"], all_slots)
         p = list(availability.values())

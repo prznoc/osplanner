@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext as _
 from django.conf import settings
-from datetime import datetime, timedelta
 
 from .app_logic import calendar_functions
 
@@ -39,7 +38,7 @@ class EmployeePreferences(models.Model):
     noise_preference = models.IntegerField(_('Noise priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
     large_screen = models.BooleanField(_('Large screen'), default = False)
-    large_screen_preference = models.IntegerField(_('Large_screen priority'), default = 0, validators=[MinValueValidator(0), 
+    large_screen_preference = models.IntegerField(_('Large screen priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
     is_mac = models.BooleanField(_('Mac'), default = False)
     is_mac_preference = models.IntegerField(_('Mac priority'), default = 0, validators=[MinValueValidator(0), 

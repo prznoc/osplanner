@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 #Python 3.8 adds fromisocalendar() to replace this
 def date_from_isoweek(iso_year, iso_weeknumber, iso_weekday):

@@ -6,13 +6,13 @@ from spaceplanner.models import Userweek, Workweek, Workstation
 from spaceplanner.app_logic.assigner import Assigner
 from spaceplanner.tables import WorkstationsScheduleTable
 
-def generate_nonexistent_userweeks(user, first_monday, last_monday)->int:
+def generate_nonexistent_userweeks(user, first_monday, last_monday) -> int:
     week_counter = 0
     while first_monday != last_monday:
         calendar = first_monday.isocalendar()
         Userweek.objects.get_or_create(employee=user, year=calendar[0], week=calendar[1])
         for workstation in Workstation.objects.all():
-            Workweek.objects.get_or_create(workstation= workstation, year=calendar[0], week=calendar[1])
+            Workweek.objects.get_or_create(workstation=workstation, year=calendar[0], week=calendar[1])
         first_monday = first_monday + timedelta(weeks=1)
         week_counter = week_counter + 1
     return week_counter
@@ -31,7 +31,7 @@ def editweek_form_processing(editform, user):
                 setattr(userweek, weekday, None)
     userweek.save()
 
-def generateweek_form_processing(generateform, userweek, user, this_week_flag:bool):
+def generateweek_form_processing(generateform, userweek: Userweek, user, this_week_flag: bool):
     weekdays = generateform.cleaned_data.get('weekdays')
     schedule = dict()
     if this_week_flag:
@@ -39,38 +39,40 @@ def generateweek_form_processing(generateform, userweek, user, this_week_flag:bo
             if list(calendar.day_name).index(weekday) < datetime.today().weekday():
                 if getattr(userweek, weekday):
                     schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
-            else: break
+            else:
+                break
     clear_workweek(userweek)
     clear_userweek(userweek)
     assigner = Assigner()
-    schedule = {**assigner.assign_week(user,weekdays,userweek.week, userweek.year), **schedule}
-    wrong_weekdays = assign_user_to_workstation(user, schedule, getattr(userweek, 'week'), getattr(userweek, 'year'))
+    schedule = {**assigner.assign_week(user, weekdays, userweek.week, userweek.year), **schedule}
+    wrong_weekdays = assign_user_to_workstation(userweek, schedule)
     return wrong_weekdays
 
-def generate_unscheduled_days_message(wrong_weekdays):
-    message= "Following days could not be scheduled: "
-    for day in wrong_weekdays:
+def generate_unscheduled_days_message(wrong_weekday: list):
+    message = "Following days could not be scheduled: "
+    for day in wrong_weekday:
         message = message + day + ", "
     message = message[:-2]
     return message
 
-def assign_user_to_workstation(user, schedule: dict(), week: int, year: int):
-        userweek, created = Userweek.objects.get_or_create(employee = user, week = week, year = year)
-        wrong_weekdays = []
-        for day in schedule.keys():
-            if schedule[day]:
-                setattr(schedule[day], day, user)
-                setattr(userweek, day, schedule[day].workstation)
-                userweek.save()
-                schedule[day].save()
-            else: wrong_weekdays.append(day)
-        return wrong_weekdays
+def assign_user_to_workstation(userweek, schedule: dict()):
+    user = userweek.employee
+    wrong_weekdays = []
+    for day in schedule.keys():
+        if schedule[day]:
+            setattr(schedule[day], day, user)
+            setattr(userweek, day, schedule[day].workstation)
+            userweek.save()
+            schedule[day].save()
+        else: 
+            wrong_weekdays.append(day)
+    return wrong_weekdays
 
 def clear_workweek(userweek):
     for weekday in list(calendar.day_name):
         workstation = getattr(userweek, weekday)
         if workstation:
-            workweek, created = Workweek.objects.get_or_create(workstation = workstation, 
+            workweek, created = Workweek.objects.get_or_create(workstation = workstation,
                     week = userweek.week, year = userweek.year)
             setattr(workweek, weekday, None)
             workweek.save()
