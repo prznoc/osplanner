@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime, timedelta
 
-from .models import Userweek, EmployeePreferences, WorkstationPreferences
+from .models import Userweek, EmployeePreferences, WorkstationPreferences, Workweek
 from .tables import ScheduleTable, PreferencesTable, WorkstationPreferencesTable
 from .app_logic import views_processing
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm, UserForm
@@ -97,9 +97,19 @@ def schedule_week(request, pk: int):
                 return redirect('user_panel')
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek, flag = this_week_flag)
-            generateform = WeekdaysForm(instance=userweek, flag = this_week_flag) 
+            generateform = WeekdaysForm(instance=userweek, flag = this_week_flag)
+            if this_week_flag:
+                schedule = dict()
+                for weekday in list(calendar.day_name):
+                    if list(calendar.day_name).index(weekday) < datetime.today().weekday():
+                        if getattr(userweek, weekday):
+                            schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
+                    else:
+                        break
             views_processing.clear_workweek(userweek)
             views_processing.clear_userweek(userweek)
+            if this_week_flag:
+                views_processing.assign_user_to_workstation(userweek, schedule)
             return redirect('schedule_week', pk=pk)
     else:
         editform = ScheduleForm(instance=userweek, flag = this_week_flag )       
