@@ -33,20 +33,21 @@ def editweek_form_processing(editform, user):
 
 def generateweek_form_processing(generateform, userweek: Userweek, user, this_week_flag:bool):
     weekdays = generateform.cleaned_data.get('weekdays')
+    '''
     schedule = dict()
-    
     if this_week_flag:
         for weekday in list(calendar.day_name):
             if list(calendar.day_name).index(weekday) < datetime.today().weekday():
                 if getattr(userweek, weekday):
                     schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
+                    weekdays.remove(weekday)
             else:
                 break
-    
+    '''
     clear_workweek(userweek)
     clear_userweek(userweek)
     assigner = Assigner()
-    schedule = {**assigner.assign_week(user, weekdays, userweek.week, userweek.year), **schedule}
+    schedule =assigner.assign_week(user, weekdays, userweek.week, userweek.year)
     wrong_weekdays = assign_user_to_workstation(userweek, schedule)
     return wrong_weekdays
 
