@@ -33,21 +33,18 @@ def editweek_form_processing(editform, user):
 
 def generateweek_form_processing(generateform, userweek: Userweek, user, this_week_flag:bool):
     weekdays = generateform.cleaned_data.get('weekdays')
-    '''
     schedule = dict()
+    cleared_days = list(calendar.day_name)
     if this_week_flag:
         for weekday in list(calendar.day_name):
             if list(calendar.day_name).index(weekday) < datetime.today().weekday():
-                if getattr(userweek, weekday):
-                    schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
-                    weekdays.remove(weekday)
+                cleared_days.remove(weekday)
             else:
                 break
-    '''
-    clear_workweek(userweek)
-    clear_userweek(userweek)
+    clear_workweek(userweek, list(cleared_days))
+    clear_userweek(userweek, list(cleared_days))
     assigner = Assigner()
-    schedule =assigner.assign_week(user, weekdays, userweek.week, userweek.year)
+    schedule = assigner.assign_week(user, weekdays, userweek.week, userweek.year)
     wrong_weekdays = assign_user_to_workstation(userweek, schedule)
     return wrong_weekdays
 
@@ -61,6 +58,7 @@ def generate_unscheduled_days_message(wrong_weekday: list):
 def assign_user_to_workstation(userweek, schedule: dict()):
     user = userweek.employee
     wrong_weekdays = []
+    print(schedule)
     for day in schedule.keys():
         if schedule[day]:
             setattr(schedule[day], day, user)
@@ -71,8 +69,8 @@ def assign_user_to_workstation(userweek, schedule: dict()):
             wrong_weekdays.append(day)
     return wrong_weekdays
 
-def clear_workweek(userweek):
-    for weekday in list(calendar.day_name):
+def clear_workweek(userweek, cleared_days: list):
+    for weekday in cleared_days:
         workstation = getattr(userweek, weekday)
         if workstation:
             workweek, created = Workweek.objects.get_or_create(workstation = workstation,
@@ -80,8 +78,8 @@ def clear_workweek(userweek):
             setattr(workweek, weekday, None)
             workweek.save()
 
-def clear_userweek(userweek):
-    for weekday in list(calendar.day_name):
+def clear_userweek(userweek, cleared_days: list):
+    for weekday in cleared_days:
         setattr(userweek, weekday, None)
         userweek.save()
 

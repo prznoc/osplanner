@@ -67,23 +67,20 @@ class ScheduleForm(forms.ModelForm):
 
 
 class WeekdaysForm(forms.Form):
-    OPTIONS = (
-        ("Monday", "Monday"),
-        ("Tuesday", "Tuesday"),
-        ("Wednesday", "Wednesday"),
-        ("Thursday", "Thursday"),
-        ("Friday", "Friday"),
-        ("Saturday", "Saturday"),
-        ("Sunday", "Sunday"),
-    )
-    weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
-                                          choices=OPTIONS, label="Choose days to schedule")
+
+    weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label="Choose days to schedule")
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance')
         this_week_flag = kwargs.pop('flag')
         super(WeekdaysForm, self).__init__(*args, **kwargs)
-        self.fields['weekdays'].choices = self.OPTIONS
+        OPTIONS = []
+        for weekday in list(calendar.day_name):
+            if this_week_flag and list(calendar.day_name).index(weekday) < datetime.today().weekday():
+                pass
+            else:
+                OPTIONS.append((weekday, weekday))
+        self.fields['weekdays'].choices = tuple(OPTIONS)
         self.fields['weekdays'].initial = [weekday for weekday in list(calendar.day_name) if getattr(instance, weekday)]
         self.fields['weekdays'].required = False
 

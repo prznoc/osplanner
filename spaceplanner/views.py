@@ -82,7 +82,7 @@ def schedule_week(request, pk: int):
         if 'editweek' in request.POST:
             generateform = WeekdaysForm(instance=userweek, flag=this_week_flag)
             editform = ScheduleForm(request.POST, instance=userweek, flag=this_week_flag)
-            views_processing.clear_workweek(userweek)
+            views_processing.clear_workweek(userweek, list(calendar.day_name))
             if editform.is_valid():
                 views_processing.editweek_form_processing(editform, user)
                 return redirect('user_panel')
@@ -98,19 +98,17 @@ def schedule_week(request, pk: int):
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek, flag=this_week_flag)
             generateform = WeekdaysForm(instance=userweek, flag=this_week_flag)
+            cleared_days = list(calendar.day_name)
             if this_week_flag:
-                schedule = dict()
                 for weekday in list(calendar.day_name):
                     if list(calendar.day_name).index(weekday) < datetime.today().weekday():
-                        if getattr(userweek, weekday):
-                            schedule[weekday] = Workweek.objects.get(week = getattr(userweek, 'week'), year = getattr(userweek, 'year'), workstation = getattr(userweek, weekday))
+                        cleared_days.remove(weekday)
                     else:
                         break
-            views_processing.clear_workweek(userweek)
-            views_processing.clear_userweek(userweek)
-            if this_week_flag:
-                views_processing.assign_user_to_workstation(userweek, schedule)
-            return redirect('schedule_week', pk=pk)
+            print(cleared_days)
+            views_processing.clear_workweek(userweek, cleared_days)
+            views_processing.clear_userweek(userweek, cleared_days)
+            return redirect('user_panel')
     else:
         editform = ScheduleForm(instance=userweek, flag=this_week_flag)       
         generateform = WeekdaysForm(instance=userweek,flag=this_week_flag)
