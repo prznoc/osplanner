@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'spaceplanner.urls'
+ROOT_URLCONF = 'osplanner.urls'
 
 TEMPLATES = [
     {
