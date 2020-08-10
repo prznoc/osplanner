@@ -58,7 +58,6 @@ def generate_unscheduled_days_message(wrong_weekday: list):
 def assign_user_to_workstation(userweek, schedule: dict()):
     user = userweek.employee
     wrong_weekdays = []
-    print(schedule)
     for day in schedule.keys():
         if schedule[day]:
             setattr(schedule[day], day, user)

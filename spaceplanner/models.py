@@ -11,14 +11,6 @@ class Workstation(models.Model):
     def __str__(self):
         return str(self.ws_id)
 
-    '''
-    def save(self, *args, **kwargs):
-        if self._state.adding is True:
-            wp = WorkstationPreferences(workstation=self)
-            wp.save()
-        super(Workstation, self).save(*args, **kwargs)
-    '''
-    
 
 class WorkstationPreferences(models.Model):
     workstation = models.OneToOneField(Workstation, name=_('workstation'), on_delete=models.CASCADE)

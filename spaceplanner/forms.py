@@ -90,10 +90,3 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
-
-    '''
-    def __init__(self, *args, **kwargs):
-        super(UserForm, self).__init__(*args, **kwargs)
-        for field in self.fields.keys():
-            self.fields[field] = forms.Field(required=False, label=mark_safe(field + ':' + '<br />'))
-    '''

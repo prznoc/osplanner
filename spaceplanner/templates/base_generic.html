@@ -19,9 +19,6 @@
       {% block sidebar %}
         <ul class="sidebar-nav">
           <li><a href="{% url 'home' %}">Home</a></li>
-          {% if user.is_superuser %}   
-              <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
-          {% endif %}
           {% if user.is_authenticated %}
             <li><a href="{% url 'user_panel' %}">Scheduler</a></li>
             <li><a href="{% url 'edit_information'%}">Edit information</a></li>

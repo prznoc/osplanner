@@ -105,7 +105,6 @@ def schedule_week(request, pk: int):
                         cleared_days.remove(weekday)
                     else:
                         break
-            print(cleared_days)
             views_processing.clear_workweek(userweek, cleared_days)
             views_processing.clear_userweek(userweek, cleared_days)
             return redirect('user_panel')
