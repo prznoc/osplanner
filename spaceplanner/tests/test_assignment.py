@@ -1,9 +1,9 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from spaceplanner.models import Workstation, Workweek, EmployeePreferences, WorkstationPreferences
+from spaceplanner.models import Workstation, Workweek, EmployeePreferences, WorkstationPreferences, Userweek
 from spaceplanner.app_logic.assigner import Assigner
-from spaceplanner.views import assign_user_to_workstation
+from spaceplanner.app_logic.views_processing import assign_user_to_workstation
 
 
 # Hypotesis
@@ -53,7 +53,6 @@ class AvailabilityTest(TestCase, Assigner):
         self.assertEqual(availability, expected_availability)
         self.assertEqual(available_slots, set([slots[0], slots[1]]))
     
-    
     def test_get_slots_with_one_empty(self):
         working_days = ["Monday", "Wednesday"]
         workstation = Workstation.objects.get(ws_id = 2)
@@ -72,7 +71,7 @@ class AvailabilityTest(TestCase, Assigner):
         self.assertEqual(availability, expected_availability)
         self.assertEqual(available_slots, set([slot]))
 
-    
+
 class SlotFilteringTest(TestCase, Assigner):
     def setUp(self):
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Andrzej"),
@@ -102,7 +101,7 @@ class SlotFilteringTest(TestCase, Assigner):
         for day in working_days:
             expected_availability[day] = [slot]
         self.assertEqual(availability, expected_availability)
-    
+       
     def test_filter_matching_workspace(self):
         slots = self.get_all_slots(3, 2022)
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
@@ -194,7 +193,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         preference2.favourite_workspace.add(workstation1) 
         preference2.save()
         schedule = self.assign_week(user2, working_days2, 3, 2022)
-        assign_user_to_workstation(user2, schedule, 3, 2022)
+        assign_user_to_workstation(Userweek.objects.get_or_create(employee=user2, week=3, year=2022)[0], schedule)
 
         user3 = User.objects.get(username = "Szymon")
         preference3 = EmployeePreferences.objects.get (employee = user3)
@@ -202,7 +201,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         preference3.favourite_workspace.add(workstation3) 
         preference3.save()
         schedule = self.assign_week(user3, working_days3, 3, 2022)
-        assign_user_to_workstation(user3, schedule, 3, 2022)
+        assign_user_to_workstation(Userweek.objects.get_or_create(employee=user3, week=3, year=2022)[0], schedule)
 
         schedule = dict()
         schedule['Monday'] = Workweek.objects.get(workstation = workstation3, year = 2022, week = 3)
@@ -225,11 +224,11 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
     def test_match_with_unavailable_day(self):
         working_days = ["Monday", "Wednesday", "Saturday"]
         schedule = self.assign_week(User.objects.get(username = "Andrzej"), working_days, 3, 2022)
-        assign_user_to_workstation(User.objects.get(username = "Andrzej"), schedule, 3, 2022)
+        assign_user_to_workstation(Userweek.objects.get_or_create(employee=User.objects.get(username = "Andrzej"), week=3, year=2022)[0], schedule)
         schedule = self.assign_week(User.objects.get(username = "Rafał"), working_days, 3, 2022)
-        assign_user_to_workstation(User.objects.get(username = "Rafał"), schedule, 3, 2022)
+        assign_user_to_workstation(Userweek.objects.get_or_create(employee=User.objects.get(username = "Rafał"), week=3, year=2022)[0], schedule)
         schedule = self.assign_week(User.objects.get(username = "Szymon"), working_days, 3, 2022)
-        assign_user_to_workstation(User.objects.get(username = "Szymon"), schedule, 3, 2022)
+        assign_user_to_workstation(Userweek.objects.get_or_create(employee=User.objects.get(username = "Szymon"), week=3, year=2022)[0], schedule)
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Stanisław"), 
         large_screen = True, is_mac = True, is_mac_preference = 3, large_screen_preference = 2)
         schedule = self.assign_week(User.objects.get(username = "Stanisław"), ["Monday", "Tuesday", "Friday"], 3, 2022)
@@ -248,7 +247,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         user1 = User.objects.get(username = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
         schedule1 = self.assign_week(user1, working_days1, 3, 2022)
-        assign_user_to_workstation(user1, schedule1, 3, 2022)
+        assign_user_to_workstation(Userweek.objects.get_or_create(employee=user1, week=3, year=2022)[0], schedule1)
         expected_schedule1 = dict.fromkeys(working_days1)
         for day in expected_schedule1.keys():
             expected_schedule1[day] = Workweek.objects.get(workstation = workstation1, year = 2022, week = 3)
@@ -294,7 +293,7 @@ class SelectingDiffrentWorkspacesTests(TestCase, Assigner):
         user1 = User.objects.get(username = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
         schedule1 = self.assign_week(user1, working_days1, 3, 2022)
-        assign_user_to_workstation(user1, schedule1, 3, 2022)
+        assign_user_to_workstation(Userweek.objects.get_or_create(employee=user1, week=3, year=2022)[0], schedule1)
         expected_schedule1 = dict.fromkeys(working_days1)
         for day in expected_schedule1.keys():
             expected_schedule1[day] = Workweek.objects.get(workstation = workstation1, year = 2022, week = 3)
