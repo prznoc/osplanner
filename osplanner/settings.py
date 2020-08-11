@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'spaceplanner',
+    'spaceplanner.apps.SpaceplannerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -121,7 +121,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-LOGIN_REDIRECT_URL = '/user_panel'
+LOGIN_REDIRECT_URL = '/spaceplanner/user_panel'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
