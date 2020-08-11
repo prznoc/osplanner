@@ -4,14 +4,15 @@
 <body>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <p>Edit preferences page</p>
-    <form method="POST" class="preferences-form">{% csrf_token %}
+    <form method="POST" class="preferences-form">
+        {% csrf_token %}
         {% for field in form %}
             <div class="form-group">
                 {{ field.label }}
                 {{ field }}       
             </div>
         {% endfor %}
-        <button type="submit" class="save btn btn-default">Save</button>
+        <input type="submit" value="Save">
     </form>
 </body>
 </html>
