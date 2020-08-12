@@ -5,58 +5,28 @@ from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
 from django.shortcuts import redirect
 from django.contrib import messages
-from django.views.generic import TemplateView
-from django.utils.decorators import method_decorator
-from django.http import HttpResponseRedirect
-
 from datetime import datetime, timedelta
 
-from .models import Userweek, EmployeePreferences, WorkstationPreferences
-from .tables import ScheduleTable, PreferencesTable, WorkstationPreferencesTable, WorkstationsScheduleTable
+from .models import Userweek, EmployeePreferences, WorkstationPreferences, Workweek
+from .tables import ScheduleTable, PreferencesTable, WorkstationPreferencesTable
 from .app_logic import views_processing
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm, UserForm
 
-class Home(TemplateView):
-    template_name = "spaceplanner/home.html"
 
+def home(request):
+    return render(request, 'spaceplanner/home.html', {})
 
-@method_decorator(login_required, name='dispatch')
-class EditInformation(TemplateView):
-    template_name = 'spaceplanner/edit_information.html'
-    form_class = UserForm
-
-    def get(self, request, *args, **kwargs):
-        form = self.form_class(instance=request.user)
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST,instance=request.user)
+@login_required
+def edit_information(request):
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=request.user)
         if form.is_valid():
             request.user = form.save(commit=False)
             request.user.save()
-            return HttpResponseRedirect('user_panel')
-        return render(request, self.template_name, {'form': form})
-
-
-@method_decorator(login_required, name='dispatch')
-class EditPreferences(TemplateView):
-    template_name = 'spaceplanner/edit_preferences.html'
-    form_class = UserPreferencesForm
-
-    def get(self, request, *args, **kwargs):
-        preferences, created = EmployeePreferences.objects.get_or_create(employee=request.user)
-        form = self.form_class(instance=preferences)
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        preferences, created = EmployeePreferences.objects.get_or_create(employee=request.user)
-        form = self.form_class(request.POST, instance=preferences)
-        if form.is_valid():
-            preferences = form.save(commit=False)
-            preferences.save()
             return redirect('user_panel')
-        return render(request, self.template_name, {'form': form})
-
+    else:
+        form = UserForm(instance=request.user)
+    return render(request, 'spaceplanner/edit_information.html', {'form': form})
 
 @login_required
 def user_panel(request, date = None):
@@ -95,47 +65,6 @@ def user_panel(request, date = None):
     return render(request, 'spaceplanner/user_panel.html', {'table': table, 'preferences': preferences,
             'date_name': date_name, 'date': date, 'previous_date': previous_date, 'next_date': next_date})
 
-'''
-@method_decorator(login_required, name='dispatch')
-class ScheduleWeek(TemplateView):
-    template_name = 'spaceplanner/schedule_week.html'
-    editform_class_name = ScheduleForm
-    generateform_class_name = WeekdaysForm
-    this_week_flag = None
-    date_range = None
-
-    def get(self, request, pk: int):
-        userweek = get_object_or_404(Userweek, pk=pk)
-        monday = userweek.monday_date
-        today = datetime.today()
-        last_monday = today - timedelta(days=today.weekday())
-        if monday < last_monday.date():
-            return redirect('workstation_schedule', date=monday.strftime('%Y-%m-%d'))
-        if monday < today.date():
-            self.this_week_flag = True
-        self.date_range = monday.strftime('%Y/%m/%d') + " - " + (monday + timedelta(days=6)).strftime('%Y/%m/%d')
-        editform = self.editform_class_name(instance=userweek, flag=self.this_week_flag)
-        generateform = self.generateform_class_name(instance=userweek, flag=self.this_week_flag)
-        return render(request, 'spaceplanner/schedule_week.html',
-            {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': self.date_range})
-
-    def post(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        userweek = get_object_or_404(Userweek, pk=pk)
-        editform = self.editform_class_name(request.POST, instance=userweek, flag=self.this_week_flag)
-        generateform = self.generateform_class_name(request.POST, instance=userweek, flag=self.this_week_flag)
-        if editform.is_valid():
-            views_processing.clear_workweek(userweek, list(calendar.day_name))
-            views_processing.editweek_form_processing(editform, request.user)
-            return redirect('user_panel')
-        if generateform.is_valid():
-            wrong_weekdays = views_processing.generateweek_form_processing(generateform, userweek, request.user, self.this_week_flag)
-            if wrong_weekdays:
-                message = views_processing.generate_unscheduled_days_message(wrong_weekdays)
-                messages.info(request, message)
-        return render(request, 'spaceplanner/schedule_week.html',
-            {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': self.date_range})
-'''
 @login_required
 def schedule_week(request, pk: int):
     user = request.user
@@ -185,36 +114,40 @@ def schedule_week(request, pk: int):
     return render(request, 'spaceplanner/schedule_week.html',
             {'userweek': userweek, 'editform': editform, 'generateform': generateform, 'date_range': date_range})
 
+@login_required
+def edit_preferences(request):
+    user = request.user
+    preferences, created = EmployeePreferences.objects.get_or_create(employee=user)
+    if request.method == "POST":
+        form = UserPreferencesForm(request.POST, instance=preferences)
+        if form.is_valid():
+            preferences = form.save(commit=False)
+            preferences.save()
+            return redirect('user_panel')
+    else:
+        form = UserPreferencesForm(instance=preferences)
+    return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
 
-@method_decorator(login_required, name='dispatch')
-class WorkstationSchedule(TemplateView):
-    template_name = 'spaceplanner/workstation_schedule.html'
-    table_class = WorkstationsScheduleTable
+@login_required
+def workstation_schedule(request, date):
+    monday = datetime.strptime(date, '%Y-%m-%d')
+    if monday < datetime(1970, 1, 1) or monday > datetime(2100, 12, 31):
+        return redirect('out_of_range')
+    date_range, table = views_processing.get_schedule_week_table(monday)
+    RequestConfig(request).configure(table)
+    monday = monday + timedelta(weeks=1)
+    next_date = monday.strftime('%Y-%m-%d')
+    monday = monday - timedelta(days=14)
+    previous_date = monday.strftime('%Y-%m-%d')
+    return render(request, 'spaceplanner/workstation_schedule.html',{'table': table, 'date_range': date_range, 'next_date': next_date, 'previous_date': previous_date})
 
-    def get(self, request, date):
-        monday = datetime.strptime(date, '%Y-%m-%d')
-        if monday < datetime(1970, 1, 1) or monday > datetime(2100, 12, 31):
-            return redirect('out_of_range')
-        date_range, table = views_processing.get_schedule_week_table(monday)
-        RequestConfig(request).configure(table)
-        monday = monday + timedelta(weeks=1)
-        next_date = monday.strftime('%Y-%m-%d')
-        monday = monday - timedelta(days=14)
-        previous_date = monday.strftime('%Y-%m-%d')
-        return render(request, self.template_name,{'table': table, 'date_range': date_range, 'next_date': next_date, 'previous_date': previous_date})
+@login_required
+def out_of_range(request):
+    return render(request, 'spaceplanner/out_of_range.html',{})
 
-
-@method_decorator(login_required, name='dispatch')
-class OutOfRange(TemplateView):
-    template_name = 'spaceplanner/out_of_range.html'
-
-
-@method_decorator(login_required, name='dispatch')
-class WorkstationPreferencesView(TemplateView):
-    template_name = 'spaceplanner/workstation_preferences.html'
-    
-    def get(self, request):
-        data = WorkstationPreferences.objects.all()
-        table = WorkstationPreferencesTable(data)
-        RequestConfig(request).configure(table)
-        return render(request, self.template_name,{'table':table})
+@login_required
+def workstation_preferences(request):
+    data = WorkstationPreferences.objects.all()
+    table = WorkstationPreferencesTable(data)
+    RequestConfig(request).configure(table)
+    return render(request, 'spaceplanner/workstation_preferences.html',{'table':table})
