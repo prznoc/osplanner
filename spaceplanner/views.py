@@ -42,9 +42,14 @@ def user_panel(request, date = None):
         message = 'Months after the next one are unavailable'
         messages.info(request, message)
         return redirect('user_panel', date=(datetime.today() + timedelta(days=31)).strftime('%Y-%m'))
-
-
-    first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
+    try:   
+        first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
+    except IndexError:
+        isotoday = datetime.today().isocalendar()
+        Userweek.objects.get_or_create(employee=user, year=isotoday[0], week=isotoday[1])
+        isotoday = (datetime.today().replace(day=1)).isocalendar()
+        Userweek.objects.get_or_create(employee=user, year=isotoday[0], week=isotoday[1])
+        first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
     if today.date() < first_monday and today.date() < datetime.today().date():
         message = 'Months before databease creation are unavailable'
         messages.info(request, message)
