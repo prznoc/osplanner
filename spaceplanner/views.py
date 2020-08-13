@@ -41,10 +41,14 @@ def user_panel(request, date = None):
     if today > (datetime.today().replace(day=7) + timedelta(days=31)):
         message = 'Months after the next one are unavailable'
         messages.info(request, message)
-        return redirect('user_panel', date=(today + timedelta(days=-1)).strftime('%Y-%m'))
+        return redirect('user_panel', date=(datetime.today() + timedelta(days=31)).strftime('%Y-%m'))
 
-    if today < datetime(1970, 1, 1):
-        return redirect('out_of_range')
+
+    first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
+    if today.date() < first_monday and today.date() < datetime.today().date():
+        message = 'Months before databease creation are unavailable'
+        messages.info(request, message)
+        return redirect('user_panel', date=(first_monday + timedelta(days=7)).strftime('%Y-%m'))
 
     date = (today + timedelta(days=-today.weekday())).strftime('%Y-%m-%d')
     
