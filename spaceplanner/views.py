@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime, timedelta
 
-from .models import Userweek, EmployeePreferences, WorkstationPreferences, Workweek
+from .models import Userweek, EmployeePreferences, WorkstationPreferences
 from .tables import ScheduleTable, PreferencesTable, WorkstationPreferencesTable
 from .app_logic import views_processing
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm, UserForm
@@ -38,7 +38,12 @@ def user_panel(request, date = None):
         today = datetime.strptime(date, '%Y-%m')
     else:
         today = datetime.today()
-    if today < datetime(1970, 1, 1) or today > datetime(2100, 12, 31):
+    if today > (datetime.today().replace(day=7) + timedelta(days=31)):
+        message = 'Months after the next one are unavailable'
+        messages.info(request, message)
+        return redirect('user_panel', date=(today + timedelta(days=-1)).strftime('%Y-%m'))
+
+    if today < datetime(1970, 1, 1):
         return redirect('out_of_range')
 
     date = (today + timedelta(days=-today.weekday())).strftime('%Y-%m-%d')
