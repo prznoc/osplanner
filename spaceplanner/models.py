@@ -6,10 +6,11 @@ from django.conf import settings
 from .app_logic import calendar_functions
 
 class Workstation(models.Model):
-    ws_id = models.IntegerField(primary_key=True)
+    ws_id = models.AutoField(primary_key=True)
+    label = models.CharField(name=_('label'), unique=True, max_length=100)
 
     def __str__(self):
-        return str(self.ws_id)
+        return str(self.label)
 
 
 class WorkstationPreferences(models.Model):
