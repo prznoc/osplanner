@@ -2,7 +2,6 @@ import django_tables2 as tables
 import calendar
 
 from django.utils.translation import gettext as _
-from django.template.loader import render_to_string
 
 from .models import Userweek, EmployeePreferences, Workweek, WorkstationPreferences
 from datetime import datetime, timedelta
@@ -28,8 +27,9 @@ class ScheduleButtonColumn(tables.TemplateColumn):
         last_monday = (datetime.today() - timedelta(days=datetime.today().weekday())).date()
         if (record.monday_date < last_monday):
             record.date=record.monday_date.strftime('%Y-%m-%d')
-            self.template_code = '{% load i18n %} <a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">{% trans "View week" %}</a>'
-        else: self.template_code = '{% load i18n %} <a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">{% trans "Schedule Week" %}</a>'
+            self.template_name = 'spaceplanner/view_button.html'
+        else: self.template_name = 'spaceplanner/schedule_button.html'
+        self.verbose_name=_('Generate schedule')
         return super(ScheduleButtonColumn, self).render(record, table, value, bound_column, **kwargs)
 
 
@@ -37,8 +37,10 @@ class ScheduleTable(tables.Table):
     data_range = tables.Column(accessor='monday_date', verbose_name=_('Dates'))
     year=tables.Column(orderable=False)
     week=tables.Column(orderable=False)
-    generate_schedule = ScheduleButtonColumn('<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>', orderable=False,
-            verbose_name=_('Generate schedule'))
+    generate_schedule = ScheduleButtonColumn(
+            template_name= 'spaceplanner/view_button.html',
+            orderable=False,
+            )
 
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
