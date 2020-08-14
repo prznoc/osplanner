@@ -1,6 +1,8 @@
 import django_tables2 as tables
 import calendar
 
+from django.utils.translation import gettext as _
+
 from .models import Userweek, EmployeePreferences, Workweek, WorkstationPreferences
 from datetime import datetime, timedelta
 
@@ -24,14 +26,14 @@ class ScheduleButtonColumn(tables.TemplateColumn):
     def render(self, record, table, value, bound_column, **kwargs):
         last_monday = (datetime.today() - timedelta(days=datetime.today().weekday())).date()
         if (record.monday_date < last_monday):
-            record.xdxd=record.monday_date.strftime('%Y-%m-%d')
-            self.template_code = '<a class="btn btn-primary" href="{% url "workstation_schedule" record.xdxd %}">View Schedule</a>'
+            record.date=record.monday_date.strftime('%Y-%m-%d')
+            self.template_code = '<a class="btn btn-primary" href="{% url "workstation_schedule" record.date %}">View Schedule</a>'
         else: self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>'
         return super(ScheduleButtonColumn, self).render(record, table, value, bound_column, **kwargs)
 
 
 class ScheduleTable(tables.Table):
-    data_range = tables.Column(accessor='monday_date', verbose_name='Dates')
+    data_range = tables.Column(accessor='monday_date', verbose_name=_('Dates'))
     year=tables.Column(orderable=False)
     week=tables.Column(orderable=False)
     generate_schedule = ScheduleButtonColumn('<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>', orderable=False)
@@ -55,7 +57,7 @@ class ScheduleTable(tables.Table):
 
 class PreferencesTable(tables.Table):
 
-    favourite_list = tables.Column(accessor='favourite_workspace', verbose_name='Favourite Workspaces')
+    favourite_list = tables.Column(accessor='favourite_workspace', verbose_name=_('Favourite Workspaces'))
 
     def render_favourite_list(self, record):
         return ', '.join([str(a) for a in record.favourite_workspace.all()])
@@ -89,7 +91,7 @@ class WorkstationWeekdayColumn(tables.Column):
 
 class WorkstationsScheduleTable(tables.Table):
 
-    workstation = tables.Column(verbose_name="Workstation ID", accessor = 'workstation.ws_id')
+    workstation = tables.Column(verbose_name=_("Workstation"), accessor = 'workstation.label')
     
     def __init__(self, *args, **kwargs):
         for weekday in list(calendar.day_name):

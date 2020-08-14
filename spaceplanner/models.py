@@ -7,56 +7,56 @@ from .app_logic import calendar_functions
 
 class Workstation(models.Model):
     ws_id = models.AutoField(primary_key=True)
-    label = models.CharField(name=_('label'), unique=True, max_length=100)
+    label = models.CharField(verbose_name=_('label'), unique=True, max_length=100)
 
     def __str__(self):
         return str(self.label)
 
 
 class WorkstationPreferences(models.Model):
-    workstation = models.OneToOneField(Workstation, name=_('workstation'), on_delete=models.CASCADE)
-    window = models.BooleanField(_('Window'), default=False)
-    noise = models.BooleanField(_('Noise'), default=False)
-    large_screen = models.BooleanField(_('Large_screen'), default=False)
-    is_mac = models.BooleanField(_('Mac'), default=False)
+    workstation = models.OneToOneField(Workstation, verbose_name=_('workstation'), on_delete=models.CASCADE)
+    window = models.BooleanField(verbose_name=_('Window'), default=False)
+    noise = models.BooleanField(verbose_name=_('Noise'), default=False)
+    large_screen = models.BooleanField(verbose_name=_('Large_screen'), default=False)
+    is_mac = models.BooleanField(verbose_name=_('Mac'), default=False)
 
 
 class EmployeePreferences(models.Model):
-    employee = models.OneToOneField(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE)
-    favourite_workspace = models.ManyToManyField(Workstation, name=_("favourite_workspace"), default = None, blank=True) 
-    window = models.BooleanField(_('Window'), default = False)
-    window_preference = models.IntegerField(_('Window priority'), default = 0, validators=[MinValueValidator(0), 
+    employee = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_("employee"), on_delete=models.CASCADE)
+    favourite_workspace = models.ManyToManyField(Workstation, verbose_name=_("favourite_workspace"), default = None, blank=True) 
+    window = models.BooleanField(verbose_name=_('Window'), default = False)
+    window_preference = models.IntegerField(verbose_name=_('Window priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
-    noise = models.BooleanField(_('Noise'), default = False)
-    noise_preference = models.IntegerField(_('Noise priority'), default = 0, validators=[MinValueValidator(0), 
+    noise = models.BooleanField(verbose_name=_('Noise'), default = False)
+    noise_preference = models.IntegerField(verbose_name=_('Noise priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
-    large_screen = models.BooleanField(_('Large screen'), default = False)
-    large_screen_preference = models.IntegerField(_('Large screen priority'), default = 0, validators=[MinValueValidator(0), 
+    large_screen = models.BooleanField(verbose_name=_('Large screen'), default = False)
+    large_screen_preference = models.IntegerField(verbose_name=_('Large screen priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
-    is_mac = models.BooleanField(_('Mac'), default = False)
-    is_mac_preference = models.IntegerField(_('Mac priority'), default = 0, validators=[MinValueValidator(0), 
+    is_mac = models.BooleanField(verbose_name=_('Mac'), default = False)
+    is_mac_preference = models.IntegerField(verbose_name=_('Mac priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
 
 
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
-    workstation = models.ForeignKey(Workstation, name=_("workstation"), on_delete=models.CASCADE, verbose_name='workstation')
-    year =  models.IntegerField(_('year'))
-    week = models.IntegerField(_('week'))
-    Monday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Monday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name= "Monday")
-    Tuesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Tuesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name="Tuesday")
-    Wednesday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Wednesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Wednesday')
-    Thursday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Thursday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Thursday')
-    Friday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Friday"), blank = True, null = True,
-            on_delete=models.SET_NULL, related_name = 'Friday')
-    Saturday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Saturday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Saturday')
-    Sunday = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("Sunday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Sunday')
+    workstation = models.ForeignKey(Workstation, name="workstation", on_delete=models.CASCADE, verbose_name=_('workstation'))
+    year =  models.IntegerField(verbose_name=_('year'))
+    week = models.IntegerField(verbose_name=_('week'))
+    Monday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Monday", blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name= _("Monday"))
+    Tuesday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Tuesday", blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name=_("Tuesday"),)
+    Wednesday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Wednesday", blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _("Wednesday"),)
+    Thursday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Thursday", blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _("Thursday"),)
+    Friday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Friday", blank = True, null = True,
+            on_delete=models.SET_NULL, related_name = _("Friday"),)
+    Saturday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Saturday", blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _("Saturday"),)
+    Sunday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Sunday", blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _("Sunday"),)
 
     def __str__(self):
         return str(str(self.workstation) + str(self.year)+ str(self.week))
@@ -65,24 +65,24 @@ class Workweek(models.Model):
         unique_together = ('workstation', 'year', 'week')
 
 class Userweek(models.Model):
-    employee = models.ForeignKey(settings.AUTH_USER_MODEL, name=_("employee"), on_delete=models.CASCADE, verbose_name='employee')
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('employee'))
     year =  models.IntegerField(_('year'))
     week = models.IntegerField(_('week'))
     monday_date = models.DateField(_("monday_date"))
-    monday = models.ForeignKey(Workstation, name=_("Monday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name= "Monday")
-    tuesday = models.ForeignKey(Workstation, name=_("Tuesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name="Tuesday")
-    wednesday = models.ForeignKey(Workstation, name=_("Wednesday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Wednesday')
-    thursday = models.ForeignKey(Workstation, name=_("Thursday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Thursday')
-    friday = models.ForeignKey(Workstation, name=_("Friday"), blank = True, null = True,
-            on_delete=models.SET_NULL, related_name = 'Friday')
-    saturday = models.ForeignKey(Workstation, name=_("Saturday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Saturday')
-    sunday = models.ForeignKey(Workstation, name=_("Sunday"), blank = True, null = True, 
-            on_delete=models.SET_NULL, related_name = 'Sunday')
+    Monday = models.ForeignKey(Workstation, blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name= _("Monday"))
+    Tuesday = models.ForeignKey(Workstation, blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name=_("Tuesday"))
+    Wednesday = models.ForeignKey(Workstation, blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _('Wednesday'))
+    Thursday = models.ForeignKey(Workstation, blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _('Thursday'))
+    Friday = models.ForeignKey(Workstation, blank = True, null = True,
+            on_delete=models.SET_NULL, related_name = _('Friday'))
+    Saturday = models.ForeignKey(Workstation, blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _('Saturday'))
+    Sunday = models.ForeignKey(Workstation, blank = True, null = True, 
+            on_delete=models.SET_NULL, related_name = _('Sunday'))
 
     def __str__(self):
         return str(str(self.employee) + str(self.year)+ str(self.week))

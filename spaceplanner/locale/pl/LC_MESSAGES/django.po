@@ -1,0 +1,357 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-14 12:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
+"%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
+"%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#: .\app_logic\views_processing.py:53
+msgid "Following days could not be scheduled: "
+msgstr "Następujące dni nie mogły zostać przydzielone: "
+
+#: .\forms.py:13
+msgid "is_mac"
+msgstr "mac"
+
+#: .\forms.py:13
+msgid "window"
+msgstr "okno"
+
+#: .\forms.py:13
+msgid "noise"
+msgstr "hałas"
+
+#: .\forms.py:13
+msgid "large_screen"
+msgstr "duży_ekran"
+
+#: .\forms.py:16
+msgid "Choose favourite workstations:"
+msgstr "Wybierz ulubione stanowiska"
+
+#: .\forms.py:72
+msgid "Choose days to schedule"
+msgstr "Wybierz dni do przydziału"
+
+#: .\models.py:10
+msgid "label"
+msgstr "etykieta"
+
+#: .\models.py:17 .\models.py:43
+msgid "workstation"
+msgstr "stanowisko"
+
+#: .\models.py:18 .\models.py:27
+msgid "Window"
+msgstr "Okno"
+
+#: .\models.py:19 .\models.py:30
+msgid "Noise"
+msgstr "Hałas"
+
+#: .\models.py:20
+msgid "Large_screen"
+msgstr "Duży ekran"
+
+#: .\models.py:21 .\models.py:36
+msgid "Mac"
+msgstr "Mac"
+
+#: .\models.py:25 .\models.py:68
+msgid "employee"
+msgstr "pracownik"
+
+#: .\models.py:26
+msgid "favourite_workspace"
+msgstr "ulubione_stanowiska"
+
+#: .\models.py:28
+msgid "Window priority"
+msgstr "Priorytet okna"
+
+#: .\models.py:31
+msgid "Noise priority"
+msgstr "Priorytet hałasu"
+
+#: .\models.py:33
+msgid "Large screen"
+msgstr "Duży ekran"
+
+#: .\models.py:34
+msgid "Large screen priority"
+msgstr "Priorytet dużego ekranu"
+
+#: .\models.py:37
+msgid "Mac priority"
+msgstr "Priorytet Maca"
+
+#: .\models.py:44 .\models.py:69
+msgid "year"
+msgstr "rok"
+
+#: .\models.py:45 .\models.py:70
+msgid "week"
+msgstr "tydzień"
+
+#: .\models.py:47 .\models.py:73
+msgid "Monday"
+msgstr "Poniedziałek"
+
+#: .\models.py:49 .\models.py:75
+msgid "Tuesday"
+msgstr "Wtorek"
+
+#: .\models.py:51 .\models.py:77
+msgid "Wednesday"
+msgstr "Środa"
+
+#: .\models.py:53 .\models.py:79
+msgid "Thursday"
+msgstr "Czwartek"
+
+#: .\models.py:55 .\models.py:81
+msgid "Friday"
+msgstr "Piątek"
+
+#: .\models.py:57 .\models.py:83
+msgid "Saturday"
+msgstr "Sobota"
+
+#: .\models.py:59 .\models.py:85
+msgid "Sunday"
+msgstr "Niedziela"
+
+#: .\models.py:71
+msgid "monday_date"
+msgstr "data_poniedziałku"
+
+#: .\tables.py:36
+msgid "Dates"
+msgstr "Daty"
+
+#: .\tables.py:60
+msgid "Favourite Workspaces"
+msgstr "Ulubione Stanowiska"
+
+#: .\tables.py:94
+msgid "Workstation"
+msgstr "Stanowisko"
+
+#: .\templates\base_generic.html:23
+msgid "Home"
+msgstr "Strona Domowa"
+
+#: .\templates\base_generic.html:25
+msgid "Scheduler"
+msgstr "Przydzielacz"
+
+#: .\templates\base_generic.html:26
+msgid "Edit information"
+msgstr "Edytuj dane osobiste"
+
+#: .\templates\base_generic.html:27
+#: .\templates\registration\password_change_form.html:6
+msgid "Change password"
+msgstr "Zmień hasło"
+
+#: .\templates\base_generic.html:28
+msgid "Logout"
+msgstr "Wyloguj"
+
+#: .\templates\base_generic.html:30
+msgid "Login"
+msgstr "Zaloguj"
+
+#: .\templates\base_generic.html:37
+msgid "Logged in as"
+msgstr "Zalogowano jako"
+
+#: .\templates\registration\logged_out.html:6
+msgid "Logged out!"
+msgstr "Wylogowano!"
+
+#: .\templates\registration\logged_out.html:7
+msgid "Click here to login again."
+msgstr "kliknij aby zalogować się ponownie"
+
+#: .\templates\registration\login.html:8
+msgid "Your username and password didn't match. Please try again."
+msgstr "Nieprawidłowa nazwa użytkownika lub hasło. Proszę spróbować ponownie"
+
+#: .\templates\registration\login.html:16
+msgid "Please login to see this page."
+msgstr "Proszę się zalogować aby zobaczyć tą stronę"
+
+#: .\templates\registration\login.html:32
+msgid "login"
+msgstr "zalgouj"
+
+#: .\templates\registration\login.html:37
+msgid "Lost password?"
+msgstr "Zapomniałeś hasła?"
+
+#: .\templates\registration\password_change_done.html:8
+#: .\templates\registration\password_change_form.html:14
+msgid "Back to main page"
+msgstr "Powrót do strony głownej"
+
+#: .\templates\registration\password_change_form.html:11
+#: .\templates\spaceplanner\edit_information.html:10
+msgid "Change"
+msgstr "Edytuj"
+
+#: .\templates\registration\password_reset_complete.html:7
+msgid "Password reset complete"
+msgstr "Zakończono resetowanie hasła"
+
+#: .\templates\registration\password_reset_complete.html:8
+msgid "Your new password has been set. You can log in now on the "
+msgstr "Nowe hasło zostało ustawione. Możesz się teraz zalogować na"
+
+#: .\templates\registration\password_reset_complete.html:8
+msgid "log in page"
+msgstr "strona logowania"
+
+#: .\templates\registration\password_reset_confirm.html:7
+msgid "Please enter (and confirm) your new password."
+msgstr "Wprowadź i potwierdź nowe hasło"
+
+#: .\templates\registration\password_reset_confirm.html:13
+msgid "New password:"
+msgstr "Nowe hasło:"
+
+#: .\templates\registration\password_reset_confirm.html:18
+msgid "Confirm password:"
+msgstr "Potwierdź hasło:"
+
+#: .\templates\registration\password_reset_confirm.html:23
+msgid "Change my password"
+msgstr "Zmień hasło"
+
+#: .\templates\registration\password_reset_confirm.html:28
+msgid "Password reset failed"
+msgstr "Resetowanie hasła zakończone niepowodzeniem"
+
+#: .\templates\registration\password_reset_confirm.html:29
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a new password reset."
+msgstr ""
+"Twój link resetowania hasła jest nieprawidłowy, prawdopodobnie dlatego że "
+"już został wykorzystany. Poproś o nowy link"
+
+#: .\templates\registration\password_reset_done.html:6
+msgid ""
+"We've emailed you instructions for setting your password. If they haven't "
+"arrived in a few minutes, check your spam folder."
+msgstr ""
+"Na podany adres wysłaliśmy instrukcje resetowania hasła, jeśli email nie "
+"dojdzie w ciągu kilku minut, sprawdź w folderze spam"
+
+#: .\templates\registration\password_reset_email.html:3
+msgid "Someone asked for password reset for email"
+msgstr "Kotś poprosił o reset hasła do konta o adresie email"
+
+#: .\templates\registration\password_reset_email.html:3
+msgid "Follow the link below:"
+msgstr "Przejdź do linku poniżej"
+
+#: .\templates\registration\password_reset_form.html:12
+msgid "Reset password"
+msgstr "Zresetuj hasło"
+
+#: .\templates\spaceplanner\edit_preferences.html:8
+msgid "Edit preferences page"
+msgstr "Strona edytowania preferencji"
+
+#: .\templates\spaceplanner\edit_preferences.html:21
+#: .\templates\spaceplanner\schedule_week.html:17
+#: .\templates\spaceplanner\schedule_week.html:25
+msgid "Save"
+msgstr "Zapisz"
+
+#: .\templates\spaceplanner\home.html:7
+msgid "Welcome to OS Planner"
+msgstr "Witamy w OS Planner"
+
+#: .\templates\spaceplanner\out_of_range.html:8
+msgid "Chosen date is out of range"
+msgstr "Wybrana data znajduje się poza dopuszczalnym zakresem"
+
+#: .\templates\spaceplanner\out_of_range.html:9
+msgid "Return to main page"
+msgstr "Powrót do strony głównej"
+
+#: .\templates\spaceplanner\schedule_button.html:1
+msgid "Schedule Week"
+msgstr "Zaplanuj tydzień"
+
+#: .\templates\spaceplanner\schedule_week.html:10
+msgid "Date"
+msgstr "Data"
+
+#: .\templates\spaceplanner\schedule_week.html:11
+msgid "Choose workstation manually:"
+msgstr "Wybierz stanowisko ręcznie"
+
+#: .\templates\spaceplanner\schedule_week.html:21
+msgid "Authomatic scheduler"
+msgstr "Automatyczne przydzielanie"
+
+#: .\templates\spaceplanner\schedule_week.html:32
+msgid "Clear Schedule"
+msgstr "Wyczyść terminarz"
+
+#: .\templates\spaceplanner\schedule_week.html:35
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: .\templates\spaceplanner\user_panel.html:21
+#: .\templates\spaceplanner\workstation_schedule.html:20
+msgid "Previous"
+msgstr "Poprzedni"
+
+#: .\templates\spaceplanner\user_panel.html:22
+#: .\templates\spaceplanner\workstation_schedule.html:21
+msgid "Next"
+msgstr "Następny"
+
+#: .\templates\spaceplanner\user_panel.html:27
+msgid "Edit preferences"
+msgstr "Zmień preferencje"
+
+#: .\templates\spaceplanner\user_panel.html:28
+#: .\templates\spaceplanner\workstation_schedule.html:18
+msgid "Workstations schedule"
+msgstr "Terminarz stanowsiska"
+
+#: .\templates\spaceplanner\user_panel.html:29
+msgid "Workstations properties"
+msgstr "Cechy stanowiska"
+
+#: .\templates\spaceplanner\workstation_preferences.html:10
+msgid "Workstations preferences"
+msgstr "Preferencje stanowiska"
+
+#: .\views.py:43
+msgid "Months after the next one are unavailable"
+msgstr "Miesiące po nastepnym są niedostępne"
+
+#: .\views.py:55
+msgid "Months before databease creation are unavailable"
+msgstr "Miesiące sprzed utworzenia bazy są niedostępne"

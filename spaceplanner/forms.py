@@ -3,16 +3,17 @@ import calendar
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 from datetime import datetime
 
 from .models import EmployeePreferences, Userweek, Workstation, Workweek
 
 class UserPreferencesForm(forms.ModelForm):
 
-    preferences_set = ["is_mac", "window", "noise", "large_screen"]
+    preferences_set = [_("is_mac"), _("window"), _("noise"), _("large_screen")]
 
     favourites = forms.ModelMultipleChoiceField(queryset=Workstation.objects.all(),
-        widget=forms.CheckboxSelectMultiple, required=False, label="Choose favourite workstations:")
+        widget=forms.CheckboxSelectMultiple, required=False, label=_("Choose favourite workstations:"))
 
     class Meta:
         model = EmployeePreferences
@@ -24,7 +25,7 @@ class UserPreferencesForm(forms.ModelForm):
             initial['favourites'] = [t.pk for t in kwargs['instance'].favourite_workspace.all()]
         forms.ModelForm.__init__(self, *args, **kwargs)
         for preference in self.preferences_set:
-            self.fields[preference+'_preference'].label = mark_safe(preference.capitalize() + " priority" ':' + '<br />')
+            self.fields[preference+'_preference'].label = mark_safe((preference.capitalize() + " priority" ':' + '<br />').replace("_", " "))
 
     def save(self, commit=True):        #Save overwrite neccessary because many-to-many relations needs them to work with forms
         instance = forms.ModelForm.save(self, False)
@@ -68,7 +69,7 @@ class ScheduleForm(forms.ModelForm):
 
 class WeekdaysForm(forms.Form):
 
-    weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label="Choose days to schedule")
+    weekdays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label=_("Choose days to schedule"))
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance')

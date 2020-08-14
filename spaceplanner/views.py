@@ -2,6 +2,7 @@ import calendar
 
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import gettext as _
 from django_tables2 import RequestConfig
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -39,7 +40,7 @@ def user_panel(request, date = None):
     else:
         today = datetime.today()
     if today > (datetime.today().replace(day=7) + timedelta(days=31)):
-        message = 'Months after the next one are unavailable'
+        message = _('Months after the next one are unavailable')
         messages.info(request, message)
         return redirect('user_panel', date=(datetime.today() + timedelta(days=31)).strftime('%Y-%m'))
     try:   
@@ -51,7 +52,7 @@ def user_panel(request, date = None):
         Userweek.objects.get_or_create(employee=user, year=isotoday[0], week=isotoday[1])
         first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
     if today.date() < first_monday and today.date() < datetime.today().date():
-        message = 'Months before databease creation are unavailable'
+        message = _('Months before databease creation are unavailable')
         messages.info(request, message)
         return redirect('user_panel', date=(first_monday + timedelta(days=7)).strftime('%Y-%m'))
 

@@ -2,6 +2,8 @@
 {% load render_table from django_tables2 %}
 {% load staticfiles %}
 
+{% load i18n %}
+
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <body>
@@ -13,10 +15,10 @@
 </ul>
 {% endif %}
 <div class='workstation-schedule-body'>
-    <p>Workstations schedule</p>
+    <p>{% trans 'Workstations schedule' %}</p>
     <div class=up-date-buttons>
-        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=previous_date %}" id='change_date' >Previous</a>
-        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=next_date %}" id='change_date'>Next</a>
+        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=previous_date %}" id='change_date' >{% trans 'Previous' %}</a>
+        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=next_date %}" id='change_date'>{% trans 'Next' %}</a>
     </div>
     <a class='up-month-name'>{{date_range}}</a>
     {% render_table table %}

@@ -1,11 +1,13 @@
 {% extends "base_generic.html" %}
 
+{% load i18n %}
+
 {% block content %}
 <body>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Change">
+        <input type="submit" value="{% trans 'Change' %}">
     </form>
 </body>
 </html>
