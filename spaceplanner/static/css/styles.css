@@ -91,10 +91,6 @@
     width: 210px;
 }
 
-#change_date {
-    width: 85px;
-}
-
 #sw-clear-schedule, #sw-cancel {
     display:inline-block;
     left: 10px;

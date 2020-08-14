@@ -7,6 +7,7 @@ from django_tables2 import RequestConfig
 from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from .models import Userweek, EmployeePreferences, WorkstationPreferences
 from .tables import ScheduleTable, PreferencesTable, WorkstationPreferencesTable
@@ -70,7 +71,7 @@ def user_panel(request, date = None):
     table = ScheduleTable(schedule, order_by=('data_range'))
     RequestConfig(request).configure(table)
 
-    date_name = today.strftime('%B') + ' ' + today.strftime('%Y')
+    date_name = _(today.strftime('%B')) + ' ' + today.strftime('%Y')
     next_date = (today.replace(day=1) + timedelta(days=31)).strftime('%Y-%m')
     previous_date = (today.replace(day=1) - timedelta(days=1)).strftime('%Y-%m')
 
@@ -144,10 +145,22 @@ def edit_preferences(request):
     return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
 
 @login_required
-def workstation_schedule(request, date):
+def workstation_schedule(request, date:str):
     monday = datetime.strptime(date, '%Y-%m-%d')
-    if monday < datetime(1970, 1, 1) or monday > datetime(2100, 12, 31):
-        return redirect('out_of_range')
+    if monday > (datetime.today() + timedelta(days=28) + relativedelta(day=31)):
+        message = _('Future schedule is unavailable')
+        messages.info(request, message)
+        return redirect('workstation_schedule', date= (monday - timedelta(days=7)).strftime('%Y-%m-%d'))
+    try:   
+        first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
+    except IndexError:
+        isotoday = datetime.today().isocalendar()
+        Userweek.objects.get_or_create(employee=request.user, year=isotoday[0], week=isotoday[1])
+        first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
+    if monday.date() < first_monday:
+        message = _('Weeks before databease creation are unavailable')
+        messages.info(request, message)
+        return redirect('workstation_schedule', date= (monday + timedelta(days=7)).strftime('%Y-%m-%d'))
     date_range, table = views_processing.get_schedule_week_table(monday)
     RequestConfig(request).configure(table)
     monday = monday + timedelta(weeks=1)
