@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-14 14:34+0200\n"
+"POT-Creation-Date: 2020-08-14 15:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,19 +140,19 @@ msgstr "Niedziela"
 msgid "monday_date"
 msgstr "data_poniedziałku"
 
+#: .\tables.py:32
+msgid "Generate schedule"
+msgstr "Terminarz tygodnia"
+
 #: .\tables.py:37
 msgid "Dates"
 msgstr "Daty"
 
-#: .\tables.py:41
-msgid "Generate schedule"
-msgstr "Terminarz tygodnia"
-
-#: .\tables.py:62
+#: .\tables.py:64
 msgid "Favourite Workspaces"
 msgstr "Ulubione Stanowiska"
 
-#: .\tables.py:96
+#: .\tables.py:98
 msgid "Workstation"
 msgstr "Stanowisko"
 
