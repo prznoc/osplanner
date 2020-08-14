@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-14 12:27+0200\n"
+"POT-Creation-Date: 2020-08-14 14:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,11 +144,15 @@ msgstr "data_poniedziałku"
 msgid "Dates"
 msgstr "Daty"
 
-#: .\tables.py:60
+#: .\tables.py:40
+msgid "Generate schedule"
+msgstr "Terminarz tygodnia"
+
+#: .\tables.py:61
 msgid "Favourite Workspaces"
 msgstr "Ulubione Stanowiska"
 
-#: .\tables.py:94
+#: .\tables.py:95
 msgid "Workstation"
 msgstr "Stanowisko"
 
@@ -300,6 +304,9 @@ msgstr "Powrót do strony głównej"
 #: .\templates\spaceplanner\schedule_button.html:1
 msgid "Schedule Week"
 msgstr "Zaplanuj tydzień"
+
+msgid "View week"
+msgstr "Zobacz plan tygodnia"
 
 #: .\templates\spaceplanner\schedule_week.html:10
 msgid "Date"

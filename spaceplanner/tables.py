@@ -2,6 +2,7 @@ import django_tables2 as tables
 import calendar
 
 from django.utils.translation import gettext as _
+from django.template.loader import render_to_string
 
 from .models import Userweek, EmployeePreferences, Workweek, WorkstationPreferences
 from datetime import datetime, timedelta
@@ -13,7 +14,7 @@ class WeekdayColumn(tables.Column):
         today = today.isocalendar()
         if getattr(record, 'year') == today[0] and \
             getattr(record, 'week') == today[1] and \
-                self.verbose_name == today_weekday:
+                self.verbose_name == _(today_weekday):
                     self.attrs = {'td': {'class': 'today'}}
         else:
             column.attrs = {'td': {}}
@@ -27,8 +28,8 @@ class ScheduleButtonColumn(tables.TemplateColumn):
         last_monday = (datetime.today() - timedelta(days=datetime.today().weekday())).date()
         if (record.monday_date < last_monday):
             record.date=record.monday_date.strftime('%Y-%m-%d')
-            self.template_code = '<a class="btn btn-primary" href="{% url "workstation_schedule" record.date %}">View Schedule</a>'
-        else: self.template_code = '<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>'
+            self.template_code = '{% load i18n %} <a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">{% trans "View week" %}</a>'
+        else: self.template_code = '{% load i18n %} <a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">{% trans "Schedule Week" %}</a>'
         return super(ScheduleButtonColumn, self).render(record, table, value, bound_column, **kwargs)
 
 
@@ -36,7 +37,8 @@ class ScheduleTable(tables.Table):
     data_range = tables.Column(accessor='monday_date', verbose_name=_('Dates'))
     year=tables.Column(orderable=False)
     week=tables.Column(orderable=False)
-    generate_schedule = ScheduleButtonColumn('<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>', orderable=False)
+    generate_schedule = ScheduleButtonColumn('<a class="btn btn-primary" href="{% url "schedule_week" record.pk %}">Schedule Week</a>', orderable=False,
+            verbose_name=_('Generate schedule'))
 
     def render_data_range(self, record):
         return record.monday_date.strftime('%Y/%m/%d') + " - " + (record.monday_date + timedelta(days=6)).strftime('%Y/%m/%d')
@@ -44,7 +46,7 @@ class ScheduleTable(tables.Table):
     def __init__(self, *args, **kwargs):
         for weekday in list(calendar.day_name):
             self.base_columns[weekday] = WeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
-                    verbose_name=weekday)
+                    verbose_name=_(weekday))
         super().__init__(*args, **kwargs)
 
 
@@ -80,7 +82,7 @@ class WorkstationWeekdayColumn(tables.Column):
         today = today.isocalendar()
         if getattr(record, 'year') == today[0] and \
             getattr(record, 'week') == today[1] and \
-                self.verbose_name == today_weekday:
+                self.verbose_name == _(today_weekday):
                     self.attrs = {'td': {'class': 'today'}}
         else:
             column.attrs = {'td': {}}
@@ -96,7 +98,7 @@ class WorkstationsScheduleTable(tables.Table):
     def __init__(self, *args, **kwargs):
         for weekday in list(calendar.day_name):
             self.base_columns[weekday] = WorkstationWeekdayColumn(accessor=weekday, orderable=False, empty_values=[],
-                    verbose_name=weekday)
+                    verbose_name=_(weekday))
         super().__init__(*args, **kwargs)
     
     class Meta:
