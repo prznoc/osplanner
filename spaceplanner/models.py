@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import ugettext_lazy  as _
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from .app_logic import calendar_functions
 
@@ -19,6 +21,12 @@ class WorkstationPreferences(models.Model):
     noise = models.BooleanField(verbose_name=_('Noise'), default=False)
     large_screen = models.BooleanField(verbose_name=_('Large_screen'), default=False)
     is_mac = models.BooleanField(verbose_name=_('Mac'), default=False)
+
+    @receiver(post_save, sender=Workstation)
+    def create_modelb(sender, instance, created, **kwargs):
+        if created:
+            if not hasattr(instance, 'WorkstationPreferences'):
+                WorkstationPreferences.objects.create(workstation=instance)
 
 
 class EmployeePreferences(models.Model):
