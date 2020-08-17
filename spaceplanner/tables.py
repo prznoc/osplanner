@@ -1,7 +1,7 @@
 import django_tables2 as tables
 import calendar
 
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext_lazy  as _
 
 from .models import Userweek, EmployeePreferences, Workweek, WorkstationPreferences
 from datetime import datetime, timedelta
@@ -29,7 +29,6 @@ class ScheduleButtonColumn(tables.TemplateColumn):
             record.date=record.monday_date.strftime('%Y-%m-%d')
             self.template_name = 'spaceplanner/view_button.html'
         else: self.template_name = 'spaceplanner/schedule_button.html'
-        self.verbose_name=_('Generate schedule')
         return super(ScheduleButtonColumn, self).render(record, table, value, bound_column, **kwargs)
 
 
@@ -40,6 +39,7 @@ class ScheduleTable(tables.Table):
     generate_schedule = ScheduleButtonColumn(
             template_name= 'spaceplanner/view_button.html',
             orderable=False,
+            verbose_name=_('Generate schedule')
             )
 
     def render_data_range(self, record):

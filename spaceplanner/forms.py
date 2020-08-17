@@ -3,14 +3,14 @@ import calendar
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy  as _
 from datetime import datetime
 
 from .models import EmployeePreferences, Userweek, Workstation, Workweek
 
 class UserPreferencesForm(forms.ModelForm):
 
-    preferences_set = [_("is_mac"), _("window"), _("noise"), _("large_screen")]
+    preferences_set = ["is_mac", "window", "noise", "large_screen"]
 
     favourites = forms.ModelMultipleChoiceField(queryset=Workstation.objects.all(),
         widget=forms.CheckboxSelectMultiple, required=False, label=_("Choose favourite workstations:"))
@@ -20,12 +20,13 @@ class UserPreferencesForm(forms.ModelForm):
         exclude = ('favourite_workspace', 'employee')
 
     def __init__(self, *args, **kwargs):
+        { _('is_mac'), _('window'), _('noise'), _('large_screen')}  #add necessary hooks to translate those strings
         if kwargs.get('instance'):
             initial = kwargs.setdefault('initial', {})
             initial['favourites'] = [t.pk for t in kwargs['instance'].favourite_workspace.all()]
         forms.ModelForm.__init__(self, *args, **kwargs)
         for preference in self.preferences_set:
-            self.fields[preference+'_preference'].label = mark_safe((preference.capitalize() + " priority" ':' + '<br />').replace("_", " "))
+            self.fields[preference+'_preference'].label = mark_safe((_("{} priority").format(_(preference)).capitalize() + ':<br />').replace("_", " "))
 
     def save(self, commit=True):        #Save overwrite neccessary because many-to-many relations needs them to work with forms
         instance = forms.ModelForm.save(self, False)
@@ -60,7 +61,7 @@ class ScheduleForm(forms.ModelForm):
                 if not attr or attr == self.instance.employee:
                     request.append(workweek.workstation)
             request = Workstation.objects.filter(ws_id__in=[rq.ws_id for rq in request])
-            self.fields[weekday] = forms.ModelChoiceField(queryset= request, required= False, label= mark_safe(weekday + ':' + '<br />'))
+            self.fields[weekday] = forms.ModelChoiceField(queryset= request, required= False, label= mark_safe(_(weekday) + ':' + '<br />'))
             self.initial[weekday] = getattr(self.instance, weekday)
             if self.this_week_flag and list(calendar.day_name).index(weekday) < datetime.today().weekday():
                 self.fields[weekday].widget = forms.HiddenInput()
@@ -80,7 +81,7 @@ class WeekdaysForm(forms.Form):
             if this_week_flag and list(calendar.day_name).index(weekday) < datetime.today().weekday():
                 pass
             else:
-                OPTIONS.append((weekday, weekday))
+                OPTIONS.append((weekday, _(weekday)))
         self.fields['weekdays'].choices = tuple(OPTIONS)
         self.fields['weekdays'].initial = [weekday for weekday in list(calendar.day_name) if getattr(instance, weekday)]
         self.fields['weekdays'].required = False

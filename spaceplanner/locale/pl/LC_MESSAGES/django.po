@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-14 15:30+0200\n"
+"POT-Creation-Date: 2020-08-17 10:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,27 +24,31 @@ msgstr ""
 msgid "Following days could not be scheduled: "
 msgstr "Następujące dni nie mogły zostać przydzielone: "
 
-#: .\forms.py:13
-msgid "is_mac"
-msgstr "mac"
-
-#: .\forms.py:13
-msgid "window"
-msgstr "okno"
-
-#: .\forms.py:13
-msgid "noise"
-msgstr "hałas"
-
-#: .\forms.py:13
-msgid "large_screen"
-msgstr "duży_ekran"
-
 #: .\forms.py:16
 msgid "Choose favourite workstations:"
 msgstr "Wybierz ulubione stanowiska"
 
-#: .\forms.py:72
+#: .\forms.py:23
+msgid "is_mac"
+msgstr "maca"
+
+#: .\forms.py:23
+msgid "window"
+msgstr "okna"
+
+#: .\forms.py:23
+msgid "noise"
+msgstr "hałasu"
+
+#: .\forms.py:23
+msgid "large_screen"
+msgstr "dużego_ekranu"
+
+#: .\forms.py:29
+msgid "{} priority"
+msgstr "priorytet {}"
+
+#: .\forms.py:73
 msgid "Choose days to schedule"
 msgstr "Wybierz dni do przydziału"
 
@@ -140,13 +144,13 @@ msgstr "Niedziela"
 msgid "monday_date"
 msgstr "data_poniedziałku"
 
-#: .\tables.py:32
-msgid "Generate schedule"
-msgstr "Terminarz tygodnia"
-
-#: .\tables.py:37
+#: .\tables.py:36
 msgid "Dates"
 msgstr "Daty"
+
+#: .\tables.py:42
+msgid "Generate schedule"
+msgstr "Terminarz tygodnia"
 
 #: .\tables.py:64
 msgid "Favourite Workspaces"
@@ -301,7 +305,7 @@ msgstr "Wybrana data znajduje się poza dopuszczalnym zakresem"
 msgid "Return to main page"
 msgstr "Powrót do strony głównej"
 
-#: .\templates\spaceplanner\schedule_button.html:1
+#: .\templates\spaceplanner\schedule_button.html:2
 msgid "Schedule Week"
 msgstr "Zaplanuj tydzień"
 
@@ -348,6 +352,10 @@ msgstr "Terminarz stanowsiska"
 msgid "Workstations properties"
 msgstr "Cechy stanowiska"
 
+#: .\templates\spaceplanner\view_button.html:2
+msgid "View week"
+msgstr "Plan tygodnia"
+
 #: .\templates\spaceplanner\workstation_preferences.html:10
 msgid "Workstations preferences"
 msgstr "Preferencje stanowiska"
@@ -367,6 +375,3 @@ msgstr "Przyszłe kalendarium jest niedostępne"
 #: .\views.py:161
 msgid "Weeks before databease creation are unavailable"
 msgstr "Tygodnie sprzed utworzenia bazy są niedostępne"
-
-msgid "View week"
-msgstr "Plan tygodnia"

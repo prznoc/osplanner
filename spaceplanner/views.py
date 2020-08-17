@@ -2,7 +2,7 @@ import calendar
 
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext_lazy  as _
 from django_tables2 import RequestConfig
 from django.shortcuts import redirect
 from django.contrib import messages
