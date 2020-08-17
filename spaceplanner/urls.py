@@ -13,5 +13,6 @@ urlpatterns = [
     path('spaceplanner/workstation_schedule/<date>', views.workstation_schedule, name='workstation_schedule'),
     path('spaceplanner/workstation_preferences', views.workstation_preferences, name='workstation_preferences'),
     path('spaceplanner/edit_information', views.edit_information, name='edit_information'),
+    path('i18n/', include('django.conf.urls.i18n')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]

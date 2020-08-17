@@ -5,7 +5,17 @@
 .page-header {
     background-color: hsl(189, 100%, 38%);
     padding: 20px 20px 20px 40px;
-    text-align: center
+    text-align: center;
+    position:relative;
+    width:100%;
+}
+
+.language-form {
+    position:absolute;
+    margin:0;
+    padding:5px;
+    top:0;
+    right:0;
 }
 
 .col-sm-2 {
@@ -54,7 +64,7 @@
 }
 
 .page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active{
-    color: rgb(255, 255, 255)
+    color: rgb(255, 255, 255);
 }
 
 .today {
