@@ -14,6 +14,8 @@ class Workstation(models.Model):
     def __str__(self):
         return str(self.label)
 
+    class Meta:
+        verbose_name= _('Workstation')
 
 class WorkstationPreferences(models.Model):
     workstation = models.OneToOneField(Workstation, verbose_name=_('workstation'), on_delete=models.CASCADE)
@@ -27,6 +29,9 @@ class WorkstationPreferences(models.Model):
         if created:
             if not hasattr(instance, 'WorkstationPreferences'):
                 WorkstationPreferences.objects.create(workstation=instance)
+
+    class Meta:
+        verbose_name= _('Workstation Preferences')
 
 
 class EmployeePreferences(models.Model):
@@ -45,6 +50,8 @@ class EmployeePreferences(models.Model):
     is_mac_preference = models.IntegerField(verbose_name=_('Mac priority'), default = 0, validators=[MinValueValidator(0), 
             MaxValueValidator(3)])
 
+    class Meta:
+        verbose_name= _('Employee Preferences')
 
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
@@ -71,6 +78,7 @@ class Workweek(models.Model):
 
     class Meta:
         unique_together = ('workstation', 'year', 'week')
+        verbose_name= _('Workweek')
 
 class Userweek(models.Model):
     employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('employee'))
@@ -102,3 +110,4 @@ class Userweek(models.Model):
 
     class Meta:
         unique_together = ('employee', 'year', 'week')
+        verbose_name= _('Userweek')
