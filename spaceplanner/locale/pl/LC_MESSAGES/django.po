@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-17 10:22+0200\n"
+"POT-Creation-Date: 2020-08-18 08:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,117 +58,123 @@ msgstr "etykieta"
 
 #: .\models.py:18 .\tables.py:98
 msgid "Workstation"
-msgid_plural "Workstations"
-msgstr[0] "Stanowisko"
-msgstr[1] "Stanowiska"
+msgstr "Stanowisko"
 
-#: .\models.py:21 .\models.py:58
+#: .\models.py:19
+msgid "Workstations"
+msgstr "Stanowiska"
+
+#: .\models.py:23 .\models.py:60
 msgid "workstation"
 msgstr "stanowisko"
 
-#: .\models.py:22 .\models.py:40
+#: .\models.py:24 .\models.py:42
 msgid "Window"
 msgstr "Okno"
 
-#: .\models.py:23 .\models.py:43
+#: .\models.py:25 .\models.py:45
 msgid "Noise"
 msgstr "Hałas"
 
-#: .\models.py:24
+#: .\models.py:26
 msgid "Large_screen"
 msgstr "Duży ekran"
 
-#: .\models.py:25 .\models.py:49
+#: .\models.py:27 .\models.py:51
 msgid "Mac"
 msgstr "Mac"
 
-#: .\models.py:34
+#: .\models.py:36
 msgid "Workstation Preferences"
 msgstr "Preferencje stanowiska"
 
-#: .\models.py:38 .\models.py:84
+#: .\models.py:40 .\models.py:87
 msgid "employee"
 msgstr "pracownik"
 
-#: .\models.py:39
+#: .\models.py:41
 msgid "favourite_workspace"
 msgstr "ulubione_stanowiska"
 
-#: .\models.py:41
+#: .\models.py:43
 msgid "Window priority"
 msgstr "Priorytet okna"
 
-#: .\models.py:44
+#: .\models.py:46
 msgid "Noise priority"
 msgstr "Priorytet hałasu"
 
-#: .\models.py:46
+#: .\models.py:48
 msgid "Large screen"
 msgstr "Duży ekran"
 
-#: .\models.py:47
+#: .\models.py:49
 msgid "Large screen priority"
 msgstr "Priorytet dużego ekranu"
 
-#: .\models.py:50
+#: .\models.py:52
 msgid "Mac priority"
 msgstr "Priorytet Maca"
 
-#: .\models.py:54
+#: .\models.py:56
 msgid "Employee Preferences"
 msgstr "Preferencje Pracownika"
 
-#: .\models.py:59 .\models.py:85
+#: .\models.py:61 .\models.py:88
 msgid "year"
 msgstr "rok"
 
-#: .\models.py:60 .\models.py:86
+#: .\models.py:62 .\models.py:89
 msgid "week"
 msgstr "tydzień"
 
-#: .\models.py:62 .\models.py:89
+#: .\models.py:64 .\models.py:92
 msgid "Monday"
 msgstr "Poniedziałek"
 
-#: .\models.py:64 .\models.py:91
+#: .\models.py:66 .\models.py:94
 msgid "Tuesday"
 msgstr "Wtorek"
 
-#: .\models.py:66 .\models.py:93
+#: .\models.py:68 .\models.py:96
 msgid "Wednesday"
 msgstr "Środa"
 
-#: .\models.py:68 .\models.py:95
+#: .\models.py:70 .\models.py:98
 msgid "Thursday"
 msgstr "Czwartek"
 
-#: .\models.py:70 .\models.py:97
+#: .\models.py:72 .\models.py:100
 msgid "Friday"
 msgstr "Piątek"
 
-#: .\models.py:72 .\models.py:99
+#: .\models.py:74 .\models.py:102
 msgid "Saturday"
 msgstr "Sobota"
 
-#: .\models.py:74 .\models.py:101
+#: .\models.py:76 .\models.py:104
 msgid "Sunday"
 msgstr "Niedziela"
 
-#: .\models.py:81
+#: .\models.py:83
 msgid "Workweek"
-msgid_plural "Workweeks"
-msgstr[0] "Tydzień Roboczy"
-msgstr[1] "Tygodnie Robocze"
+msgstr "Tydzień Roboczy"
 
-#: .\models.py:87
+#: .\models.py:84
+msgid "Workweeks"
+msgstr "Tygodnie Robocze"
+
+#: .\models.py:90
 msgid "monday_date"
 msgstr "data_poniedziałku"
 
-#: .\models.py:113
+#: .\models.py:116
 msgid "Userweek"
-msgid_plural "Userweeks"
-msgstr[0] "Tydzień Pracownika"
-msgstr[1] "Tygodnie Pracownika"
+msgstr "Tydzień Pracownika"
+
+#: .\models.py:117
+msgid "Userweeks"
+msgstr "Tygodnie Pracownika"
 
 #: .\tables.py:36
 msgid "Dates"
@@ -182,32 +188,32 @@ msgstr "Terminarz tygodnia"
 msgid "Favourite Workspaces"
 msgstr "Ulubione Stanowiska"
 
-#: .\templates\base_generic.html:23
+#: .\templates\base_generic.html:37
 msgid "Home"
 msgstr "Strona Domowa"
 
-#: .\templates\base_generic.html:25
+#: .\templates\base_generic.html:39
 msgid "Scheduler"
 msgstr "Przydzielacz"
 
-#: .\templates\base_generic.html:26
+#: .\templates\base_generic.html:40
 msgid "Edit information"
 msgstr "Edytuj dane osobiste"
 
-#: .\templates\base_generic.html:27
+#: .\templates\base_generic.html:41
 #: .\templates\registration\password_change_form.html:6
 msgid "Change password"
 msgstr "Zmień hasło"
 
-#: .\templates\base_generic.html:28
+#: .\templates\base_generic.html:42
 msgid "Logout"
 msgstr "Wyloguj"
 
-#: .\templates\base_generic.html:30
+#: .\templates\base_generic.html:44
 msgid "Login"
 msgstr "Zaloguj"
 
-#: .\templates\base_generic.html:37
+#: .\templates\base_generic.html:51
 msgid "Logged in as"
 msgstr "Zalogowano jako"
 

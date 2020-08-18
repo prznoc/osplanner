@@ -16,6 +16,8 @@ class Workstation(models.Model):
 
     class Meta:
         verbose_name= _('Workstation')
+        verbose_name_plural = _("Workstations")
+
 
 class WorkstationPreferences(models.Model):
     workstation = models.OneToOneField(Workstation, verbose_name=_('workstation'), on_delete=models.CASCADE)
@@ -79,6 +81,7 @@ class Workweek(models.Model):
     class Meta:
         unique_together = ('workstation', 'year', 'week')
         verbose_name= _('Workweek')
+        verbose_name_plural= _('Workweeks')
 
 class Userweek(models.Model):
     employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('employee'))
@@ -111,3 +114,4 @@ class Userweek(models.Model):
     class Meta:
         unique_together = ('employee', 'year', 'week')
         verbose_name= _('Userweek')
+        verbose_name_plural= _('Userweeks')
