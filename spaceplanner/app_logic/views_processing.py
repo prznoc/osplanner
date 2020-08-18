@@ -1,7 +1,7 @@
 import calendar
 
 from datetime import datetime, timedelta
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from spaceplanner.models import Userweek, Workweek, Workstation
 from spaceplanner.app_logic.assigner import Assigner
@@ -52,7 +52,7 @@ def generateweek_form_processing(generateform, userweek: Userweek, user, this_we
 def generate_unscheduled_days_message(wrong_weekday: list):
     message = _("Following days could not be scheduled: ")
     for day in wrong_weekday:
-        message = message + day + ", "
+        message = message + _(day) + ", "
     message = message[:-2]
     return message
 
