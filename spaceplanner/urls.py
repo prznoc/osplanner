@@ -1,4 +1,5 @@
 from django.urls import path, include
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
@@ -15,4 +16,8 @@ urlpatterns = [
     path('spaceplanner/edit_information', views.edit_information, name='edit_information'),
     path('i18n/', include('django.conf.urls.i18n')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('workstations/', views.workstation_list),
+    path('workstations/<int:pk>/', views.workstation_detail),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

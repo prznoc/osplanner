@@ -13,6 +13,11 @@ from .models import Userweek, EmployeePreferences, WorkstationPreferences
 from .tables import ScheduleTable, PreferencesTable, WorkstationPreferencesTable
 from .app_logic import views_processing
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm, UserForm
+from .serializers import WorkstationSerializer
+
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 def home(request):
@@ -179,3 +184,45 @@ def workstation_preferences(request):
     table = WorkstationPreferencesTable(data)
     RequestConfig(request).configure(table)
     return render(request, 'spaceplanner/workstation_preferences.html',{'table':table})
+
+@api_view(['GET', 'POST'])
+def workstation_list(request, format=None):
+    """
+    List all code snippets, or create a new snippet.
+    """
+    if request.method == 'GET':
+        workstations = Workstation.objects.all()
+        serializer = WorkstationSerializer(workstations, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = WorkstationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def workstation_detail(request, pk, format = None):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        workstation = Workstation.objects.get(ws_id=pk)
+    except Workstation.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = WorkstationSerializer(workstation)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = WorkstationSerializer(workstation, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        workstation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
