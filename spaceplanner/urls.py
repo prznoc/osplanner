@@ -16,8 +16,20 @@ urlpatterns = [
     path('spaceplanner/edit_information', views.edit_information, name='edit_information'),
     path('i18n/', include('django.conf.urls.i18n')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('workstations/', views.workstation_list),
-    path('workstations/<int:pk>/', views.workstation_detail),
+    
+]
+
+urlpatterns += [
+    path('workstations/', views.WorkstationList.as_view()),
+    path('workstations/<int:pk>/', views.WorkstationDetail.as_view()),
+    path('workstation_preferences/', views.WorkstationPreferencesList.as_view()),
+    path('workstation_preferences/<int:pk>/', views.WorkstationPreferencesDetail.as_view()),
+    path('employee_preferences/', views.EmployeePreferencesList.as_view()),
+    path('employee_preferences/<int:pk>/', views.EmployeePreferencesDetail.as_view()),
+    path('workweeks/', views.WorkweekList.as_view()),
+    path('workweeks/<int:pk>/', views.WorkweekDetail.as_view()),
+    path('userweeks/', views.UserweekList.as_view()),
+    path('userweeks/<int:pk>/', views.UserweekDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

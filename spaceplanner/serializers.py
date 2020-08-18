@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from spaceplanner.models import Workstation, WorkstationPreferences, EmployeePreferences, Workweek, Userweek
+import calendar
+
 # from django.utils.translation import ugettext_lazy  as _
 from django.contrib.auth.models import User
 
@@ -22,12 +24,6 @@ class WorkstationPreferencesSerializer(serializers.ModelSerializer):
         preference, created = WorkstationPreferences.objects.create(workstation=workstation)
         return preference
 
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = '__all__'
-
 class EmployeePreferencesSerializer(serializers.ModelSerializer):
     
     employee = serializers.StringRelatedField()
@@ -36,17 +32,16 @@ class EmployeePreferencesSerializer(serializers.ModelSerializer):
         model = EmployeePreferences
         fields = '__all__'
 
-    def create(self, validated_data):
-        employee = WorkstationSerializer.create(UserSerializer(), validated_data)
-        preference, created = EmployeePreferences.objects.create(employee=employee)
-        return preference
 
 class WorkweekSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workweek
+        fields = '__all__'
+
 
 class UserweekSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Userweek
+        fields = '__all__'
