@@ -7,14 +7,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     last_login = serializers.ReadOnlyField()
     date_joined = serializers.ReadOnlyField()
-    employee_preferences = serializers.HyperlinkedRelatedField(many=False, view_name='employee-preference-detail', read_only=True)
+    employee_preferences = serializers.HyperlinkedRelatedField(many=False, view_name='spaceplanner:employee-preference-detail', read_only=True)
     class Meta:
         model = User
         fields = ['id', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'employee_preferences']
 
 class WorkstationSerializer(serializers.ModelSerializer):
 
-    workstation_preferences = serializers.HyperlinkedRelatedField(many=False, view_name='workstation-preference-detail', read_only=True)
+    workstation_preferences = serializers.HyperlinkedRelatedField(many=False, view_name='spaceplanner:workstation-preference-detail', read_only=True)
     class Meta:
         model = Workstation
         fields = [ 'ws_id', 'label', 'workstation_preferences']
