@@ -1,0 +1,112 @@
+.main-body {
+    background-color: #dbd9d9;
+  }
+
+.page-header {
+    background-color: hsl(189, 100%, 38%);
+    padding: 20px 20px 20px 40px;
+    text-align: center;
+    position:relative;
+    width:100%;
+}
+
+.language-form {
+    position:absolute;
+    margin:0;
+    padding:5px;
+    top:0;
+    right:0;
+}
+
+.col-sm-2 {
+    min-width: min-content;
+    float:left;
+}
+
+.sidebar-nav {
+    background-color: #bfca5c;
+    padding: 20px 20px 20px 40px;
+    text-align: left;
+    min-width: min-content;
+    margin-top: 10px;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0; 
+    border: 3px solid #73AD21;
+}
+
+.col-sm-10 {
+    float:left;
+    margin:auto;
+}
+
+.user-body, .workstation-schedule-body {
+    text-align: center;
+}
+
+.up-month-name {
+    position: relative;
+    float: right;
+    right: 10px;
+}
+
+.up-date-buttons , .up-preference-buttons, .sw-control-buttons{
+    float: left;
+    left: 10px;
+}
+
+.up-date-buttons {
+    margin-bottom: 10px
+}
+
+.up-preference-buttons{
+    margin-top: 10px
+}
+
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active{
+    color: rgb(255, 255, 255);
+}
+
+.today {
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+.btn-primary {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.empty-space {
+    height: 50px;
+}
+
+.control-buttons {
+    overflow: hidden;
+}
+
+.headline {
+    text-align: center;
+}
+
+.oor-body {
+    align-content: center;
+    background-color: indigo;
+}
+
+.messages {
+    text-align: left;
+}
+
+#workstation_schedule_btn, #edit_preferences_btn {
+    width: 210px;
+}
+
+#sw-clear-schedule, #sw-cancel {
+    display:inline-block;
+    left: 10px;
+    margin-right: 15px;
+}
+
+#oor-button {
+    left:50%;
+}

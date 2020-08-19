@@ -1,0 +1,39 @@
+{% extends "base_generic.html" %}
+
+{% load i18n %}
+
+{% load staticfiles %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<body>
+    <p>{% trans 'Date' %}: {{ userweek.year }}|{{userweek.week}}, {{date_range}} </p>
+    <p>{% trans 'Choose workstation manually:' %}</p>
+    <form method="POST" class="schedule-form">
+        {% csrf_token %}
+        {% for field in editform %}
+            <p>{{ field.label }} {{ field }}</p>
+        {% endfor %}
+        <button type="submit" class="button" name="editweek">{% trans 'Save' %}</button>
+    </form>
+    <p class="empty-space"></p>
+    
+    <p>{% trans 'Authomatic scheduler' %}</p>
+    <form method='POST'>
+        {% csrf_token %}
+        {{ generateform.as_p }}
+        <button type="submit" class="button" name="generateweek">{% trans 'Save' %}</button>
+    </form>
+    <p class="empty-space"></p>
+    <div class="sw-control-buttons">
+        <div id="sw-clear-schedule">
+            <form method='POST'>
+                {% csrf_token %}
+                <input type="submit" class="button" value="{% trans 'Clear Schedule' %}" name="mybtn">
+            </form>
+        </div>
+        <a href="{% url 'user_panel'%}" id="sw-cancel"><button>{% trans 'Cancel' %}</button></a>
+    </div>
+</body>
+</html>
+{% endblock %}
