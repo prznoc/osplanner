@@ -18,15 +18,15 @@
     {% endif %}
     <a class='up-month-name'>{{date_name}}</a>
     <div class=up-date-buttons>
-        <a class="btn btn-primary" href="{% url 'user_panel' date=previous_date %}" id='change_date' >{% trans 'Previous' %}</a>
-        <a class="btn btn-primary" href="{% url 'user_panel' date=next_date %}" id='change_date'>{% trans 'Next' %}</a>
+        <a class="btn btn-primary" href="{% url 'spaceplanner:user_panel' date=previous_date %}" id='change_date' >{% trans 'Previous' %}</a>
+        <a class="btn btn-primary" href="{% url 'spaceplanner:user_panel' date=next_date %}" id='change_date'>{% trans 'Next' %}</a>
     </div>
     {% render_table table %}
     {% render_table preferences %}
     <div class=up-preference-buttons>
-        <a class="btn btn-primary" href="{% url 'edit_preferences' %}" id='edit_preferences_btn'>{% trans 'Edit preferences' %}</a>
-        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=date %}", id='edit_preferences_btn'>{% trans 'Workstations schedule' %}</a>
-        <a class="btn btn-primary" href="{% url 'workstation_preferences'%}", id='edit_preferences_btn'>{% trans 'Workstations properties' %}</a>
+        <a class="btn btn-primary" href="{% url 'spaceplanner:edit_preferences' %}" id='edit_preferences_btn'>{% trans 'Edit preferences' %}</a>
+        <a class="btn btn-primary" href="{% url 'spaceplanner:workstation_schedule' date=date %}", id='edit_preferences_btn'>{% trans 'Workstations schedule' %}</a>
+        <a class="btn btn-primary" href="{% url 'spaceplanner:workstation_preferences'%}", id='edit_preferences_btn'>{% trans 'Workstations properties' %}</a>
     </div>
 </div>
 </body>

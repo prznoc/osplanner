@@ -1,0 +1,6 @@
+include LICENSE
+include README.rst
+recursive-include spaceplanner/static *
+recursive-include spaceplanner/templates *
+recursive-include spaceplanner/locale *
+recursive-include docs *

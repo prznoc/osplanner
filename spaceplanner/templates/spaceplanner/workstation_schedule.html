@@ -17,8 +17,8 @@
 <div class='workstation-schedule-body'>
     <p>{% trans 'Workstations schedule' %}</p>
     <div class=up-date-buttons>
-        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=previous_date %}" id='change_date' >{% trans 'Previous' %}</a>
-        <a class="btn btn-primary" href="{% url 'workstation_schedule' date=next_date %}" id='change_date'>{% trans 'Next' %}</a>
+        <a class="btn btn-primary" href="{% url 'spaceplanner:workstation_schedule' date=previous_date %}" id='change_date' >{% trans 'Previous' %}</a>
+        <a class="btn btn-primary" href="{% url 'spaceplanner:workstation_schedule' date=next_date %}" id='change_date'>{% trans 'Next' %}</a>
     </div>
     <a class='up-month-name'>{{date_range}}</a>
     {% render_table table %}

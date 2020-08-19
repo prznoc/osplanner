@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <body class='oor-body'>
     <p class='headline'>{% trans 'Chosen date is out of range' %}</p>
-    <a class="btn btn-primary" id='or-button' href="{% url 'user_panel' %}">{% trans 'Return to main page' %}</a>
+    <a class="btn btn-primary" id='or-button' href="{% url 'spaceplanner:user_panel' %}">{% trans 'Return to main page' %}</a>
 </body>
 </html>
 {% endblock %}

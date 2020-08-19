@@ -17,7 +17,7 @@
     {% endif %}
   {% endif %}
   
-  <form method="post" action="{% url 'login' %}">
+  <form method="post" action="{% url 'spaceplanner:login' %}">
     {% csrf_token %}
     <table>
       <tr>
@@ -34,6 +34,6 @@
   </form>
   
   {# Assumes you setup the password_reset view in your URLconf #}
-  <p><a href="{% url 'password_reset' %}">{% trans 'Lost password?' %}</a></p>
+  <p><a href="{% url 'spaceplanner:password_reset' %}">{% trans 'Lost password?' %}</a></p>
   
 {% endblock %}

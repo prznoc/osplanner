@@ -32,7 +32,7 @@ def edit_information(request):
         if form.is_valid():
             request.user = form.save(commit=False)
             request.user.save()
-            return redirect('user_panel')
+            return redirect('spaceplanner:user_panel')
     else:
         form = UserForm(instance=request.user)
     return render(request, 'spaceplanner/edit_information.html', {'form': form})
@@ -50,7 +50,7 @@ def user_panel(request, date = None):
     if today > (datetime.today().replace(day=7) + timedelta(days=31)):
         message = _('Months after the next one are unavailable')
         messages.info(request, message)
-        return redirect('user_panel', date=(datetime.today() + timedelta(days=31)).strftime('%Y-%m'))
+        return redirect('spaceplanner:user_panel', date=(datetime.today() + timedelta(days=31)).strftime('%Y-%m'))
     try:   
         first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
     except IndexError:
@@ -62,7 +62,7 @@ def user_panel(request, date = None):
     if today.date() < first_monday and today.date() < datetime.today().date():
         message = _('Months before databease creation are unavailable')
         messages.info(request, message)
-        return redirect('user_panel', date=(first_monday + timedelta(days=7)).strftime('%Y-%m'))
+        return redirect('spaceplanner:user_panel', date=(first_monday + timedelta(days=7)).strftime('%Y-%m'))
 
     date = (today + timedelta(days=-today.weekday())).strftime('%Y-%m-%d')
     
@@ -96,7 +96,7 @@ def schedule_week(request, pk: int):
     today = datetime.today()
     last_monday = today - timedelta(days=today.weekday())
     if monday < last_monday.date():
-        return redirect('workstation_schedule', date=monday.strftime('%Y-%m-%d'))
+        return redirect('spaceplanner:workstation_schedule', date=monday.strftime('%Y-%m-%d'))
     this_week_flag = None
     if monday < today.date():
         this_week_flag = True
@@ -108,7 +108,7 @@ def schedule_week(request, pk: int):
             views_processing.clear_workweek(userweek, list(calendar.day_name))
             if editform.is_valid():
                 views_processing.editweek_form_processing(editform, user)
-                return redirect('user_panel')
+                return redirect('spaceplanner:user_panel')
         if 'generateweek' in request.POST:
             editform = ScheduleForm(instance=userweek, flag=this_week_flag)
             generateform = WeekdaysForm(request.POST, instance=userweek, flag=this_week_flag)
@@ -117,7 +117,7 @@ def schedule_week(request, pk: int):
                 if wrong_weekdays:
                     message = views_processing.generate_unscheduled_days_message(wrong_weekdays)
                     messages.info(request, message)
-                return redirect('user_panel')
+                return redirect('spaceplanner:user_panel')
         if 'mybtn' in request.POST:
             editform = ScheduleForm(instance=userweek, flag=this_week_flag)
             generateform = WeekdaysForm(instance=userweek, flag=this_week_flag)
@@ -130,7 +130,7 @@ def schedule_week(request, pk: int):
                         break
             views_processing.clear_workweek(userweek, cleared_days)
             views_processing.clear_userweek(userweek, cleared_days)
-            return redirect('user_panel')
+            return redirect('spaceplanner:user_panel')
     else:
         editform = ScheduleForm(instance=userweek, flag=this_week_flag)       
         generateform = WeekdaysForm(instance=userweek,flag=this_week_flag)
@@ -146,7 +146,7 @@ def edit_preferences(request):
         if form.is_valid():
             preferences = form.save(commit=False)
             preferences.save()
-            return redirect('user_panel')
+            return redirect('spaceplanner:user_panel')
     else:
         form = UserPreferencesForm(instance=preferences)
     return render(request, 'spaceplanner/edit_preferences.html', {'form': form})
@@ -157,7 +157,7 @@ def workstation_schedule(request, date:str):
     if monday > (datetime.today() + timedelta(days=28) + relativedelta(day=31)):
         message = _('Future schedule is unavailable')
         messages.info(request, message)
-        return redirect('workstation_schedule', date= (monday - timedelta(days=7)).strftime('%Y-%m-%d'))
+        return redirect('spaceplanner:workstation_schedule', date= (monday - timedelta(days=7)).strftime('%Y-%m-%d'))
     try:   
         first_monday = Userweek.objects.all().order_by('monday_date')[0].monday_date
     except IndexError:
@@ -167,7 +167,7 @@ def workstation_schedule(request, date:str):
     if monday.date() < first_monday:
         message = _('Weeks before databease creation are unavailable')
         messages.info(request, message)
-        return redirect('workstation_schedule', date= (monday + timedelta(days=7)).strftime('%Y-%m-%d'))
+        return redirect('spaceplanner:workstation_schedule', date= (monday + timedelta(days=7)).strftime('%Y-%m-%d'))
     date_range, table = views_processing.get_schedule_week_table(monday)
     RequestConfig(request).configure(table)
     monday = monday + timedelta(weeks=1)
@@ -186,6 +186,9 @@ def workstation_preferences(request):
     table = WorkstationPreferencesTable(data)
     RequestConfig(request).configure(table)
     return render(request, 'spaceplanner/workstation_preferences.html',{'table':table})
+
+def logout(request):
+    return render(request, 'registration/logged_out.html', {})
 
 class WorkstationList(generics.ListCreateAPIView):
     permission_classes = [IsAdminUserOrReadOnly]

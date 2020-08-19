@@ -15,7 +15,8 @@
 <body class='main-body'>
     <div class="page-header">
         <h1><a href="/">OS Planner</a></h1>
-        <form action="{% url 'set_language' %}" method="post" class=language-form>
+        <!--
+        <form action="{% url 'spaceplanner:set_language' %}" method="post" class=language-form>
             {% csrf_token %}
             <input name="next" type="hidden" value="{{ redirect_to }}" />
               {% get_current_language as LANGUAGE_CODE %}
@@ -28,20 +29,21 @@
                 </button>
               {% endfor %}
           </form>
+          -->
     </div>
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-2">
       {% block sidebar %}
         <ul class="sidebar-nav">
-          <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+          <li><a href="{% url 'spaceplanner:home' %}">{% trans 'Home' %}</a></li>
           {% if user.is_authenticated %}
-            <li><a href="{% url 'user_panel' %}">{% trans 'Scheduler' %}</a></li>
-            <li><a href="{% url 'edit_information'%}">{% trans 'Edit information' %}</a></li>
-            <li><a href="{% url 'password_change' %}">{% trans 'Change password' %}</a></li>
-            <li><a href="{% url 'logout'%}">{% trans 'Logout' %}</a></li>
+            <li><a href="{% url 'spaceplanner:user_panel' %}">{% trans 'Scheduler' %}</a></li>
+            <li><a href="{% url 'spaceplanner:edit_information'%}">{% trans 'Edit information' %}</a></li>
+            <li><a href="{% url 'spaceplanner:password_change' %}">{% trans 'Change password' %}</a></li>
+            <li><a href="{% url 'spaceplanner:logout'%}">{% trans 'Logout' %}</a></li>
           {% else %}
-            <li><a href="{% url 'login'%}">{% trans 'Login' %}</a></li>   
+            <li><a href="{% url 'spaceplanner:login'%}">{% trans 'Login' %}</a></li>   
           {% endif %} 
         </ul>
      {% endblock %}

@@ -29,5 +29,3 @@ ENV/
 .vscode
 
 db.sqlite3
-to-do-list
-playground.py
