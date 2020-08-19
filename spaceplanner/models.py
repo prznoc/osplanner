@@ -20,7 +20,7 @@ class Workstation(models.Model):
 
 
 class WorkstationPreferences(models.Model):
-    workstation = models.OneToOneField(Workstation, verbose_name=_('workstation'), on_delete=models.CASCADE)
+    workstation = models.OneToOneField(Workstation, verbose_name=_('workstation'), on_delete=models.CASCADE, related_name='workstation_preferences')
     window = models.BooleanField(verbose_name=_('Window'), default=False)
     noise = models.BooleanField(verbose_name=_('Noise'), default=False)
     large_screen = models.BooleanField(verbose_name=_('Large_screen'), default=False)
@@ -37,7 +37,7 @@ class WorkstationPreferences(models.Model):
 
 
 class EmployeePreferences(models.Model):
-    employee = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_("employee"), on_delete=models.CASCADE)
+    employee = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_("employee"), on_delete=models.CASCADE, related_name='employee_preferences')
     favourite_workspace = models.ManyToManyField(Workstation, verbose_name=_("favourite_workspace"), default = None, blank=True) 
     window = models.BooleanField(verbose_name=_('Window'), default = False)
     window_preference = models.IntegerField(verbose_name=_('Window priority'), default = 0, validators=[MinValueValidator(0), 
@@ -57,7 +57,7 @@ class EmployeePreferences(models.Model):
 
 class Workweek(models.Model):
     week_id = models.AutoField(primary_key=True)
-    workstation = models.ForeignKey(Workstation, name="workstation", on_delete=models.CASCADE, verbose_name=_('workstation'))
+    workstation = models.ForeignKey(Workstation, name="workstation", on_delete=models.CASCADE, verbose_name=_('workstation'), related_name='workweeks')
     year =  models.IntegerField(verbose_name=_('year'))
     week = models.IntegerField(verbose_name=_('week'))
     Monday = models.ForeignKey(settings.AUTH_USER_MODEL, name="Monday", blank = True, null = True, 
@@ -84,7 +84,7 @@ class Workweek(models.Model):
         verbose_name_plural= _('Workweeks')
 
 class Userweek(models.Model):
-    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('employee'))
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('employee'), related_name='userweeks')
     year =  models.IntegerField(_('year'))
     week = models.IntegerField(_('week'))
     monday_date = models.DateField(_("monday_date"))

@@ -1,15 +1,23 @@
-from rest_framework import serializers
 from spaceplanner.models import Workstation, WorkstationPreferences, EmployeePreferences, Workweek, Userweek
-import calendar
 
-# from django.utils.translation import ugettext_lazy  as _
+from rest_framework import serializers
 from django.contrib.auth.models import User
+
+class UserSerializer(serializers.ModelSerializer):
+
+    last_login = serializers.ReadOnlyField()
+    date_joined = serializers.ReadOnlyField()
+    employee_preferences = serializers.HyperlinkedRelatedField(many=False, view_name='employee-preference-detail', read_only=True)
+    class Meta:
+        model = User
+        fields = ['id', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'employee_preferences']
 
 class WorkstationSerializer(serializers.ModelSerializer):
 
+    workstation_preferences = serializers.HyperlinkedRelatedField(many=False, view_name='workstation-preference-detail', read_only=True)
     class Meta:
         model = Workstation
-        fields = [ 'ws_id', 'label']
+        fields = [ 'ws_id', 'label', 'workstation_preferences']
 
 class WorkstationPreferencesSerializer(serializers.ModelSerializer):
     
@@ -35,12 +43,20 @@ class EmployeePreferencesSerializer(serializers.ModelSerializer):
 
 class WorkweekSerializer(serializers.ModelSerializer):
 
+    year = serializers.IntegerField(read_only=True)
+    week = serializers.IntegerField(read_only=True)
+    workstation = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Workweek
         fields = '__all__'
 
 
 class UserweekSerializer(serializers.ModelSerializer):
+
+    year = serializers.IntegerField(read_only=True)
+    week = serializers.IntegerField(read_only=True)
+    monday_date = serializers.DateField(read_only=True)
+    employee = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Userweek

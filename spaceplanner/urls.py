@@ -19,17 +19,20 @@ urlpatterns = [
     
 ]
 
+#RestApi patterns
 urlpatterns += [
     path('workstations/', views.WorkstationList.as_view()),
     path('workstations/<int:pk>/', views.WorkstationDetail.as_view()),
     path('workstation_preferences/', views.WorkstationPreferencesList.as_view()),
-    path('workstation_preferences/<int:pk>/', views.WorkstationPreferencesDetail.as_view()),
+    path('workstation_preferences/<int:pk>/', views.WorkstationPreferencesDetail.as_view(), name='workstation-preference-detail'),
     path('employee_preferences/', views.EmployeePreferencesList.as_view()),
-    path('employee_preferences/<int:pk>/', views.EmployeePreferencesDetail.as_view()),
+    path('employee_preferences/<int:pk>/', views.EmployeePreferencesDetail.as_view(), name='employee-preference-detail'),
     path('workweeks/', views.WorkweekList.as_view()),
     path('workweeks/<int:pk>/', views.WorkweekDetail.as_view()),
     path('userweeks/', views.UserweekList.as_view()),
     path('userweeks/<int:pk>/', views.UserweekDetail.as_view()),
+    path('users/', views.UserList.as_view()),
+    path('users/<int:pk>/', views.UserDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -8,19 +8,19 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from rest_framework import mixins
+from rest_framework import generics
+from rest_framework import permissions
+from rest_framework.exceptions import MethodNotAllowed
+from django.contrib.auth.models import User
 
 from .models import Userweek, EmployeePreferences, WorkstationPreferences, Workstation, Workweek
 from .tables import ScheduleTable, PreferencesTable, WorkstationPreferencesTable
 from .app_logic import views_processing
 from .forms import UserPreferencesForm, ScheduleForm, WeekdaysForm, UserForm
-from .serializers import WorkstationSerializer, WorkstationPreferencesSerializer, EmployeePreferencesSerializer, WorkweekSerializer, UserweekSerializer
+from .serializers import WorkstationSerializer, WorkstationPreferencesSerializer, EmployeePreferencesSerializer, WorkweekSerializer, UserweekSerializer, UserSerializer
+from .permissions import IsOwnerOrAdminOrReadOnly, IsAdminUserOrReadOnly
 
-from django.http import Http404
-from rest_framework import mixins
-from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
 
 def home(request):
     return render(request, 'spaceplanner/home.html', {})
@@ -188,15 +188,18 @@ def workstation_preferences(request):
     return render(request, 'spaceplanner/workstation_preferences.html',{'table':table})
 
 class WorkstationList(generics.ListCreateAPIView):
+    permission_classes = [IsAdminUserOrReadOnly]
     queryset = Workstation.objects.all()
     serializer_class = WorkstationSerializer
 
 class WorkstationDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminUserOrReadOnly]
     queryset = Workstation.objects.all()
     serializer_class = WorkstationSerializer
 
 
 class WorkstationPreferencesList(mixins.ListModelMixin, generics.GenericAPIView):
+    permission_classes = [IsAdminUserOrReadOnly]
     queryset = WorkstationPreferences.objects.all()
     serializer_class = WorkstationPreferencesSerializer
 
@@ -204,6 +207,7 @@ class WorkstationPreferencesList(mixins.ListModelMixin, generics.GenericAPIView)
         return self.list(request, *args, **kwargs)
 
 class WorkstationPreferencesDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.GenericAPIView):
+    permission_classes = [IsAdminUserOrReadOnly]
     queryset = WorkstationPreferences.objects.all()
     serializer_class = WorkstationPreferencesSerializer
 
@@ -212,9 +216,17 @@ class WorkstationPreferencesDetail(mixins.RetrieveModelMixin, mixins.UpdateModel
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+    
+    def update(self, *args, **kwargs):
+        raise MethodNotAllowed("POST", detail="Use PATCH")
+
+    def partial_update(self, request, *args, **kwargs):
+        # Override Partial Update Code if desired
+        return super().update(*args, **kwargs, partial=True)
 
 
 class EmployeePreferencesList(mixins.ListModelMixin, generics.GenericAPIView):
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
     queryset = EmployeePreferences.objects.all()
     serializer_class = EmployeePreferencesSerializer
 
@@ -222,6 +234,7 @@ class EmployeePreferencesList(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 class EmployeePreferencesDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.GenericAPIView):
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
     queryset = EmployeePreferences.objects.all()
     serializer_class = EmployeePreferencesSerializer
 
@@ -231,20 +244,52 @@ class EmployeePreferencesDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMix
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
+    def update(self, *args, **kwargs):
+        raise MethodNotAllowed("POST", detail="Use PATCH")
+
+    def partial_update(self, request, *args, **kwargs):
+        # Override Partial Update Code if desired
+        return super().update(*args, **kwargs, partial=True)
+
 
 class WorkweekList(generics.ListCreateAPIView):
+    permission_classes = [IsAdminUserOrReadOnly]
     queryset = Workweek.objects.all()
     serializer_class = WorkweekSerializer
     
 class WorkweekDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminUserOrReadOnly]
     queryset = Workweek.objects.all()
     serializer_class = WorkweekSerializer
 
 
 class UserweekList(generics.ListCreateAPIView):
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
     queryset = Userweek.objects.all()
     serializer_class = UserweekSerializer
 
 class UserweekDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
     queryset = Userweek.objects.all()
     serializer_class = UserweekSerializer
+
+
+class UserList(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAdminUser]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAdminUser]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+
+
