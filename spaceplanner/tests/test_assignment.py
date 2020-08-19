@@ -12,8 +12,8 @@ from spaceplanner.app_logic.views_processing import assign_user_to_workstation
 class SetupTests(TestCase, Assigner):
  
     def setUp(self):
-        Workstation.objects.create(ws_id = 1)
-        Workstation.objects.create(ws_id = 2)
+        Workstation.objects.create(label= 'komp1')
+        Workstation.objects.create(label= 'komp2')
 
 
     def test_generate_workweeks(self):
@@ -24,8 +24,8 @@ class SetupTests(TestCase, Assigner):
 
 class AvailabilityTest(TestCase, Assigner):
     def setUp(self):
-        Workstation.objects.create(ws_id = 1)
-        Workstation.objects.create(ws_id = 2)
+        Workstation.objects.create(label= 'komp1')
+        Workstation.objects.create(label= 'komp2')
         User.objects.create(username = "Andrzej")
 
     def test_get_free_slots_from_empty_schedule(self):
@@ -76,19 +76,19 @@ class SlotFilteringTest(TestCase, Assigner):
     def setUp(self):
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Andrzej"),
             large_screen = True, is_mac = True)
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 1))
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 2))
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 3))
+        Workstation.objects.create(label = 'komp1')
+        Workstation.objects.create(label = 'komp2')
+        Workstation.objects.create(label = 'komp3')
     
     def test_filter_with_three_preferences(self):
         slots = self.get_all_slots(3, 2022)
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
-        workstation1 = Workstation.objects.get(ws_id = 1)
+        workstation1 = Workstation.objects.get(label = 'komp1')
         workstation1_preferences = WorkstationPreferences.objects.get(workstation = workstation1)
         workstation1_preferences.large_screen = True
         workstation1_preferences.is_mac = True
         workstation1_preferences.save()
-        workstation2 = Workstation.objects.get(ws_id = 2)
+        workstation2 = Workstation.objects.get(label = 'komp2')
         workstation2_preferences = WorkstationPreferences.objects.get(workstation = workstation2)
         workstation2_preferences.large_screen = False
         workstation2_preferences.is_mac = True
@@ -101,7 +101,7 @@ class SlotFilteringTest(TestCase, Assigner):
         for day in working_days:
             expected_availability[day] = [slot]
         self.assertEqual(availability, expected_availability)
-       
+    
     def test_filter_matching_workspace(self):
         slots = self.get_all_slots(3, 2022)
         preference = EmployeePreferences.objects.get(employee = User.objects.get(username = "Andrzej"))
@@ -139,9 +139,9 @@ class SlotFilteringTest(TestCase, Assigner):
 class SelectingSingleWorkspaceTests(TestCase, Assigner):
 
     def setUp(self):
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 1))
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 2))
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 3))
+        Workstation.objects.create(label = '1')
+        Workstation.objects.create(label = '2')
+        Workstation.objects.create(label = '3')
 
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation1_preferences = WorkstationPreferences.objects.get(workstation = workstation1)
@@ -163,7 +163,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 1)
     
     def test_filter_favourite_workspace(self):
-        slots = self.get_all_slots(3, 2022)
+        self.get_all_slots(3, 2022)
         working_days = ["Monday", "Wednesday", "Saturday"]
         user = User.objects.get(username = "Andrzej")
         preference = EmployeePreferences.objects.get (employee = user)
@@ -177,7 +177,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         self.assertEqual(selected_workspace, schedule)
     
     def test_filter_diffrent_favourite_workspaces(self):
-        slots = self.get_all_slots(3, 2022)
+        self.get_all_slots(3, 2022)
         working_days = ["Monday", "Wednesday", "Saturday"]
         user = User.objects.get(username = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
@@ -211,7 +211,7 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
         self.assertEqual(selected_workspace, schedule)
     
     def test_matching_workspaces_present(self):
-        slots = self.get_all_slots(3, 2022)
+        self.get_all_slots(3, 2022)
         working_days = ["Monday", "Wednesday", "Saturday"]
         user = User.objects.get(username = "Andrzej")
         workstation1 = Workstation.objects.get(ws_id = 1)
@@ -274,14 +274,14 @@ class SelectingSingleWorkspaceTests(TestCase, Assigner):
 class SelectingDiffrentWorkspacesTests(TestCase, Assigner):
     
     def setUp(self):
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 1))
+        Workstation.objects.create(label = '1')
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation1_preferences = WorkstationPreferences.objects.get(workstation = workstation1)
         workstation1_preferences.large_screen = True
         workstation1_preferences.is_mac = True
         workstation1_preferences.save()
 
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 2))
+        Workstation.objects.create(label = '2')
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Andrzej"), 
         large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 2)
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Rafał"), 
@@ -311,14 +311,14 @@ class SelectingDiffrentWorkspacesTests(TestCase, Assigner):
 class MiscFunctions(TestCase, Assigner):
 
     def setUp(self):
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 1))
+        Workstation.objects.create(label = '1')
         workstation1 = Workstation.objects.get(ws_id = 1)
         workstation1_preferences = WorkstationPreferences.objects.get(workstation = workstation1)
         workstation1_preferences.large_screen = False
         workstation1_preferences.is_mac = True
         workstation1_preferences.save()
 
-        WorkstationPreferences.objects.create(workstation = Workstation.objects.create(ws_id = 2))
+        Workstation.objects.create(label = '2')
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Andrzej"), 
         large_screen = True, is_mac = True, is_mac_preference = 2, large_screen_preference = 1)
         EmployeePreferences.objects.create(employee = User.objects.create(username = "Rafał"), 
